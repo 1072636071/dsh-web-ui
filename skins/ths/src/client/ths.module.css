@@ -582,17 +582,18 @@ body[data-dsh-ths] [data-pane='sidebar'] > div > :first-child svg [fill='var(--d
   fill: #fff;
 }
 
-/* The "New session" action reads as a 买入 buy button under the band. */
+/* The "New session" action reads as a 买入 buy button under the band — a
+   deep wine crimson, not the neon red of the title bar. */
 body[data-dsh-ths] [data-pane='sidebar'] > div > button {
-  background: linear-gradient(180deg, #ff1f2e, #e60012);
-  border: 1px solid #c4000f;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, #c80010, #a5000d);
+  border: 1px solid #8a0009;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
   color: #fff;
   font-weight: 600;
 }
 
 body[data-dsh-ths] [data-pane='sidebar'] > div > button:hover {
-  background: linear-gradient(180deg, #ff3340, #d4000f);
+  background: linear-gradient(180deg, #d40012, #b0000e);
 }
 
 /* --- Watchlist rows ----------------------------------------------------------
