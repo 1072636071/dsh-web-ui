@@ -12,6 +12,7 @@
 skins/
   qq98/        第一个入库的皮肤：QQ98/OICQ 怀旧版（Win98 桌面、企鹅标题栏、宋体、立体控件）
   ths/         同花顺风格炒股主题（品牌红标题栏、行情状态栏、灰蓝数据终端面板）
+  xp/          Windows XP (Luna) 复古主题（蓝色渐变窗口条、绿色开始按钮、米色状态栏、全局直角）
 ```
 
 > ⚠️ 同一时刻只接线一个皮肤：两个皮肤都会注入标题栏/状态栏。换皮肤 = 把 `web.cordis.yml` 里的皮肤行换成另一个（见各皮肤 README）。
@@ -68,6 +69,7 @@ A collection of **DeepSeek Harness Web GUI** skins and UI plugins. Every skin is
 
 - `skins/qq98/` — the first collected skin: the QQ98/OICQ retro edition (Win98 desktop, penguin title bar, 宋体 text, beveled controls). Ships a prebuilt `lib/client.js` (CSS inlined) plus source.
 - `skins/ths/` — the Tonghuashun-style (同花顺) stock-trading theme: brand-red title bar, quote status bar (红涨绿跌), gray-blue data-terminal panels. Ships a prebuilt `lib/client.js` (CSS inlined) plus source.
+- `skins/xp/` — the Windows XP (Luna) retro theme: blue gradient window chrome with caption buttons, green Start button, cream status bar with CAPS/NUM/SCRL indicators, square corners. Ships a prebuilt `lib/client.js` (CSS inlined) plus source.
 - **Quick use**: copy the skin dir into a DSH checkout's `packages/client/`, add a `dshClient` row to `apps/cli/config/web.cordis.yml`, add the package to `apps/cli/package.json` and `tsconfig.client.json`, `pnpm install`, restart `dsh web`, refresh. Wire **only one skin row at a time** — two skins both inject title/status bars.
 - **Add a skin**: clone `skins/qq98/`, scope your styles under your own body attribute, retract everything on dispose, verify the assembled look before submitting.
 

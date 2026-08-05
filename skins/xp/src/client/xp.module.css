@@ -1,0 +1,829 @@
+/* Windows XP (Luna) skin for the dsh web GUI. A trip back to the XP desktop:
+   the blue gradient window chrome with glossy caption bars, the cream (Luna)
+   surfaces, the green Start button on a taskbar-blue footer strip, beveled
+   status-bar cells, and square corners everywhere. Everything is scoped
+   under body[data-dsh-xp], which the plugin's apply() sets (and retracts on
+   dispose), so the skin is fully hot-pluggable: load the bundle, set the
+   attribute, remove the attribute. The dark palette
+   (`body[data-dsh-xp][data-ds-dark-theme]`) is the Zune/Media-Center black
+   variant. Classes are consumed by the plugin's chrome through the module
+   class map; global selectors pass through the CSS-modules transform
+   untouched. Scrollbar aliases are deliberately left on the base theme so
+   the stock scrollbar contract keeps holding under the skin. */
+
+/* --- Desktop, fonts ---------------------------------------------------------- */
+
+body[data-dsh-xp] {
+  --dsw-font-family: Tahoma, 'Microsoft YaHei', 'PingFang SC', 'SimSun', '宋体', sans-serif;
+  --ds-font-family-code: 'Courier New', 'SimSun', monospace;
+  color: #000;
+  background-color: #2c66b8;
+  /* The Bliss-style sky over the window; the hill reads through the frame gap. */
+  background-image:
+    radial-gradient(130% 90% at 50% 120%, #4f9e46 0%, #2e6b34 38%, rgba(46, 107, 52, 0) 70%),
+    linear-gradient(180deg, #8fc3f2 0%, #5d9be0 45%, #2c66b8 78%, #1e4f96 100%);
+  background-attachment: fixed;
+  /* The fixed title/status bars reserve room; #root becomes the window. */
+  padding: 30px 10px 26px;
+  box-sizing: border-box;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] {
+  color: #e8eaed;
+  background-color: #0b1019;
+  background-image: linear-gradient(180deg, #17233a 0%, #0d1526 55%, #070c16 100%);
+}
+
+/* #root is the window: white interior behind an XP active-window frame. */
+body[data-dsh-xp] [id='root'] {
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #0831d9;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [id='root'] {
+  background: #0d0f12;
+  border-color: #000;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65);
+}
+
+/* --- Static palette: light -----------------------------------------------------
+   Luna has no rounded corners anywhere: the window chrome is square. */
+
+body[data-dsh-xp] * {
+  border-radius: 0 !important;
+}
+
+body[data-dsh-xp] {
+  --dsw-static-amber-100: #ffe38e;
+  --dsw-static-amber-400: #d69a3a;
+  --dsw-static-amber-500: #b07600;
+  --dsw-static-amber-600: #966300;
+  --dsw-static-amber-900: #3f2f10;
+  --dsw-static-blue-100: #dbe9fc;
+  --dsw-static-blue-300: #a8c8f0;
+  --dsw-static-blue-400: #7fa9e0;
+  --dsw-static-blue-450: #5f8fd6;
+  --dsw-static-blue-500: #316ac5;
+  --dsw-static-blue-50: #f0f6fd;
+  --dsw-static-blue-50p: #e9f1fb;
+  --dsw-static-blue-600: #2558a8;
+  --dsw-static-blue-75: #edf4fc;
+  --dsw-static-blue-800: #0a246a;
+  --dsw-static-blue-950: #051236;
+  --dsw-static-deepseek-100: #dbe9fc;
+  --dsw-static-deepseek-200: #c2daf8;
+  --dsw-static-deepseek-300: #a8c8f0;
+  --dsw-static-deepseek-400: #7fa9e0;
+  --dsw-static-deepseek-450: #5f8fd6;
+  --dsw-static-deepseek-500: #316ac5;
+  --dsw-static-deepseek-50: #f0f6fd;
+  --dsw-static-deepseek-600: #2558a8;
+  --dsw-static-deepseek-700-delete: #1e4a90;
+  --dsw-static-deepseek-800: #0a246a;
+  --dsw-static-deepseek-900: #081d55;
+  --dsw-static-green-100: #dff0e0;
+  --dsw-static-green-400: #4baf4d;
+  --dsw-static-green-500: #3d9f43;
+  --dsw-static-green-900: #14402a;
+  --dsw-static-neutral-00: #fff;
+  --dsw-static-neutral-1000: #10141a;
+  --dsw-static-neutral-100: #f1efe9;
+  --dsw-static-neutral-150: #ece9d8;
+  --dsw-static-neutral-200: #dbe2ea;
+  --dsw-static-neutral-250: #d0d8e2;
+  --dsw-static-neutral-300: #bcc8d6;
+  --dsw-static-neutral-400: #9aa8ba;
+  --dsw-static-neutral-500: #7f8d9f;
+  --dsw-static-neutral-50: #f7f6f0;
+  --dsw-static-neutral-550: #6a788a;
+  --dsw-static-neutral-600: #5d6b7e;
+  --dsw-static-neutral-700: #4a5668;
+  --dsw-static-neutral-800: #39434f;
+  --dsw-static-neutral-850: #2d3540;
+  --dsw-static-neutral-900: #20262e;
+  --dsw-static-neutral-bluish-00: #fff;
+  --dsw-static-neutral-bluish-1000: #10141a;
+  --dsw-static-neutral-bluish-100: #f1efe9;
+  --dsw-static-neutral-bluish-150: #ece9d8;
+  --dsw-static-neutral-bluish-200: #dbe2ea;
+  --dsw-static-neutral-bluish-300: #bcc8d6;
+  --dsw-static-neutral-bluish-400: #9aa8ba;
+  --dsw-static-neutral-bluish-500: #7f8d9f;
+  --dsw-static-neutral-bluish-50: #f7f6f0;
+  --dsw-static-neutral-bluish-600: #5d6b7e;
+  --dsw-static-neutral-bluish-60: #f5f3ea;
+  --dsw-static-neutral-bluish-700: #4a5668;
+  --dsw-static-neutral-bluish-750: #3e4957;
+  --dsw-static-neutral-bluish-75: #f0eee2;
+  --dsw-static-neutral-bluish-800: #39434f;
+  --dsw-static-neutral-bluish-850: #2d3540;
+  --dsw-static-neutral-bluish-875: #272e37;
+  --dsw-static-neutral-bluish-900: #20262e;
+  --dsw-static-neutral-bluish-950: #181d24;
+  --dsw-static-red-100: #fadcd9;
+  --dsw-static-red-400: #e6544a;
+  --dsw-static-red-500: #e33e2b;
+  --dsw-static-red-50: #fdf0ef;
+  --dsw-static-red-600: #b3291c;
+  --dsw-static-red-900: #5c0f0a;
+}
+
+/* --- Static palette: dark ------------------------------------------------------ */
+
+body[data-dsh-xp][data-ds-dark-theme] {
+  --dsw-static-amber-100: #4a3f14;
+  --dsw-static-amber-400: #d69a3a;
+  --dsw-static-amber-500: #b07600;
+  --dsw-static-amber-600: #966300;
+  --dsw-static-amber-900: #3f2f10;
+  --dsw-static-blue-100: #1f2d3d;
+  --dsw-static-blue-300: #2f445c;
+  --dsw-static-blue-400: #3d5875;
+  --dsw-static-blue-450: #4b6a8b;
+  --dsw-static-blue-500: #5f81a4;
+  --dsw-static-blue-50: #17222f;
+  --dsw-static-blue-50p: #192531;
+  --dsw-static-blue-600: #7398bb;
+  --dsw-static-blue-75: #1b2735;
+  --dsw-static-blue-800: #97b3cf;
+  --dsw-static-blue-950: #b9cddf;
+  --dsw-static-deepseek-100: #1f2d3d;
+  --dsw-static-deepseek-200: #26374b;
+  --dsw-static-deepseek-300: #2f445c;
+  --dsw-static-deepseek-400: #3d5875;
+  --dsw-static-deepseek-450: #4b6a8b;
+  --dsw-static-deepseek-500: #5f81a4;
+  --dsw-static-deepseek-50: #17222f;
+  --dsw-static-deepseek-600: #7398bb;
+  --dsw-static-deepseek-700-delete: #86a6c6;
+  --dsw-static-deepseek-800: #97b3cf;
+  --dsw-static-deepseek-900: #a8c0d8;
+  --dsw-static-green-100: #1c3a2a;
+  --dsw-static-green-400: #35b26d;
+  --dsw-static-green-500: #2fbf71;
+  --dsw-static-green-900: #14402a;
+  --dsw-static-neutral-00: #0d0f12;
+  --dsw-static-neutral-1000: #e8eaed;
+  --dsw-static-neutral-100: #1b1d21;
+  --dsw-static-neutral-150: #202227;
+  --dsw-static-neutral-200: #26282d;
+  --dsw-static-neutral-250: #2b2e34;
+  --dsw-static-neutral-300: #33363d;
+  --dsw-static-neutral-400: #43474f;
+  --dsw-static-neutral-500: #565b64;
+  --dsw-static-neutral-50: #15171b;
+  --dsw-static-neutral-550: #636872;
+  --dsw-static-neutral-600: #6f747e;
+  --dsw-static-neutral-700: #8a8f98;
+  --dsw-static-neutral-800: #a8acb3;
+  --dsw-static-neutral-850: #b6bac0;
+  --dsw-static-neutral-900: #c8ccd2;
+  --dsw-static-neutral-bluish-00: #0d0f12;
+  --dsw-static-neutral-bluish-1000: #e8eaed;
+  --dsw-static-neutral-bluish-100: #1b1d21;
+  --dsw-static-neutral-bluish-150: #202227;
+  --dsw-static-neutral-bluish-200: #26282d;
+  --dsw-static-neutral-bluish-300: #33363d;
+  --dsw-static-neutral-bluish-400: #43474f;
+  --dsw-static-neutral-bluish-500: #565b64;
+  --dsw-static-neutral-bluish-50: #15171b;
+  --dsw-static-neutral-bluish-600: #6f747e;
+  --dsw-static-neutral-bluish-60: #181a1e;
+  --dsw-static-neutral-bluish-700: #8a8f98;
+  --dsw-static-neutral-bluish-750: #969ba3;
+  --dsw-static-neutral-bluish-75: #191b1f;
+  --dsw-static-neutral-bluish-800: #a8acb3;
+  --dsw-static-neutral-bluish-850: #b6bac0;
+  --dsw-static-neutral-bluish-875: #c0c4ca;
+  --dsw-static-neutral-bluish-900: #c8ccd2;
+  --dsw-static-neutral-bluish-950: #d5d8dd;
+  --dsw-static-red-100: #4a2224;
+  --dsw-static-red-400: #e6544a;
+  --dsw-static-red-500: #ff5252;
+  --dsw-static-red-50: #3a1c1e;
+  --dsw-static-red-600: #d64040;
+  --dsw-static-red-900: #5c1010;
+}
+
+/* --- Alias layer: light --------------------------------------------------------- */
+
+body[data-dsh-xp] {
+  --dsw-alias-bg-base: #fff;
+  --dsw-alias-bg-layer-1: #f6f4ec;
+  --dsw-alias-bg-layer-2: #ece9d8;
+  --dsw-alias-bg-layer-3: #e2dfcb;
+  --dsw-alias-bg-mask-1: rgba(16, 24, 36, 0.42);
+  --dsw-alias-bg-mask-2: rgba(16, 24, 36, 0.22);
+  --dsw-alias-bg-mask-3: rgba(16, 24, 36, 0.55);
+  --dsw-alias-bg-mask-photo: rgba(16, 24, 36, 0.88);
+  --dsw-alias-bg-module-platform: #ece9d8;
+  --dsw-alias-bg-multi-select: #dbe9fc;
+  --dsw-alias-bg-overlay: #ece9d8;
+  --dsw-alias-bg-skeleton: rgba(16, 24, 36, 0.06);
+  --dsw-alias-border-inverted2: rgba(255, 255, 255, 0.6);
+  --dsw-alias-border-inverted: rgba(255, 255, 255, 0.4);
+  --dsw-alias-border-l1: rgba(0, 0, 0, 0.06);
+  --dsw-alias-border-l2-darkmode-thin: rgba(0, 0, 0, 0.1);
+  --dsw-alias-border-l2: rgba(0, 0, 0, 0.12);
+  --dsw-alias-border-l3: rgba(0, 0, 0, 0.2);
+  --dsw-alias-border-l4: rgba(0, 0, 0, 0.32);
+  --dsw-alias-brand-primary-invert: #fff;
+  --dsw-alias-brand-primary-new-colorprimary-new-color: #316ac5;
+  --dsw-alias-brand-primary: #316ac5;
+  --dsw-alias-brand-text: #316ac5;
+  --dsw-alias-button-contrast-fill: #0a246a;
+  --dsw-alias-button-elevated-fill: #f1efe9;
+  --dsw-alias-button-floating-fill: #ece9d8;
+  --dsw-alias-button-floating-hover: #e2dfcb;
+  --dsw-alias-button-ghost-active-border: #7f9db9;
+  --dsw-alias-button-ghost-active-fill: #ece9d8;
+  --dsw-alias-button-ghost-active-hover: #e2dfcb;
+  --dsw-alias-button-info-fill: #316ac5;
+  --dsw-alias-button-info-hover: #2558a8;
+  --dsw-alias-button-primary-dimmed: #9db9e0;
+  --dsw-alias-button-primary-fill: #316ac5;
+  --dsw-alias-button-primary-hover: #2558a8;
+  --dsw-alias-button-tool-bar-fill-invisible: rgba(49, 106, 197, 0.3);
+  --dsw-alias-button-tool-bar-fill: rgba(49, 106, 197, 0.42);
+  --dsw-alias-button-tool-bar-hover: rgba(49, 106, 197, 0.58);
+  --dsw-alias-interactive-bg-active: rgba(49, 106, 197, 0.1);
+  --dsw-alias-interactive-bg-hover-accent: rgba(49, 106, 197, 0.15);
+  --dsw-alias-interactive-bg-hover-danger: rgba(196, 0, 15, 0.07);
+  --dsw-alias-interactive-bg-hover-solid: #ece9d8;
+  --dsw-alias-interactive-bg-hover: rgba(49, 106, 197, 0.08);
+  --dsw-alias-label-caption: #7f8d9f;
+  --dsw-alias-label-dimmed: #8a97a8;
+  --dsw-alias-label-primary-dimmed: #3d4a5c;
+  --dsw-alias-label-primary-foreground: #fff;
+  --dsw-alias-label-primary-inverted: #fff;
+  --dsw-alias-label-primary: #000;
+  --dsw-alias-label-secondary: #3d4a5c;
+  --dsw-alias-label-tertiary: #5d6b7e;
+  --dsw-alias-markdown-citation: #ece9d8;
+  --dsw-alias-markdown-code-block-banner: #f1efe9;
+  --dsw-alias-markdown-code-block: #f6f4ec;
+  --dsw-alias-markdown-code-segment-selected: #fff;
+  --dsw-alias-markdown-code-segment-unselected: #f1efe9;
+  --dsw-alias-markdown-inline-code: #f1efe9;
+  --dsw-alias-markdown-placeholder: #f1efe9;
+  --dsw-alias-markdown-tag: #ece9d8;
+  --dsw-alias-state-business-primary: #316ac5;
+  --dsw-alias-state-business-tertiary: #dbe9fc;
+  --dsw-alias-state-error-primary: #e33e2b;
+  --dsw-alias-state-error-secondary: #e6544a;
+  --dsw-alias-state-success-primary: #3d9f43;
+  --dsw-alias-state-success-secondary: #4baf4d;
+  --dsw-alias-state-success-tertiary: #dff0e0;
+  --dsw-alias-toast-bg: #0f2d5c;
+  --dsw-specific-bubble-highlight: #dbe9fc;
+  --dsw-specific-bubble: #eef3fb;
+  --dsw-specific-input-major: #fff;
+  --dsw-specific-login-input: #fff;
+  --dsw-specific-menu: #ece9d8;
+  --dsw-specific-selector: #e9f0fa;
+  --dsw-specific-sidebar-fill: #ece9d8;
+  --dsw-specific-sidebar-nav-item-active-accent: #316ac5;
+  --dsw-specific-sidebar-nav-item-active: #dbe9fc;
+  --dsw-specific-sidebar-nav-item-hover: #e9f1fb;
+  --dsw-specific-tip: #f1efe9;
+}
+
+/* --- Alias layer: dark ---------------------------------------------------------- */
+
+body[data-dsh-xp][data-ds-dark-theme] {
+  --dsw-alias-bg-base: #0d0f12;
+  --dsw-alias-bg-layer-1: #15171b;
+  --dsw-alias-bg-layer-2: #1b1d21;
+  --dsw-alias-bg-layer-3: #202227;
+  --dsw-alias-bg-mask-1: rgba(0, 0, 0, 0.5);
+  --dsw-alias-bg-mask-2: rgba(0, 0, 0, 0.25);
+  --dsw-alias-bg-mask-3: rgba(0, 0, 0, 0.55);
+  --dsw-alias-bg-mask-photo: rgba(0, 0, 0, 0.88);
+  --dsw-alias-bg-module-platform: #1b1d21;
+  --dsw-alias-bg-multi-select: #232a36;
+  --dsw-alias-bg-overlay: #1b1d21;
+  --dsw-alias-bg-skeleton: rgba(255, 255, 255, 0.06);
+  --dsw-alias-border-inverted2: rgba(255, 255, 255, 0.6);
+  --dsw-alias-border-inverted: rgba(255, 255, 255, 0.4);
+  --dsw-alias-border-l1: rgba(255, 255, 255, 0.08);
+  --dsw-alias-border-l2-darkmode-thin: rgba(255, 255, 255, 0.12);
+  --dsw-alias-border-l2: rgba(255, 255, 255, 0.16);
+  --dsw-alias-border-l3: rgba(255, 255, 255, 0.24);
+  --dsw-alias-border-l4: rgba(255, 255, 255, 0.32);
+  --dsw-alias-brand-primary-invert: #0d0f12;
+  --dsw-alias-brand-primary-new-colorprimary-new-color: #6da8e8;
+  --dsw-alias-brand-primary: #6da8e8;
+  --dsw-alias-brand-text: #6da8e8;
+  --dsw-alias-button-contrast-fill: #c8ccd2;
+  --dsw-alias-button-elevated-fill: #202227;
+  --dsw-alias-button-floating-fill: #1b1d21;
+  --dsw-alias-button-floating-hover: #23262b;
+  --dsw-alias-button-ghost-active-border: #7e8c9c;
+  --dsw-alias-button-ghost-active-fill: #202227;
+  --dsw-alias-button-ghost-active-hover: #26292e;
+  --dsw-alias-button-info-fill: #316ac5;
+  --dsw-alias-button-info-hover: #3d7ad8;
+  --dsw-alias-button-primary-dimmed: #3d5875;
+  --dsw-alias-button-primary-fill: #316ac5;
+  --dsw-alias-button-primary-hover: #3d7ad8;
+  --dsw-alias-button-tool-bar-fill-invisible: rgba(109, 168, 232, 0.3);
+  --dsw-alias-button-tool-bar-fill: rgba(109, 168, 232, 0.42);
+  --dsw-alias-button-tool-bar-hover: rgba(109, 168, 232, 0.58);
+  --dsw-alias-interactive-bg-active: rgba(109, 168, 232, 0.16);
+  --dsw-alias-interactive-bg-hover-accent: rgba(109, 168, 232, 0.22);
+  --dsw-alias-interactive-bg-hover-danger: rgba(255, 82, 82, 0.14);
+  --dsw-alias-interactive-bg-hover-solid: #23262b;
+  --dsw-alias-interactive-bg-hover: rgba(109, 168, 232, 0.1);
+  --dsw-alias-label-caption: #8a8f98;
+  --dsw-alias-label-dimmed: #6f747e;
+  --dsw-alias-label-primary-dimmed: #b6bac0;
+  --dsw-alias-label-primary-foreground: #fff;
+  --dsw-alias-label-primary-inverted: #fff;
+  --dsw-alias-label-primary: #e8eaed;
+  --dsw-alias-label-secondary: #c8ccd2;
+  --dsw-alias-label-tertiary: #9aa0a8;
+  --dsw-alias-markdown-citation: #1b1d21;
+  --dsw-alias-markdown-code-block-banner: #15171b;
+  --dsw-alias-markdown-code-block: #15171b;
+  --dsw-alias-markdown-code-segment-selected: #202227;
+  --dsw-alias-markdown-code-segment-unselected: #1b1d21;
+  --dsw-alias-markdown-inline-code: #1b1d21;
+  --dsw-alias-markdown-placeholder: #15171b;
+  --dsw-alias-markdown-tag: #1b1d21;
+  --dsw-alias-state-business-primary: #6da8e8;
+  --dsw-alias-state-business-tertiary: #1f2d3d;
+  --dsw-alias-state-error-primary: #ff5252;
+  --dsw-alias-state-error-secondary: #e6544a;
+  --dsw-alias-state-success-primary: #2fbf71;
+  --dsw-alias-state-success-secondary: #35b26d;
+  --dsw-alias-state-success-tertiary: #1c3a2a;
+  --dsw-alias-toast-bg: #2b2e33;
+  --dsw-specific-bubble-highlight: #223042;
+  --dsw-specific-bubble: #1b2027;
+  --dsw-specific-input-major: #0d0f12;
+  --dsw-specific-login-input: #0d0f12;
+  --dsw-specific-menu: #202227;
+  --dsw-specific-selector: #202227;
+  --dsw-specific-sidebar-fill: #17191d;
+  --dsw-specific-sidebar-nav-item-active-accent: #6da8e8;
+  --dsw-specific-sidebar-nav-item-active: #232a36;
+  --dsw-specific-sidebar-nav-item-hover: #1f242c;
+  --dsw-specific-tip: #1b1d21;
+}
+
+/* --- Selection ---------------------------------------------------------------- */
+
+body[data-dsh-xp] ::selection {
+  background: #316ac5;
+  color: #fff;
+}
+
+/* --- Window chrome: title bar and status bar ------------------------------------
+   Fixed strips above/below #root (the plugin renders them; #root itself is
+   the window body via the rules above). */
+
+.xpTitlebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 5px;
+  /* The Luna active title bar: glossy blue gradient. */
+  background: linear-gradient(180deg, #0a5bc4 0%, #1a6fd0 45%, #3a8fe0 100%);
+  border-bottom: 1px solid #0a3a8f;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  color: #fff;
+  font: 700 12px/30px Tahoma, 'Microsoft YaHei', 'PingFang SC', 'SimSun', sans-serif;
+  user-select: none;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] .xpTitlebar {
+  background: linear-gradient(180deg, #3a3f45 0%, #22262b 55%, #101216 100%);
+  border-bottom-color: #000;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.xpTitlebarTitle {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.xpTitlebarIcon {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Caption buttons: small beveled plates; the close button goes red on hover. */
+.xpTitlebarBtn,
+.xpTitlebarBtnClose {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 19px;
+  margin-left: 1px;
+  background: linear-gradient(180deg, #4f8fe0 0%, #1e5fd0 100%);
+  border: 1px solid #0831d9;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-size: 11px;
+  line-height: 1;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] .xpTitlebarBtn,
+body[data-dsh-xp][data-ds-dark-theme] .xpTitlebarBtnClose {
+  background: linear-gradient(180deg, #4a4e55 0%, #26292e 100%);
+  border-color: #000;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.xpTitlebarBtn:hover {
+  background: linear-gradient(180deg, #7fb0ec 0%, #3f84e0 100%);
+}
+
+.xpTitlebarBtnClose:hover {
+  background: linear-gradient(180deg, #ff9d8a 0%, #e83b2b 100%);
+}
+
+/* Status bar: the classic cream strip with beveled cell dividers and sunken
+   CAPS/NUM/SCRL key indicators on the right. */
+.xpStatusbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000000;
+  display: flex;
+  align-items: stretch;
+  height: 24px;
+  background: #ece9d8;
+  border-top: 1px solid #b3ad95;
+  color: #000;
+  font: 11px/24px Tahoma, 'Microsoft YaHei', 'PingFang SC', 'SimSun', sans-serif;
+  user-select: none;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] .xpStatusbar {
+  background: #1c1e22;
+  border-top-color: #000;
+  color: #c8ccd2;
+}
+
+.xpStatusbarCell {
+  flex: none;
+  padding: 0 10px;
+  border-right: 1px solid #b3ad95;
+  /* The raised divider: light edge right of the dark line. */
+  box-shadow: 1px 0 0 #fff;
+  white-space: nowrap;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] .xpStatusbarCell {
+  border-right-color: #3a3d42;
+  box-shadow: 1px 0 0 #0b0c0e;
+}
+
+.xpStatusbarKey {
+  flex: none;
+  min-width: 32px;
+  padding: 0 6px;
+  margin: 2px 2px 2px 0;
+  text-align: center;
+  white-space: nowrap;
+  /* Sunken recessed indicator. */
+  background: #e2dfcb;
+  box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.28), inset -1px -1px 1px rgba(255, 255, 255, 0.6);
+}
+
+body[data-dsh-xp][data-ds-dark-theme] .xpStatusbarKey {
+  background: #14161a;
+  box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.7), inset -1px -1px 1px rgba(255, 255, 255, 0.08);
+}
+
+.xpStatusbarSpacer {
+  flex: 1;
+}
+
+/* --- Pane chrome --------------------------------------------------------------
+   The AppFrame columns carry data-pane hooks (ui-layout); give each the XP
+   surface. The sidebar is the Explorer window: cream body, blue title band
+   on top, a taskbar-blue footer strip with the green Start button. Without
+   the hooks these rules simply do not match. */
+
+body[data-dsh-xp] [data-pane='sidebar'] > div {
+  background: #ece9d8;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [data-pane='sidebar'] > div {
+  background: #17191d;
+}
+
+/* Sidebar header band: the first child (logo row) becomes the Luna caption
+   bar; everything inside renders white. */
+body[data-dsh-xp] [data-pane='sidebar'] > div > :first-child,
+body[data-dsh-xp] [data-pane='sidebar'] > div > :first-child * {
+  color: #fff;
+}
+
+body[data-dsh-xp] [data-pane='sidebar'] > div > :first-child {
+  background: linear-gradient(180deg, #0a5bc4 0%, #1a6fd0 45%, #3a8fe0 100%);
+  border-bottom: 1px solid #0a3a8f;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [data-pane='sidebar'] > div > :first-child {
+  background: linear-gradient(180deg, #3a3f45 0%, #22262b 55%, #101216 100%);
+  border-bottom-color: #000;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+/* Header-band buttons stay flat and transparent on the blue strip. */
+body[data-dsh-xp] [data-pane='sidebar'] > div > :first-child button {
+  background: transparent;
+  color: #fff;
+}
+
+body[data-dsh-xp] [data-pane='sidebar'] > div > :first-child button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* The brand lockup is vector text: "DeepSeek" + a "HARNESS" badge pill. The
+   pill follows currentColor (white here) while the badge letters use the
+   inverted-primary token — white on white. Pin the pill to the light
+   highlight plate and force the letters navy, so the badge reads like a
+   beveled window label on the caption bar. */
+body[data-dsh-xp] [data-pane='sidebar'] > div > :first-child svg rect[fill='currentColor'] {
+  fill: #eaf3fe;
+}
+
+body[data-dsh-xp] [data-pane='sidebar'] > div > :first-child svg [fill='var(--dsw-alias-label-primary-inverted)'] {
+  fill: #0a246a;
+}
+
+/* The "New session" action reads as a Luna command button: cream beveled
+   plate with the blue XP border, gold hot-tint on hover. */
+body[data-dsh-xp] [data-pane='sidebar'] > div > button {
+  background: linear-gradient(180deg, #fdfdfd 0%, #f1efe9 45%, #d8d7cf 100%);
+  border: 1px solid #003c74;
+  box-shadow: inset 0 1px 0 #fff;
+  color: #000;
+  font-weight: 600;
+}
+
+body[data-dsh-xp] [data-pane='sidebar'] > div > button:hover {
+  background: linear-gradient(180deg, #fff3d6 0%, #ffe38e 100%);
+}
+
+body[data-dsh-xp] [data-pane='sidebar'] > div > button:active {
+  background: linear-gradient(180deg, #d8d7cf 0%, #f1efe9 55%, #fdfdfd 100%);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [data-pane='sidebar'] > div > button {
+  background: linear-gradient(180deg, #3f444b 0%, #23262b 100%);
+  border-color: #000;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [data-pane='sidebar'] > div > button:hover {
+  background: linear-gradient(180deg, #4a5058 0%, #2c3036 100%);
+}
+
+/* --- Explorer rows -----------------------------------------------------------
+   The session/project tree items become Explorer rows: cream body, a light
+   blue hover, and the classic blue selection. */
+
+body[data-dsh-xp] [data-pane='sidebar'] [role='treeitem'] {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+body[data-dsh-xp] [data-pane='sidebar'] [role='treeitem']:hover {
+  background: #dbe9fc;
+}
+
+body[data-dsh-xp] [data-pane='sidebar'] [role='treeitem'][aria-selected='true'],
+body[data-dsh-xp] [data-pane='sidebar'] [role='treeitem'][aria-selected='true'] * {
+  background: #316ac5;
+  color: #fff;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [data-pane='sidebar'] [role='treeitem'] {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [data-pane='sidebar'] [role='treeitem']:hover {
+  background: #232a36;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [data-pane='sidebar'] [role='treeitem'][aria-selected='true'],
+body[data-dsh-xp][data-ds-dark-theme] [data-pane='sidebar'] [role='treeitem'][aria-selected='true'] * {
+  background: #316ac5;
+  color: #fff;
+}
+
+/* The search box: white text field with the XP blue-gray border; the focus
+   ring is the navy XP focus color. */
+body[data-dsh-xp] [data-pane='sidebar'] input {
+  background: #fff;
+  border: 1px solid #7f9db9;
+  color: #000;
+}
+
+body[data-dsh-xp] [data-pane='sidebar'] input:focus {
+  border-color: #0a246a;
+  box-shadow: 0 0 0 1px #0a246a;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [data-pane='sidebar'] input {
+  background: #14161a;
+  border-color: #4a4e55;
+  color: #e8eaed;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [data-pane='sidebar'] input:focus {
+  border-color: #6da8e8;
+  box-shadow: 0 0 0 1px #6da8e8;
+}
+
+/* The footer strip (settings entry) becomes the taskbar: Luna blue gradient
+   with the green Start button on the left and the settings trigger on the
+   right (Start renders first, so margin-right:auto parks it left). */
+body[data-dsh-xp] [data-pane='sidebar'] > div > :last-child {
+  background: linear-gradient(180deg, #245edb 0%, #3f8cf3 9%, #3778e7 18%, #245edb 100%);
+  border-top: 1px solid #16409c;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [data-pane='sidebar'] > div > :last-child {
+  background: linear-gradient(180deg, #26292e 0%, #3a3f45 12%, #2b2e33 24%, #1b1d21 100%);
+  border-top-color: #000;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+body[data-dsh-xp] [data-pane='sidebar'] > div > :last-child button:not(.xpStart) {
+  background: transparent;
+  color: #fff;
+}
+
+body[data-dsh-xp] [data-pane='sidebar'] > div > :last-child button:not(.xpStart):hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* The Start button: green gradient plate with the four-color flag. */
+.xpStart {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 12px;
+  margin-right: auto;
+  background: linear-gradient(180deg, #7bc04b 0%, #5aa72f 45%, #3c9212 100%);
+  border: 1px solid #2d6e0e;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 1px 1px rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font: 700 11px/1 Tahoma, 'Microsoft YaHei', 'PingFang SC', 'SimSun', sans-serif;
+}
+
+.xpStart:hover {
+  background: linear-gradient(180deg, #8fd25c 0%, #4aa01a 100%);
+}
+
+.xpStart:active {
+  background: linear-gradient(180deg, #3c9212 0%, #5aa72f 55%, #7bc04b 100%);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.xpStartIcon {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Conversation: white window body with a Luna caption-bar header. */
+body[data-dsh-xp] [data-pane='conversation'] {
+  background: #fff;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [data-pane='conversation'] {
+  background: #0d0f12;
+}
+
+body[data-dsh-xp] [data-pane='conversation'] > div > header {
+  background: linear-gradient(180deg, #0a5bc4 0%, #1a6fd0 45%, #3a8fe0 100%);
+  border-bottom: 1px solid #0a3a8f;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  color: #fff;
+}
+
+body[data-dsh-xp] [data-pane='conversation'] > div > header * {
+  color: #fff;
+}
+
+body[data-dsh-xp] [data-pane='conversation'] > div > header input {
+  background: #fff;
+  border: 1px solid #7f9db9;
+  color: #000;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [data-pane='conversation'] > div > header {
+  background: linear-gradient(180deg, #3a3f45 0%, #22262b 55%, #101216 100%);
+  border-bottom-color: #000;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [data-pane='conversation'] > div > header input {
+  background: #14161a;
+  border-color: #4a4e55;
+  color: #e8eaed;
+}
+
+body[data-dsh-xp] [data-pane='details'] {
+  background: #ece9d8;
+  /* Beveled divider without shifting layout. */
+  box-shadow: -1px 0 0 rgba(0, 0, 0, 0.15);
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [data-pane='details'] {
+  background: #1b1d21;
+  box-shadow: -1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+/* --- Settings panel -----------------------------------------------------------
+   The settings dialog becomes an XP window: Luna caption-bar title, cream
+   nav rail with the classic blue selection, white content plate. */
+
+body[data-dsh-xp] [role='dialog'] {
+  border: 1px solid #0831d9;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [role='dialog'] {
+  border-color: #000;
+}
+
+body[data-dsh-xp] [role='dialog'] > nav {
+  background: #ece9d8;
+  border-right: 1px solid #b3ad95;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [role='dialog'] > nav {
+  background: #1b1d21;
+  border-right-color: #3a3d42;
+}
+
+body[data-dsh-xp] [role='dialog'] > nav > div:first-child {
+  background: linear-gradient(180deg, #0a5bc4 0%, #1a6fd0 45%, #3a8fe0 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  color: #fff;
+  font-weight: 600;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [role='dialog'] > nav > div:first-child {
+  background: linear-gradient(180deg, #3a3f45 0%, #22262b 55%, #101216 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+body[data-dsh-xp] [role='dialog'] > nav button:hover {
+  background: #dbe9fc;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [role='dialog'] > nav button:hover {
+  background: #232a36;
+}
+
+body[data-dsh-xp] [role='dialog'] > nav button[aria-current='true'],
+body[data-dsh-xp] [role='dialog'] > nav button[aria-current='true'] * {
+  background: #316ac5;
+  color: #fff;
+  font-weight: 600;
+}
+
+body[data-dsh-xp] [role='dialog'] > div {
+  background: #fff;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [role='dialog'] > div {
+  background: #0d0f12;
+}
+
+body[data-dsh-xp] [role='dialog'] > div > div:first-child {
+  background: #f1efe9;
+  border-bottom: 1px solid #d8d7cf;
+}
+
+body[data-dsh-xp][data-ds-dark-theme] [role='dialog'] > div > div:first-child {
+  background: #1b1d21;
+  border-bottom-color: #3a3d42;
+}
