@@ -1,0 +1,578 @@
+/* Tonghuashun-style stock-trading skin for the dsh web GUI. A data-terminal
+   take on the classic 同花顺 client: red brand chrome (涨红跌绿), a gray-blue
+   desktop, crisp 2px corners, table-like surfaces. Everything is scoped under
+   body[data-dsh-ths], which the plugin's apply() sets (and retracts on
+   dispose), so the skin is fully hot-pluggable: load the bundle, set the
+   attribute, remove the attribute. The dark palette
+   (`body[data-dsh-ths][data-ds-dark-theme]`) is the night-trading variant.
+   Classes are consumed by the plugin's chrome through the module class map;
+   global selectors pass through the CSS-modules transform untouched.
+   Scrollbar aliases are deliberately left on the base theme so the stock
+   scrollbar contract keeps holding under the skin. */
+
+/* --- Desktop, fonts ---------------------------------------------------------- */
+
+body[data-dsh-ths] {
+  --dsw-font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'WenQuanYi Micro Hei', 'Segoe UI', sans-serif;
+  --ds-font-family-code: 'SFMono-Regular', 'Menlo', 'Consolas', 'Liberation Mono', monospace;
+  color: #1f2733;
+  background-color: #e9edf2;
+  /* The fixed title/status bars reserve room; #root becomes the window. */
+  padding: 34px 10px 28px;
+  box-sizing: border-box;
+}
+
+body[data-dsh-ths][data-ds-dark-theme] {
+  color: #d7dde6;
+  background-color: #10151d;
+}
+
+/* #root is the window body: a crisp terminal frame over the gray desktop. */
+body[data-dsh-ths] [id='root'] {
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #b7bfc9;
+  box-shadow: 0 1px 0 #e4e8ee, 0 3px 12px rgba(23, 32, 45, 0.12);
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [id='root'] {
+  background: #141a22;
+  border-color: #242e3b;
+  box-shadow: 0 1px 0 #0c1118, 0 3px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* --- Static palette: light -----------------------------------------------------
+   The stock UI is rounded; the terminal is crisp. A small 2px corner on
+   everything reads as a data tool, not a chat app. */
+
+body[data-dsh-ths] * {
+  border-radius: 2px !important;
+}
+
+body[data-dsh-ths] {
+  --dsw-static-amber-100: #f8ecd9;
+  --dsw-static-amber-400: #d69a3a;
+  --dsw-static-amber-500: #b07600;
+  --dsw-static-amber-600: #966300;
+  --dsw-static-amber-900: #3f2f10;
+  --dsw-static-blue-100: #e2e9f1;
+  --dsw-static-blue-300: #aec3d6;
+  --dsw-static-blue-400: #8aa7c0;
+  --dsw-static-blue-450: #6f92b0;
+  --dsw-static-blue-500: #56799a;
+  --dsw-static-blue-50: #f4f7fa;
+  --dsw-static-blue-50p: #eef3f8;
+  --dsw-static-blue-600: #46627f;
+  --dsw-static-blue-75: #edf2f7;
+  --dsw-static-blue-800: #2b4158;
+  --dsw-static-blue-950: #182635;
+  --dsw-static-deepseek-100: #e2e9f1;
+  --dsw-static-deepseek-200: #ccd9e6;
+  --dsw-static-deepseek-300: #aec3d6;
+  --dsw-static-deepseek-400: #8aa7c0;
+  --dsw-static-deepseek-450: #6f92b0;
+  --dsw-static-deepseek-500: #56799a;
+  --dsw-static-deepseek-50: #f4f7fa;
+  --dsw-static-deepseek-600: #46627f;
+  --dsw-static-deepseek-700-delete: #35506a;
+  --dsw-static-deepseek-800: #2b4158;
+  --dsw-static-deepseek-900: #223446;
+  --dsw-static-green-100: #d6f0e1;
+  --dsw-static-green-400: #35b26d;
+  --dsw-static-green-500: #0d9b4f;
+  --dsw-static-green-900: #14402a;
+  --dsw-static-neutral-00: #fff;
+  --dsw-static-neutral-1000: #131a22;
+  --dsw-static-neutral-100: #f0f3f6;
+  --dsw-static-neutral-150: #e9edf2;
+  --dsw-static-neutral-200: #e3e8ee;
+  --dsw-static-neutral-250: #dbe1e8;
+  --dsw-static-neutral-300: #ccd4dd;
+  --dsw-static-neutral-400: #aab5c1;
+  --dsw-static-neutral-500: #8b98a8;
+  --dsw-static-neutral-50: #f6f8fa;
+  --dsw-static-neutral-550: #7e8b9b;
+  --dsw-static-neutral-600: #6c7989;
+  --dsw-static-neutral-700: #566374;
+  --dsw-static-neutral-800: #3e4a59;
+  --dsw-static-neutral-850: #333e4c;
+  --dsw-static-neutral-900: #232c38;
+  --dsw-static-neutral-bluish-00: #fff;
+  --dsw-static-neutral-bluish-1000: #131a22;
+  --dsw-static-neutral-bluish-100: #f0f3f6;
+  --dsw-static-neutral-bluish-150: #e9edf2;
+  --dsw-static-neutral-bluish-200: #e3e8ee;
+  --dsw-static-neutral-bluish-300: #ccd4dd;
+  --dsw-static-neutral-bluish-400: #aab5c1;
+  --dsw-static-neutral-bluish-500: #8b98a8;
+  --dsw-static-neutral-bluish-50: #f6f8fa;
+  --dsw-static-neutral-bluish-600: #6c7989;
+  --dsw-static-neutral-bluish-60: #f3f5f8;
+  --dsw-static-neutral-bluish-700: #566374;
+  --dsw-static-neutral-bluish-750: #495567;
+  --dsw-static-neutral-bluish-75: #eef1f5;
+  --dsw-static-neutral-bluish-800: #3e4a59;
+  --dsw-static-neutral-bluish-850: #333e4c;
+  --dsw-static-neutral-bluish-875: #2b3542;
+  --dsw-static-neutral-bluish-900: #232c38;
+  --dsw-static-neutral-bluish-950: #1b232d;
+  --dsw-static-red-100: #fadcd9;
+  --dsw-static-red-400: #e6544a;
+  --dsw-static-red-500: #e60012;
+  --dsw-static-red-50: #fdf0ef;
+  --dsw-static-red-600: #c4000f;
+  --dsw-static-red-900: #5c0f0a;
+}
+
+/* --- Static palette: dark ------------------------------------------------------ */
+
+body[data-dsh-ths][data-ds-dark-theme] {
+  --dsw-static-amber-100: #3a2d14;
+  --dsw-static-amber-400: #d69a3a;
+  --dsw-static-amber-500: #b07600;
+  --dsw-static-amber-600: #966300;
+  --dsw-static-amber-900: #3f2f10;
+  --dsw-static-blue-100: #1f2d3d;
+  --dsw-static-blue-300: #2f445c;
+  --dsw-static-blue-400: #3d5875;
+  --dsw-static-blue-450: #4b6a8b;
+  --dsw-static-blue-500: #5f81a4;
+  --dsw-static-blue-50: #17222f;
+  --dsw-static-blue-50p: #192531;
+  --dsw-static-blue-600: #7398bb;
+  --dsw-static-blue-75: #1b2735;
+  --dsw-static-blue-800: #97b3cf;
+  --dsw-static-blue-950: #b9cddf;
+  --dsw-static-deepseek-100: #1f2d3d;
+  --dsw-static-deepseek-200: #26374b;
+  --dsw-static-deepseek-300: #2f445c;
+  --dsw-static-deepseek-400: #3d5875;
+  --dsw-static-deepseek-450: #4b6a8b;
+  --dsw-static-deepseek-500: #5f81a4;
+  --dsw-static-deepseek-50: #17222f;
+  --dsw-static-deepseek-600: #7398bb;
+  --dsw-static-deepseek-700-delete: #86a6c6;
+  --dsw-static-deepseek-800: #97b3cf;
+  --dsw-static-deepseek-900: #a8c0d8;
+  --dsw-static-green-100: #1c3a2a;
+  --dsw-static-green-400: #35b26d;
+  --dsw-static-green-500: #2fbf71;
+  --dsw-static-green-900: #14402a;
+  --dsw-static-neutral-00: #151b23;
+  --dsw-static-neutral-1000: #e6ecf3;
+  --dsw-static-neutral-100: #202936;
+  --dsw-static-neutral-150: #25303e;
+  --dsw-static-neutral-200: #2a3645;
+  --dsw-static-neutral-250: #303c4d;
+  --dsw-static-neutral-300: #3a485a;
+  --dsw-static-neutral-400: #4c5b6e;
+  --dsw-static-neutral-500: #5f7085;
+  --dsw-static-neutral-50: #1a212b;
+  --dsw-static-neutral-550: #6a7b90;
+  --dsw-static-neutral-600: #7a8ba0;
+  --dsw-static-neutral-700: #93a3b6;
+  --dsw-static-neutral-800: #b0bdcc;
+  --dsw-static-neutral-850: #bcc8d5;
+  --dsw-static-neutral-900: #cdd7e2;
+  --dsw-static-neutral-bluish-00: #151b23;
+  --dsw-static-neutral-bluish-1000: #e6ecf3;
+  --dsw-static-neutral-bluish-100: #202936;
+  --dsw-static-neutral-bluish-150: #25303e;
+  --dsw-static-neutral-bluish-200: #2a3645;
+  --dsw-static-neutral-bluish-300: #3a485a;
+  --dsw-static-neutral-bluish-400: #4c5b6e;
+  --dsw-static-neutral-bluish-500: #5f7085;
+  --dsw-static-neutral-bluish-50: #1a212b;
+  --dsw-static-neutral-bluish-600: #7a8ba0;
+  --dsw-static-neutral-bluish-60: #1d2530;
+  --dsw-static-neutral-bluish-700: #93a3b6;
+  --dsw-static-neutral-bluish-750: #9faec0;
+  --dsw-static-neutral-bluish-75: #1c2531;
+  --dsw-static-neutral-bluish-800: #b0bdcc;
+  --dsw-static-neutral-bluish-850: #bcc8d5;
+  --dsw-static-neutral-bluish-875: #c6d1dc;
+  --dsw-static-neutral-bluish-900: #cdd7e2;
+  --dsw-static-neutral-bluish-950: #d9e1ea;
+  --dsw-static-red-100: #4a2224;
+  --dsw-static-red-400: #e6544a;
+  --dsw-static-red-500: #ff5252;
+  --dsw-static-red-50: #3a1c1e;
+  --dsw-static-red-600: #d64040;
+  --dsw-static-red-900: #5c1010;
+}
+
+/* --- Alias layer: light --------------------------------------------------------- */
+
+body[data-dsh-ths] {
+  --dsw-alias-bg-base: #fff;
+  --dsw-alias-bg-layer-1: #f5f7f9;
+  --dsw-alias-bg-layer-2: #eef1f5;
+  --dsw-alias-bg-layer-3: #e7ebf0;
+  --dsw-alias-bg-mask-1: rgba(16, 24, 36, 0.42);
+  --dsw-alias-bg-mask-2: rgba(16, 24, 36, 0.22);
+  --dsw-alias-bg-mask-3: rgba(16, 24, 36, 0.55);
+  --dsw-alias-bg-mask-photo: rgba(16, 24, 36, 0.88);
+  --dsw-alias-bg-module-platform: #eef1f5;
+  --dsw-alias-bg-multi-select: #e9edf2;
+  --dsw-alias-bg-overlay: #eef1f5;
+  --dsw-alias-bg-skeleton: rgba(16, 24, 36, 0.06);
+  --dsw-alias-border-inverted2: rgba(255, 255, 255, 0.6);
+  --dsw-alias-border-inverted: rgba(255, 255, 255, 0.4);
+  --dsw-alias-border-l1: rgba(16, 24, 36, 0.1);
+  --dsw-alias-border-l2-darkmode-thin: rgba(16, 24, 36, 0.14);
+  --dsw-alias-border-l2: rgba(16, 24, 36, 0.16);
+  --dsw-alias-border-l3: rgba(16, 24, 36, 0.24);
+  --dsw-alias-border-l4: rgba(16, 24, 36, 0.35);
+  --dsw-alias-brand-primary-invert: #fff;
+  --dsw-alias-brand-primary-new-colorprimary-new-color: #e60012;
+  --dsw-alias-brand-primary: #e60012;
+  --dsw-alias-brand-text: #e60012;
+  --dsw-alias-button-contrast-fill: #2b3648;
+  --dsw-alias-button-elevated-fill: #fff;
+  --dsw-alias-button-floating-fill: #fff;
+  --dsw-alias-button-floating-hover: #f2f4f7;
+  --dsw-alias-button-ghost-active-border: #9aa6b4;
+  --dsw-alias-button-ghost-active-fill: #e6ebf0;
+  --dsw-alias-button-ghost-active-hover: #dde4eb;
+  --dsw-alias-button-info-fill: #e60012;
+  --dsw-alias-button-info-hover: #c4000f;
+  --dsw-alias-button-primary-dimmed: #efb6ba;
+  --dsw-alias-button-primary-fill: #e60012;
+  --dsw-alias-button-primary-hover: #c4000f;
+  --dsw-alias-button-tool-bar-fill-invisible: rgba(86, 121, 154, 0.3);
+  --dsw-alias-button-tool-bar-fill: rgba(86, 121, 154, 0.42);
+  --dsw-alias-button-tool-bar-hover: rgba(86, 121, 154, 0.58);
+  --dsw-alias-interactive-bg-active: rgba(230, 0, 18, 0.1);
+  --dsw-alias-interactive-bg-hover-accent: rgba(230, 0, 18, 0.15);
+  --dsw-alias-interactive-bg-hover-danger: rgba(196, 0, 15, 0.07);
+  --dsw-alias-interactive-bg-hover-solid: #e9edf2;
+  --dsw-alias-interactive-bg-hover: rgba(86, 121, 154, 0.1);
+  --dsw-alias-label-caption: #8a97a6;
+  --dsw-alias-label-dimmed: #a7b1bd;
+  --dsw-alias-label-primary-dimmed: #4a5564;
+  --dsw-alias-label-primary-foreground: #fff;
+  --dsw-alias-label-primary-inverted: #fff;
+  --dsw-alias-label-primary: #1f2733;
+  --dsw-alias-label-secondary: #4a5564;
+  --dsw-alias-label-tertiary: #6b7888;
+  --dsw-alias-markdown-citation: #e9edf2;
+  --dsw-alias-markdown-code-block-banner: #f5f7f9;
+  --dsw-alias-markdown-code-block: #f5f7f9;
+  --dsw-alias-markdown-code-segment-selected: #fff;
+  --dsw-alias-markdown-code-segment-unselected: #eceff3;
+  --dsw-alias-markdown-inline-code: #e9edf2;
+  --dsw-alias-markdown-placeholder: #f0f3f6;
+  --dsw-alias-markdown-tag: #eceff3;
+  --dsw-alias-state-business-primary: #e60012;
+  --dsw-alias-state-business-tertiary: #fadcd9;
+  --dsw-alias-state-error-primary: #e60012;
+  --dsw-alias-state-error-secondary: #e6544a;
+  --dsw-alias-state-success-primary: #0d9b4f;
+  --dsw-alias-state-success-secondary: #35b26d;
+  --dsw-alias-state-success-tertiary: #d6f0e1;
+  --dsw-alias-toast-bg: #2b3648;
+  /* Tooltips: the dark navy plate of the trading app (white text both themes). */
+  --dsw-alias-tooltip-bg: #2b3648;
+  --dsw-specific-bubble-highlight: #e2e9f1;
+  --dsw-specific-bubble: #eef1f5;
+  --dsw-specific-input-major: #fff;
+  --dsw-specific-login-input: #fff;
+  --dsw-specific-menu: #f5f7f9;
+  --dsw-specific-selector: #e9edf2;
+  --dsw-specific-sidebar-fill: #1b2636;
+  --dsw-specific-sidebar-nav-item-active-accent: #e60012;
+  --dsw-specific-sidebar-nav-item-active: #fdecea;
+  --dsw-specific-sidebar-nav-item-hover: #f3f6f9;
+  --dsw-specific-tip: #f5f7f9;
+}
+
+/* --- Alias layer: dark ---------------------------------------------------------- */
+
+body[data-dsh-ths][data-ds-dark-theme] {
+  --dsw-alias-bg-base: #141a22;
+  --dsw-alias-bg-layer-1: #1a222d;
+  --dsw-alias-bg-layer-2: #1f2834;
+  --dsw-alias-bg-layer-3: #252e3b;
+  --dsw-alias-bg-mask-1: rgba(0, 0, 0, 0.5);
+  --dsw-alias-bg-mask-2: rgba(0, 0, 0, 0.25);
+  --dsw-alias-bg-mask-3: rgba(0, 0, 0, 0.55);
+  --dsw-alias-bg-mask-photo: rgba(0, 0, 0, 0.88);
+  --dsw-alias-bg-module-platform: #1f2834;
+  --dsw-alias-bg-multi-select: #202a36;
+  --dsw-alias-bg-overlay: #1d2631;
+  --dsw-alias-bg-skeleton: rgba(255, 255, 255, 0.06);
+  --dsw-alias-border-inverted2: rgba(255, 255, 255, 0.6);
+  --dsw-alias-border-inverted: rgba(255, 255, 255, 0.4);
+  --dsw-alias-border-l1: rgba(255, 255, 255, 0.08);
+  --dsw-alias-border-l2-darkmode-thin: rgba(255, 255, 255, 0.12);
+  --dsw-alias-border-l2: rgba(255, 255, 255, 0.16);
+  --dsw-alias-border-l3: rgba(255, 255, 255, 0.24);
+  --dsw-alias-border-l4: rgba(255, 255, 255, 0.32);
+  --dsw-alias-brand-primary-invert: #0e131a;
+  --dsw-alias-brand-primary-new-colorprimary-new-color: #ff5a5a;
+  --dsw-alias-brand-primary: #ff5a5a;
+  --dsw-alias-brand-text: #ff5a5a;
+  --dsw-alias-button-contrast-fill: #c8d2dd;
+  --dsw-alias-button-elevated-fill: #1a222d;
+  --dsw-alias-button-floating-fill: #1d2631;
+  --dsw-alias-button-floating-hover: #222c39;
+  --dsw-alias-button-ghost-active-border: #7e8c9c;
+  --dsw-alias-button-ghost-active-fill: #252e3b;
+  --dsw-alias-button-ghost-active-hover: #2a3442;
+  --dsw-alias-button-info-fill: #e60012;
+  --dsw-alias-button-info-hover: #ff1a2b;
+  --dsw-alias-button-primary-dimmed: #4a262b;
+  --dsw-alias-button-primary-fill: #e60012;
+  --dsw-alias-button-primary-hover: #c4000f;
+  --dsw-alias-button-tool-bar-fill-invisible: rgba(180, 200, 225, 0.3);
+  --dsw-alias-button-tool-bar-fill: rgba(180, 200, 225, 0.42);
+  --dsw-alias-button-tool-bar-hover: rgba(180, 200, 225, 0.58);
+  --dsw-alias-interactive-bg-active: rgba(255, 90, 90, 0.16);
+  --dsw-alias-interactive-bg-hover-accent: rgba(255, 90, 90, 0.22);
+  --dsw-alias-interactive-bg-hover-danger: rgba(255, 90, 90, 0.14);
+  --dsw-alias-interactive-bg-hover-solid: #222c39;
+  --dsw-alias-interactive-bg-hover: rgba(180, 200, 225, 0.1);
+  --dsw-alias-label-caption: #64748a;
+  --dsw-alias-label-dimmed: #55647a;
+  --dsw-alias-label-primary-dimmed: #aebcce;
+  --dsw-alias-label-primary-foreground: #fff;
+  --dsw-alias-label-primary-inverted: #fff;
+  --dsw-alias-label-primary: #e2e9f2;
+  --dsw-alias-label-secondary: #b3c0d0;
+  --dsw-alias-label-tertiary: #8d9bad;
+  --dsw-alias-markdown-citation: #1a222d;
+  --dsw-alias-markdown-code-block-banner: #161d27;
+  --dsw-alias-markdown-code-block: #161d27;
+  --dsw-alias-markdown-code-segment-selected: #202a36;
+  --dsw-alias-markdown-code-segment-unselected: #1c2531;
+  --dsw-alias-markdown-inline-code: #1d2631;
+  --dsw-alias-markdown-placeholder: #1a222d;
+  --dsw-alias-markdown-tag: #1d2631;
+  --dsw-alias-state-business-primary: #ff5a5a;
+  --dsw-alias-state-business-tertiary: #3a2026;
+  --dsw-alias-state-error-primary: #ff5a5a;
+  --dsw-alias-state-error-secondary: #e6544a;
+  --dsw-alias-state-success-primary: #2fbf71;
+  --dsw-alias-state-success-secondary: #35b26d;
+  --dsw-alias-state-success-tertiary: #1c3a2a;
+  --dsw-alias-toast-bg: #3a4657;
+  --dsw-alias-tooltip-bg: #2c3a4e;
+  --dsw-specific-bubble-highlight: #26344a;
+  --dsw-specific-bubble: #1f2834;
+  --dsw-specific-input-major: #141a22;
+  --dsw-specific-login-input: #141a22;
+  --dsw-specific-menu: #1a222d;
+  --dsw-specific-selector: #202a36;
+  --dsw-specific-sidebar-fill: #0f141c;
+  --dsw-specific-sidebar-nav-item-active-accent: #ff5a5a;
+  --dsw-specific-sidebar-nav-item-active: #33262c;
+  --dsw-specific-sidebar-nav-item-hover: #1d2733;
+  --dsw-specific-tip: #1a222d;
+}
+
+/* --- Selection, links --------------------------------------------------------- */
+
+body[data-dsh-ths] ::selection {
+  background: rgba(230, 0, 18, 0.18);
+}
+
+body[data-dsh-ths][data-ds-dark-theme] ::selection {
+  background: rgba(255, 90, 90, 0.3);
+}
+
+/* --- Window chrome: title bar and status bar ------------------------------------
+   Fixed strips above/below #root (the plugin renders them; #root itself is
+   the window body via the rules above). */
+
+.thsTitlebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 6px;
+  background: linear-gradient(90deg, #e60012 0%, #b8000c 100%);
+  border-bottom: 1px solid #8a0009;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font: 600 13px/32px 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+  user-select: none;
+}
+
+.thsTitlebarTitle {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.thsTitlebarIcon {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.thsTitlebarBtn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 20px;
+  border-radius: 2px;
+  color: #fff;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.thsTitlebarBtn:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.thsStatusbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000000;
+  display: flex;
+  align-items: stretch;
+  height: 26px;
+  background: #edf1f5;
+  border-top: 1px solid #c9d1db;
+  color: #55616f;
+  font: 11px/26px 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+  user-select: none;
+}
+
+body[data-dsh-ths][data-ds-dark-theme] .thsStatusbar {
+  background: #1a212c;
+  border-top-color: #2a3442;
+  color: #8d9bad;
+}
+
+.thsStatusbarCell {
+  flex: none;
+  padding: 0 12px;
+  border-right: 1px solid #d7dee7;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+body[data-dsh-ths][data-ds-dark-theme] .thsStatusbarCell {
+  border-right-color: #2a3442;
+}
+
+/* 红涨绿跌 — the quote cells carry their direction on the element. */
+.thsStatusbarCell[data-trend='up'] {
+  color: #e60012;
+  font-weight: 600;
+}
+
+.thsStatusbarCell[data-trend='down'] {
+  color: #0d9b4f;
+  font-weight: 600;
+}
+
+.thsStatusbarCell[data-trend='brand'] {
+  color: #e60012;
+  font-weight: 700;
+}
+
+body[data-dsh-ths][data-ds-dark-theme] .thsStatusbarCell[data-trend='up'],
+body[data-dsh-ths][data-ds-dark-theme] .thsStatusbarCell[data-trend='brand'] {
+  color: #ff5a5a;
+}
+
+body[data-dsh-ths][data-ds-dark-theme] .thsStatusbarCell[data-trend='down'] {
+  color: #2fbf71;
+}
+
+.thsStatusbarSpacer {
+  flex: 1;
+}
+
+/* --- Pane chrome --------------------------------------------------------------
+   The AppFrame columns carry data-pane hooks (ui-layout); give each the
+   terminal surface. The sidebar becomes the watchlist panel: a deep navy
+   header band over a cool gray body. The conversation header reads as a
+   table header band. Without the hooks these rules simply do not match. */
+
+body[data-dsh-ths] [data-pane='sidebar'] > div {
+  background: linear-gradient(180deg, #f4f7fa 0%, #e9eef4 100%);
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [data-pane='sidebar'] > div {
+  background: linear-gradient(180deg, #182029 0%, #141b24 100%);
+}
+
+/* Sidebar header band: the first child (logo row) becomes the deep navy
+   market header; everything inside renders white. */
+body[data-dsh-ths] [data-pane='sidebar'] > div > :first-child,
+body[data-dsh-ths] [data-pane='sidebar'] > div > :first-child * {
+  color: #fff;
+}
+
+body[data-dsh-ths] [data-pane='sidebar'] > div > :first-child {
+  background: linear-gradient(180deg, #1b2636, #253348);
+  border-bottom: 1px solid #10161f;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [data-pane='sidebar'] > div > :first-child {
+  background: linear-gradient(180deg, #101a2a, #16233a);
+  border-bottom-color: #0a111c;
+}
+
+/* Header-band buttons stay flat and transparent on the navy strip. */
+body[data-dsh-ths] [data-pane='sidebar'] > div > :first-child button {
+  background: transparent;
+  color: #fff;
+}
+
+body[data-dsh-ths] [data-pane='sidebar'] > div > :first-child button:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* The brand lockup is vector text: "DeepSeek" + a "HARNESS" badge pill. The
+   pill follows currentColor (white here) while the badge letters use the
+   inverted-primary token — white on white. Pin the pill to the brand red and
+   force the letters white, so the badge reads like a market tag on the band. */
+body[data-dsh-ths] [data-pane='sidebar'] > div > :first-child svg rect[fill='currentColor'] {
+  fill: #e60012;
+}
+
+body[data-dsh-ths] [data-pane='sidebar'] > div > :first-child svg [fill='var(--dsw-alias-label-primary-inverted)'] {
+  fill: #fff;
+}
+
+/* Conversation: white quote surface with a gray table-header band. */
+body[data-dsh-ths] [data-pane='conversation'] {
+  background: #fff;
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [data-pane='conversation'] {
+  background: #12181f;
+}
+
+body[data-dsh-ths] [data-pane='conversation'] > div > header {
+  background: #eef1f5;
+  border-bottom: 1px solid #d9dfe7;
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [data-pane='conversation'] > div > header {
+  background: #1c2531;
+  border-bottom-color: #2b3543;
+}
+
+body[data-dsh-ths] [data-pane='details'] {
+  background: #f4f6f9;
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [data-pane='details'] {
+  background: #161d27;
+}

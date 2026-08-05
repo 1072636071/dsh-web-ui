@@ -1,0 +1,120 @@
+/**
+ * Tonghuashun-style stock-trading skin — a hot-pluggable client plugin in the
+ * dsh web ui family. apply() owns the whole terminal surface and retracts it
+ * on dispose (the ThemePresenter retraction discipline: the plugin only ever
+ * removes what it wrote): the `data-dsh-ths` body attribute the stylesheet is
+ * scoped on, the fixed title/status bars, the injected favicon, and the
+ * document title the shell's DocumentTitle will capture as the product title.
+ * The CSS rides the bundle's CSS-modules auto-inject (style tag owned by the
+ * loader, removed on entry dispose). No services are injected: the skin needs
+ * only the DOM.
+ */
+import type { Context } from 'cordis'
+import css from './ths.module.css'
+
+/** The product title the skin pins (captured by the shell's DocumentTitle after settle). */
+const SKIN_TITLE = '同花顺 · DeepSeek 在线'
+
+/** Quote trend direction, coloring the status bar cells 红涨绿跌. */
+type Trend = 'up' | 'down' | 'brand' | 'none'
+
+/** Status bar cells; the spacer cell splits the quote group from the status group. */
+const STOCK_CELLS: ReadonlyArray<{ text: string; trend: Trend }> = [
+  { text: '同花顺', trend: 'brand' },
+  { text: '上证指数 3,342.17 ▲0.42%', trend: 'up' },
+  { text: '深证成指 10,846.59 ▲0.87%', trend: 'up' },
+  { text: '创业板指 2,201.33 ▼0.21%', trend: 'down' },
+  { text: '就绪', trend: 'none' },
+  { text: '已连接', trend: 'none' },
+  { text: '在线', trend: 'none' },
+]
+
+/** Title bar window buttons (decorative glyphs, aria-hidden). */
+const TITLEBAR_GLYPHS = ['–', '□', '✕'] as const
+
+/**
+ * Resolve one module class name. The css-modules record types as
+ * `string | undefined` under noUncheckedIndexedAccess; every key used here
+ * is a literal name in this package's own stylesheet, so the fallback is
+ * unreachable in practice and only satisfies the indexed-access type.
+ */
+const cls = (name: keyof typeof css): string => css[name] ?? ''
+
+/** White candlestick mark, inline so the skin carries no static assets. */
+const CANDLE_SVG = [
+  '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">',
+  '<rect x="6" y="14" width="8" height="20" fill="#fff"/>',
+  '<rect x="9" y="6" width="2" height="36" fill="#fff"/>',
+  '<rect x="17" y="20" width="8" height="18" fill="#fff"/>',
+  '<rect x="20" y="12" width="2" height="34" fill="#fff"/>',
+  '<rect x="28" y="10" width="8" height="16" fill="#fff"/>',
+  '<rect x="31" y="4" width="2" height="28" fill="#fff"/>',
+  '</svg>',
+].join('')
+
+/** Brand-red square favicon carrying the 同 glyph, inline data URI. */
+const FAVICON_SVG = [
+  '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">',
+  '<rect x="2" y="2" width="60" height="60" rx="12" fill="#e60012"/>',
+  '<text x="32" y="45" font-size="36" font-family="PingFang SC, Microsoft YaHei, sans-serif" fill="#fff" text-anchor="middle">同</text>',
+  '</svg>',
+].join('')
+
+/**
+ * Apply the stock-trading skin: body attribute, chrome bars, title, favicon.
+ * All writes are retracted by the effect disposer on dispose.
+ * @param ctx - owning context (the effect lifecycle owns retraction).
+ */
+export function apply(ctx: Context): void {
+  const body = document.body
+  const originalTitle = document.title
+  body.dataset.dshThs = ''
+
+  const titlebar = document.createElement('div')
+  titlebar.className = cls('thsTitlebar')
+  const icon = document.createElement('span')
+  icon.className = cls('thsTitlebarIcon')
+  icon.innerHTML = CANDLE_SVG
+  const title = document.createElement('span')
+  title.className = cls('thsTitlebarTitle')
+  title.textContent = SKIN_TITLE
+  titlebar.append(icon, title)
+  for (const glyph of TITLEBAR_GLYPHS) {
+    const btn = document.createElement('span')
+    btn.className = cls('thsTitlebarBtn')
+    btn.setAttribute('aria-hidden', 'true')
+    btn.textContent = glyph
+    titlebar.append(btn)
+  }
+
+  const statusbar = document.createElement('div')
+  statusbar.className = cls('thsStatusbar')
+  const spacer = document.createElement('span')
+  spacer.className = cls('thsStatusbarSpacer')
+  statusbar.append(spacer)
+  for (const cell of STOCK_CELLS) {
+    const el = document.createElement('span')
+    el.className = cls('thsStatusbarCell')
+    el.textContent = cell.text
+    if (cell.trend !== 'none') el.dataset.trend = cell.trend
+    statusbar.append(el)
+  }
+
+  const favicon = document.createElement('link')
+  favicon.rel = 'icon'
+  favicon.href = `data:image/svg+xml;utf8,${encodeURIComponent(FAVICON_SVG)}`
+  document.head.append(favicon)
+
+  document.title = SKIN_TITLE
+  body.append(titlebar, statusbar)
+
+  ctx.effect(() => () => {
+    delete body.dataset.dshThs
+    titlebar.remove()
+    statusbar.remove()
+    favicon.remove()
+    // Only restore when the skin's own title still stands — a session title
+    // projected by the shell must not be clobbered by skin teardown.
+    if (document.title === SKIN_TITLE) document.title = originalTitle
+  }, 'ui-skin-ths: quote chrome')
+}
