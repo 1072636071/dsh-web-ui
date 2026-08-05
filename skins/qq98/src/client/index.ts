@@ -16,7 +16,7 @@ import css from './qq98.module.css'
 const SKIN_TITLE = 'OICQ · DeepSeek 在线'
 
 /** Status bar cells; the spacer cell splits left and right groups. */
-const STATUS_CELLS = ['就绪', '已连接', '在线', 'OICQ 1998 · 怀旧版'] as const
+const STATUS_CELLS = ['QQ 10000', '就绪', '已连接', '在线', 'OICQ 1998 · 怀旧版'] as const
 
 /** Title bar window buttons (decorative glyphs, aria-hidden). */
 const TITLEBAR_GLYPHS = ['–', '□', '✕'] as const
