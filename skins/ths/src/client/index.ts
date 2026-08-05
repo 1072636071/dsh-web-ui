@@ -32,6 +32,9 @@ const STOCK_CELLS: ReadonlyArray<{ text: string; trend: Trend }> = [
 /** Title bar window buttons (decorative glyphs, aria-hidden). */
 const TITLEBAR_GLYPHS = ['–', '□', '✕'] as const
 
+/** Live-quote chip shown in the title bar before the window buttons. */
+const TICKER = { name: '上证指数', value: '3,342.17', change: '▲0.42%', trend: 'up' as const }
+
 /**
  * Resolve one module class name. The css-modules record types as
  * `string | undefined` under noUncheckedIndexedAccess; every key used here
@@ -79,6 +82,19 @@ export function apply(ctx: Context): void {
   title.className = cls('thsTitlebarTitle')
   title.textContent = SKIN_TITLE
   titlebar.append(icon, title)
+  const ticker = document.createElement('span')
+  ticker.className = cls('thsTitlebarTicker')
+  const tickerName = document.createElement('span')
+  tickerName.textContent = TICKER.name
+  const tickerValue = document.createElement('span')
+  tickerValue.className = cls('thsTitlebarTickerVal')
+  tickerValue.textContent = TICKER.value
+  const tickerChange = document.createElement('span')
+  tickerChange.className = cls('thsTitlebarTickerChg')
+  tickerChange.dataset.trend = TICKER.trend
+  tickerChange.textContent = TICKER.change
+  ticker.append(tickerName, tickerValue, tickerChange)
+  titlebar.append(ticker)
   for (const glyph of TITLEBAR_GLYPHS) {
     const btn = document.createElement('span')
     btn.className = cls('thsTitlebarBtn')

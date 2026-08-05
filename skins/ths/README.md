@@ -2,7 +2,7 @@
 
 English | [中文](README.zh.md)
 
-Tonghuashun-style (同花顺) stock-trading skin for the dsh web GUI. Hot-pluggable as a client plugin: `apply()` sets the `data-dsh-ths` body attribute (the scope of the whole stylesheet), renders the fixed brand-red title bar and the quote status bar (上证指数 / 深证成指 / 创业板指, colored 红涨绿跌), pins the document title and injects the 同 favicon; its effect disposer retracts every write (the attribute, both bars, the favicon, and the title unless a session title already replaced it). The stylesheet rides the bundle's CSS-modules auto-inject, so the loader removes it with the entry.
+Tonghuashun-style (同花顺) stock-trading skin for the dsh web GUI. Hot-pluggable as a client plugin: `apply()` sets the `data-dsh-ths` body attribute (the scope of the whole stylesheet), renders the fixed brand-red title bar with a live-quote chip (上证指数), the quote status bar (上证指数 / 深证成指 / 创业板指, colored 红涨绿跌), a watchlist-style sidebar (red market rule, quote rows) and a terminal-style settings panel; pins the document title and injects the 同 favicon; its effect disposer retracts every write (the attribute, both bars, the favicon, and the title unless a session title already replaced it). The stylesheet rides the bundle's CSS-modules auto-inject, so the loader removes it with the entry.
 
 The skin is presentation-only: no services are injected, no cordis events are emitted, and nothing reaches a model request. The dark palette (`body[data-dsh-ths][data-ds-dark-theme]`) is the night-trading variant, so the base theme system keeps flipping tokens underneath. Scrollbar aliases stay on the base theme, keeping the stock scrollbar contract under the skin.
 

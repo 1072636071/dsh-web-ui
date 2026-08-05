@@ -433,6 +433,37 @@ body[data-dsh-ths][data-ds-dark-theme] ::selection {
   background: rgba(255, 255, 255, 0.22);
 }
 
+/* Live-quote chip: a white plate carrying the index name, value and change,
+   rendered by apply() between the title and the window buttons. */
+.thsTitlebarTicker {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 20px;
+  padding: 0 10px;
+  margin-right: 8px;
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 2px;
+  color: #55616f;
+  font: 600 11px/1 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+}
+
+.thsTitlebarTickerVal {
+  font-weight: 700;
+  color: #1f2733;
+  font-variant-numeric: tabular-nums;
+}
+
+.thsTitlebarTickerChg {
+  font-weight: 700;
+  color: #e60012;
+}
+
+.thsTitlebarTickerChg[data-trend='down'] {
+  color: #0d9b4f;
+}
+
 .thsStatusbar {
   position: fixed;
   bottom: 0;
@@ -519,13 +550,14 @@ body[data-dsh-ths] [data-pane='sidebar'] > div > :first-child * {
 
 body[data-dsh-ths] [data-pane='sidebar'] > div > :first-child {
   background: linear-gradient(180deg, #1b2636, #253348);
-  border-bottom: 1px solid #10161f;
+  /* The red market rule under the navy band: the watchlist header. */
+  border-bottom: 2px solid #e60012;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 body[data-dsh-ths][data-ds-dark-theme] [data-pane='sidebar'] > div > :first-child {
   background: linear-gradient(180deg, #101a2a, #16233a);
-  border-bottom-color: #0a111c;
+  border-bottom-color: #e60012;
 }
 
 /* Header-band buttons stay flat and transparent on the navy strip. */
@@ -550,7 +582,72 @@ body[data-dsh-ths] [data-pane='sidebar'] > div > :first-child svg [fill='var(--d
   fill: #fff;
 }
 
-/* Conversation: white quote surface with a gray table-header band. */
+/* The "New session" action reads as a 买入 buy button under the band. */
+body[data-dsh-ths] [data-pane='sidebar'] > div > button {
+  background: linear-gradient(180deg, #ff1f2e, #e60012);
+  border: 1px solid #c4000f;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-weight: 600;
+}
+
+body[data-dsh-ths] [data-pane='sidebar'] > div > button:hover {
+  background: linear-gradient(180deg, #ff3340, #d4000f);
+}
+
+/* --- Watchlist rows ----------------------------------------------------------
+   The session/project tree items become quote rows: hairline separators, a
+   red market bar + red tint on the selected row, and a quote-search input. */
+
+body[data-dsh-ths] [data-pane='sidebar'] [role='treeitem'] {
+  border-bottom: 1px solid rgba(16, 24, 36, 0.05);
+}
+
+body[data-dsh-ths] [data-pane='sidebar'] [role='treeitem'][aria-selected='true'] {
+  background: linear-gradient(90deg, rgba(230, 0, 18, 0.14), rgba(230, 0, 18, 0.05));
+  box-shadow: inset 3px 0 0 #e60012;
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [data-pane='sidebar'] [role='treeitem'] {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [data-pane='sidebar'] [role='treeitem'][aria-selected='true'] {
+  background: linear-gradient(90deg, rgba(255, 90, 90, 0.2), rgba(255, 90, 90, 0.06));
+  box-shadow: inset 3px 0 0 #ff5a5a;
+}
+
+/* The quote-search box: white plate, hairline border, red focus ring. */
+body[data-dsh-ths] [data-pane='sidebar'] input {
+  background: #fff;
+  border: 1px solid rgba(16, 24, 36, 0.16);
+  color: #1f2733;
+}
+
+body[data-dsh-ths] [data-pane='sidebar'] input:focus {
+  border-color: #e60012;
+  box-shadow: 0 0 0 2px rgba(230, 0, 18, 0.14);
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [data-pane='sidebar'] input {
+  background: #141a22;
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #e2e9f2;
+}
+
+/* The footer strip (settings entry) reads as a toolbar. */
+body[data-dsh-ths] [data-pane='sidebar'] > div > :last-child {
+  background: #f5f7f9;
+  border-top: 1px solid rgba(16, 24, 36, 0.1);
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [data-pane='sidebar'] > div > :last-child {
+  background: #1a222d;
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Conversation: white quote surface with a gray table-header band. The red
+   left edge marks the header as the active quote. */
 body[data-dsh-ths] [data-pane='conversation'] {
   background: #fff;
 }
@@ -562,17 +659,93 @@ body[data-dsh-ths][data-ds-dark-theme] [data-pane='conversation'] {
 body[data-dsh-ths] [data-pane='conversation'] > div > header {
   background: #eef1f5;
   border-bottom: 1px solid #d9dfe7;
+  border-left: 3px solid #e60012;
 }
 
 body[data-dsh-ths][data-ds-dark-theme] [data-pane='conversation'] > div > header {
   background: #1c2531;
   border-bottom-color: #2b3543;
+  border-left-color: #ff5a5a;
 }
 
 body[data-dsh-ths] [data-pane='details'] {
   background: #f4f6f9;
+  /* Hairline separator without shifting layout. */
+  box-shadow: -1px 0 0 rgba(16, 24, 36, 0.1);
 }
 
 body[data-dsh-ths][data-ds-dark-theme] [data-pane='details'] {
   background: #161d27;
+  box-shadow: -1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+/* --- Settings panel -----------------------------------------------------------
+   The settings dialog becomes a trading-terminal panel: navy title band,
+   gray nav rail with a red active cell, white content plate. */
+
+body[data-dsh-ths] [role='dialog'] {
+  border: 1px solid #b7bfc9;
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [role='dialog'] {
+  border-color: #242e3b;
+}
+
+body[data-dsh-ths] [role='dialog'] > nav {
+  background: #f5f7f9;
+  border-right: 1px solid rgba(16, 24, 36, 0.1);
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [role='dialog'] > nav {
+  background: #1a222d;
+  border-right-color: rgba(255, 255, 255, 0.08);
+}
+
+body[data-dsh-ths] [role='dialog'] > nav > div:first-child {
+  background: linear-gradient(180deg, #1b2636, #253348);
+  color: #fff;
+  font-weight: 600;
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [role='dialog'] > nav > div:first-child {
+  background: linear-gradient(180deg, #101a2a, #16233a);
+}
+
+body[data-dsh-ths] [role='dialog'] > nav button:hover {
+  background: rgba(16, 24, 36, 0.06);
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [role='dialog'] > nav button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body[data-dsh-ths] [role='dialog'] > nav button[aria-current='true'] {
+  background: linear-gradient(90deg, rgba(230, 0, 18, 0.14), rgba(230, 0, 18, 0.05));
+  box-shadow: inset 3px 0 0 #e60012;
+  color: #c4000f;
+  font-weight: 600;
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [role='dialog'] > nav button[aria-current='true'] {
+  background: linear-gradient(90deg, rgba(255, 90, 90, 0.2), rgba(255, 90, 90, 0.06));
+  box-shadow: inset 3px 0 0 #ff5a5a;
+  color: #ff5a5a;
+}
+
+body[data-dsh-ths] [role='dialog'] > div {
+  background: #fff;
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [role='dialog'] > div {
+  background: #141a22;
+}
+
+body[data-dsh-ths] [role='dialog'] > div > div:first-child {
+  background: #f5f7f9;
+  border-bottom: 1px solid rgba(16, 24, 36, 0.1);
+}
+
+body[data-dsh-ths][data-ds-dark-theme] [role='dialog'] > div > div:first-child {
+  background: #1a222d;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
 }
