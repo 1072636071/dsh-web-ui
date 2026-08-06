@@ -3,7 +3,7 @@ import type { Message, StreamChunk, TokenUsage } from '@deepseek-ai/dsh-llm'
 import type { EpochHeader, SessionEvent, SurfaceEvent } from '@deepseek-ai/dsh-session'
 import { isSurfaceEvent } from '@deepseek-ai/dsh-session'
 import type { ProjectionDefinition } from '@deepseek-ai/dsh-session-projection'
-import type { TokenUsageProjection } from '@deepseek-ai/dsh-token-meter/client'
+import type { LiveTokenUsageProjection, TokenUsageProjection } from '@deepseek-ai/dsh-token-meter/client'
 import {
   estimateAssistantBlockTokens,
   estimateContentTokens,
@@ -14,20 +14,7 @@ import {
 } from './estimator.ts'
 import type { EstimatorSpec } from './estimator.ts'
 
-/** Live token-usage projection: durable buckets plus estimate state and throughput. */
-export interface LiveTokenUsageProjection extends TokenUsageProjection {
-  /** True while any active step's buckets are heuristic estimates. */
-  estimated: boolean
-  /** Output tokens per second of the active (or latest settled) step. */
-  tokensPerSecond?: number
-}
-
-declare module '@deepseek-ai/dsh-session-projection/types' {
-  interface SessionProjectionMap {
-    /** Live per-step token estimates plus generation throughput. */
-    liveTokenUsage: LiveTokenUsageProjection
-  }
-}
+export type { LiveTokenUsageProjection } from '@deepseek-ai/dsh-token-meter/client'
 
 const zeroBuckets = (): TokenUsageProjection => ({
   uncachedInputTokens: 0,

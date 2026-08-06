@@ -2,11 +2,10 @@
 
 English | [中文](README.zh.md)
 
-Live input/output token estimates and generation throughput for DSH Web. It keeps the built-in session status row, updates its input and output token totals while a response streams, and adds a second row for generation throughput:
+Live input/output token estimates and generation throughput for DSH Web. It feeds the built-in session status row: input and output token totals update while a response streams, and the generation throughput group (`TPS 31.4 tok/s`) renders right after the step counts, ahead of the billing groups:
 
 ```text
-Input ~7.9K tok · Output ~12 tok
-TPS 31.4 tok/s
+1 turns · 3 steps TPS 31.4 tok/s Input ~7.9K tok · Output ~12 tok
 ```
 
 `~` marks a heuristic estimate. Provider usage replaces the estimate when it arrives; exact cache accounting continues to come from DSH's durable token-usage projection. A retry replaces the prior estimate for that step, and an aborted turn removes its unsettled estimate.
@@ -14,7 +13,7 @@ TPS 31.4 tok/s
 ## What it does
 
 - **Host half**: registers the replayable `liveTokenUsage` session projection (`ctx.sessionProjections`). The fold estimates input tokens from the surface log plus header/tool framing, estimates output tokens from streaming chunks, and replaces estimates with provider usage as soon as a `usage` chunk or final message lands. TPS is derived from output tokens over wall-clock time of the active step.
-- **Client half**: a `conversation.composer.dock` entry (`live-tps`) renders the second status row below the built-in session statistics while a response streams; it stays visible as the latest settled step's TPS until the next turn.
+- **Client half**: kept for roster compatibility only. The TPS group lives inside the conversation stats line — ui-conversation reads the `liveTokenUsage` projection directly — so the client mounts nothing.
 
 ## Installation
 
