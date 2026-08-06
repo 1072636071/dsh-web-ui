@@ -76,7 +76,8 @@ interface SettledSample {
   step: number
   buckets: TokenUsageProjection
   estimated: boolean
-  tokensPerSecond?: number
+  /** Last measured throughput; carried across rate-less steps. */
+  tokensPerSecond: number | undefined
 }
 
 interface State {
@@ -227,7 +228,13 @@ function view(state: State): LiveTokenUsageProjection {
   const estimates = state.settledEstimates
     - (previous?.estimated === true ? 1 : 0)
     + (active !== null && !active.exact ? 1 : 0)
-  const rate = active === null ? state.last?.tokensPerSecond : rateOf(active)
+  // Resident throughput: once any step measured a rate, keep reporting it.
+  // Without the fallback the row drops out between output bursts (an active
+  // step before its first chunk) and after a rate-less step settles — the
+  // stats band must not flicker while the other groups stay put.
+  const rate = active === null
+    ? state.last?.tokensPerSecond
+    : rateOf(active) ?? state.last?.tokensPerSecond
   return {
     ...buckets,
     estimated: estimates > 0,
@@ -336,7 +343,9 @@ export function createLiveTokenUsageProjectionDefinition(
             step: active.step,
             buckets: active.buckets,
             estimated: !active.exact,
-            ...(rate === undefined ? {} : { tokensPerSecond: rate }),
+            // Carry the last measured rate across a rate-less step instead of
+            // clobbering it: the row stays resident (see view()).
+            tokensPerSecond: rate ?? state.last?.tokensPerSecond,
           },
           active: null,
         }

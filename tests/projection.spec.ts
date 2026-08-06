@@ -104,6 +104,34 @@ describe('liveTokenUsage projection', () => {
     expect(projected(ctx, session).tokensPerSecond).toBe(15)
   })
 
+  it('keeps the last measured rate resident across rate-less steps', async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(1_000)
+    const { ctx, session } = await harness()
+    session.append('step/start', { turn: 1, step: 1 })
+    vi.setSystemTime(2_000)
+    session.append('assistant/chunk', {
+      turn: 1, step: 1,
+      chunk: { type: 'text-delta', index: 0, text: 'abcd' },
+    })
+    vi.setSystemTime(3_000)
+    session.append('assistant/chunk', {
+      turn: 1, step: 1,
+      chunk: { type: 'text-delta', index: 0, text: 'efgh' },
+    })
+    // 10 estimated tokens over the 1s window.
+    session.append('step/end', { turn: 1, step: 1 })
+    expect(projected(ctx, session).tokensPerSecond).toBe(10)
+
+    // A new step before its first output keeps the last rate on the row.
+    session.append('step/start', { turn: 2, step: 1 })
+    expect(projected(ctx, session).tokensPerSecond).toBe(10)
+
+    // A step that settles without output does not erase it either.
+    session.append('step/end', { turn: 2, step: 1 })
+    expect(projected(ctx, session).tokensPerSecond).toBe(10)
+  })
+
   it('replaces same-step retry estimates and drops aborted estimates', async () => {
     const { ctx, session } = await harness()
     session.append('step/start', { turn: 1, step: 1 })

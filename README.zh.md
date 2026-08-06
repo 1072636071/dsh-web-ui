@@ -12,7 +12,7 @@ DSH Web 的实时输入/输出 token 估算与生成吞吐显示。它供给内�
 
 ## 功能
 
-- **宿主侧**：注册可重放的 `liveTokenUsage` 会话投影（`ctx.sessionProjections`）。该折叠从表面日志加上 header/工具框架估算输入 token，从流式 chunk 估算输出 token，并在 `usage` chunk 或最终消息落地后立即用 provider 用量替换估算。TPS 由活跃步骤的输出 token 除以墙钟耗时得出。
+- **宿主侧**：注册可重放的 `liveTokenUsage` 会话投影（`ctx.sessionProjections`）。该折叠从表面日志加上 header/工具框架估算输入 token，从流式 chunk 估算输出 token，并在 `usage` chunk 或最终消息落地后立即用 provider 用量替换估算。TPS 由活跃步骤的输出 token 除以墙钟耗时得出，且速率是常驻的：一旦某个步骤测得速率，投影就会持续上报（新步骤尚未产生输出或遇到无速率步骤时回退到最近一次测得值），状态行不会闪烁消失。
 - **客户端**：仅为 roster 兼容保留。TPS 组渲染在会话统计行内部——ui-conversation 直接读取 `liveTokenUsage` 投影——因此客户端不再挂载任何内容。
 
 ## 安装

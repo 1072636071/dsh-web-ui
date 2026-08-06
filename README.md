@@ -12,7 +12,7 @@ Live input/output token estimates and generation throughput for DSH Web. It feed
 
 ## What it does
 
-- **Host half**: registers the replayable `liveTokenUsage` session projection (`ctx.sessionProjections`). The fold estimates input tokens from the surface log plus header/tool framing, estimates output tokens from streaming chunks, and replaces estimates with provider usage as soon as a `usage` chunk or final message lands. TPS is derived from output tokens over wall-clock time of the active step.
+- **Host half**: registers the replayable `liveTokenUsage` session projection (`ctx.sessionProjections`). The fold estimates input tokens from the surface log plus header/tool framing, estimates output tokens from streaming chunks, and replaces estimates with provider usage as soon as a `usage` chunk or final message lands. TPS is derived from output tokens over wall-clock time of the active step, and the rate is resident: once any step measured one, the projection keeps reporting it (falling back to the last measured value while a new step has not produced output yet, or after a rate-less step), so the row never flickers out.
 - **Client half**: kept for roster compatibility only. The TPS group lives inside the conversation stats line — ui-conversation reads the `liveTokenUsage` projection directly — so the client mounts nothing.
 
 ## Installation
