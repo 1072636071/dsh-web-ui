@@ -659,25 +659,29 @@ body[data-dsh-xp][data-ds-dark-theme] [data-pane='sidebar'] input:focus {
 
 /* The footer strip (settings entry) becomes the taskbar: Luna blue gradient
    with the green Start button on the left and the settings trigger on the
-   right (Start renders first, so margin-right:auto parks it left). */
-body[data-dsh-xp] [data-pane='sidebar'] > div > :last-child {
+   right (Start renders first, so margin-right:auto parks it left). The strip
+   is anchored by the xpTaskbar class apply() puts on the foot area: the
+   settings dialog portals into the sidebar column, so a :last-child anchor
+   would paint the portal container and spill the white button color into
+   every dialog control. */
+.xpTaskbar {
   background: linear-gradient(180deg, #245edb 0%, #3f8cf3 9%, #3778e7 18%, #245edb 100%);
   border-top: 1px solid #16409c;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-body[data-dsh-xp][data-ds-dark-theme] [data-pane='sidebar'] > div > :last-child {
+body[data-dsh-xp][data-ds-dark-theme] .xpTaskbar {
   background: linear-gradient(180deg, #26292e 0%, #3a3f45 12%, #2b2e33 24%, #1b1d21 100%);
   border-top-color: #000;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
-body[data-dsh-xp] [data-pane='sidebar'] > div > :last-child button:not(.xpStart) {
+.xpTaskbar > button:not(.xpStart) {
   background: transparent;
   color: #fff;
 }
 
-body[data-dsh-xp] [data-pane='sidebar'] > div > :last-child button:not(.xpStart):hover {
+.xpTaskbar > button:not(.xpStart):hover {
   background: rgba(255, 255, 255, 0.2);
 }
 

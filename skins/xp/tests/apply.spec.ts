@@ -68,9 +68,35 @@ describe('Windows XP-style skin apply', () => {
     const start = foot.querySelector('[class*="xpStart"]')
     expect(start).not.toBeNull()
     expect(start?.textContent).toContain('开始')
+    // The foot strip is taskbar-anchored by class, never by :last-child —
+    // the settings dialog portals into the sidebar column.
+    expect(foot.className).toContain('xpTaskbar')
     expect(opened).toBe(0)
     ;(start as HTMLButtonElement).click()
     expect(opened).toBe(1)
+  })
+
+  it('plants the Start button when the sidebar footer mounts after the skin', async () => {
+    fiber = await mount()
+    expect(document.body.querySelector('[class*="xpStart"]')).toBeNull()
+
+    // The sidebar renders after the skin settles: the observer must catch it.
+    const foot = document.createElement('div')
+    const trigger = document.createElement('button')
+    trigger.type = 'button'
+    trigger.setAttribute('aria-haspopup', 'dialog')
+    foot.append(trigger)
+    const sidebar = document.createElement('div')
+    sidebar.dataset.pane = 'sidebar'
+    const holder = document.createElement('div')
+    holder.append(foot)
+    sidebar.append(holder)
+    document.body.append(sidebar)
+
+    await new Promise(resolve => setTimeout(resolve, 0))
+    const start = foot.querySelector('[class*="xpStart"]')
+    expect(start).not.toBeNull()
+    expect(foot.className).toContain('xpTaskbar')
   })
 
   it('retracts everything on fiber dispose', async () => {

@@ -101,20 +101,43 @@ export function apply(ctx: Context): void {
   }
 
   // The Start button opens the settings dialog by forwarding to the real
-  // settings trigger in the sidebar footer strip.
-  let start: HTMLButtonElement | undefined
-  const foot = document.querySelector(SIDEBAR_FOOT_SELECTOR)
-  if (foot) {
-    start = document.createElement('button')
-    start.type = 'button'
-    start.className = cls('xpStart')
-    const startIcon = document.createElement('span')
-    startIcon.className = cls('xpStartIcon')
-    startIcon.innerHTML = FLAG_SVG
-    start.append(startIcon, document.createTextNode('开始'))
-    const settings = foot.querySelector<HTMLButtonElement>('button[aria-haspopup="dialog"]')
-    start.addEventListener('click', () => settings?.click())
-    foot.insertBefore(start, foot.firstChild)
+  // settings trigger in the sidebar footer strip. The footer may mount after
+  // the skin settles (and re-render), and the settings dialog portals into
+  // the sidebar column (making :last-child point at the portal), so install
+  // is anchored on the trigger button and re-runs on DOM changes until
+  // dispose.
+  const mountStart = (): (() => void) => {
+    const install = (): void => {
+      const foot = document.querySelector(SIDEBAR_FOOT_SELECTOR)
+      // The real footer strip carries the settings trigger; the dialog
+      // portal (also a possible :last-child) never does.
+      if (!foot?.querySelector('button[aria-haspopup="dialog"]')) return
+      if (!foot.querySelector('[class*="xpStart"]')) {
+        const start = document.createElement('button')
+        start.type = 'button'
+        start.className = cls('xpStart')
+        const startIcon = document.createElement('span')
+        startIcon.className = cls('xpStartIcon')
+        startIcon.innerHTML = FLAG_SVG
+        start.append(startIcon, document.createTextNode('开始'))
+        const settings = foot.querySelector<HTMLButtonElement>('button[aria-haspopup="dialog"]')
+        start.addEventListener('click', () => settings?.click())
+        foot.insertBefore(start, foot.firstChild)
+      }
+      // Anchor the taskbar styling on the real footer strip: a :last-child
+      // anchor would leak the white footer-button color into every dialog
+      // control.
+      foot.classList.add(cls('xpTaskbar'))
+    }
+    const observer = new MutationObserver(install)
+    observer.observe(document.body, { childList: true, subtree: true })
+    install()
+    return () => {
+      observer.disconnect()
+      const start = document.querySelector("[data-pane='sidebar'] [class*='xpStart']")
+      start?.parentElement?.classList.remove(cls('xpTaskbar'))
+      start?.remove()
+    }
   }
 
   const favicon = document.createElement('link')
@@ -124,12 +147,13 @@ export function apply(ctx: Context): void {
 
   document.title = SKIN_TITLE
   body.append(titlebar, statusbar)
+  const disposeStart = mountStart()
 
   ctx.effect(() => () => {
     delete body.dataset.dshXp
     titlebar.remove()
     statusbar.remove()
-    start?.remove()
+    disposeStart()
     favicon.remove()
     // Only restore when the skin's own title still stands — a session title
     // projected by the shell must not be clobbered by skin teardown.
