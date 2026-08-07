@@ -1,5 +1,5 @@
 /**
- * The whale backdrop art — the "DeepSeek-鲸鱼娘" Codex theme background
+ * The whale backdrop art — the "蓝色幻想" Codex theme background
  * (dreamskin.cc, MIT, author powerdog996), compressed to 1920x1079 JPEG
  * (q76) and inlined as a data URL so the skin carries no static assets.
  * Regenerate from the source package:

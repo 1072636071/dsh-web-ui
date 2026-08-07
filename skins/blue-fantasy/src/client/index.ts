@@ -1,9 +1,9 @@
 /**
- * deepseek-whale skin — the "DeepSeek-鲸鱼娘" Codex desktop theme
+ * blue-fantasy skin — the "蓝色幻想" Codex desktop theme
  * (dreamskin.cc, MIT, author powerdog996) adapted for the dsh web GUI, as a
  * hot-pluggable client plugin. apply() owns the whole ambient surface and
  * retracts it on dispose (the ThemePresenter retraction discipline: the
- * plugin only ever removes what it wrote): the `data-dsh-whale` body
+ * plugin only ever removes what it wrote): the `data-dsh-blue-fantasy` body
  * attribute the stylesheet is scoped on, the whale-art backdrop (base64
  * data URL with a readability scrim chosen by the current theme, swapped
  * live on `data-ds-dark-theme` changes), and the injected whale favicon.
@@ -48,7 +48,7 @@ const BACKDROP_PROPERTIES = [
 ] as const
 
 /**
- * Apply the deepseek-whale skin: body attribute, whale-art backdrop (with a
+ * Apply the blue-fantasy skin: body attribute, whale-art backdrop (with a
  * live-swapping theme scrim), favicon. All writes are retracted by the
  * effect disposer on dispose. Backdrop writes go through the canonical
  * hyphenated CSSOM API (setProperty/getPropertyValue), so any prior value
@@ -61,7 +61,7 @@ export function apply(ctx: Context): void {
   for (const prop of BACKDROP_PROPERTIES) {
     previous.set(prop, body.style.getPropertyValue(prop))
   }
-  body.dataset.dshWhale = ''
+  body.dataset.dshBlueFantasy = ''
 
   const setBackdrop = (): void => {
     const dark = body.dataset.dsDarkTheme !== undefined
@@ -83,11 +83,11 @@ export function apply(ctx: Context): void {
   document.head.append(favicon)
 
   ctx.effect(() => () => {
-    delete body.dataset.dshWhale
+    delete body.dataset.dshBlueFantasy
     observer.disconnect()
     for (const [prop, value] of previous) {
       body.style.setProperty(prop, value)
     }
     favicon.remove()
-  }, 'ui-skin-deepseek-whale: whale backdrop')
+  }, 'ui-skin-blue-fantasy: whale backdrop')
 }

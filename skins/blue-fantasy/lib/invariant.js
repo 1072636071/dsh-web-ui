@@ -1,11 +1,11 @@
 //#region lib/types/invariant.js
 /**
-* Package-owned invariant companion for `@deepseek-ai/dsh-client-ui-skin-deepseek-whale`.
-* @module @deepseek-ai/dsh-client-ui-skin-deepseek-whale/invariant
+* Package-owned invariant companion for `@deepseek-ai/dsh-client-ui-skin-blue-fantasy`.
+* @module @deepseek-ai/dsh-client-ui-skin-blue-fantasy/invariant
 */
-const PACKAGE_NAME = "@deepseek-ai/dsh-client-ui-skin-deepseek-whale";
+const PACKAGE_NAME = "@deepseek-ai/dsh-client-ui-skin-blue-fantasy";
 /** Cordis companion plugin name. */
-const name = "client-ui-skin-deepseek-whale-invariant";
+const name = "client-ui-skin-blue-fantasy-invariant";
 /** Service required before the companion can reserve package ownership. */
 const inject = ["invariants"];
 /**

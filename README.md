@@ -13,7 +13,7 @@ skins/
   qq98/        第一个入库的皮肤：QQ2008 怀旧版（水晶蓝桌面渐变、玻璃深蓝标题栏、戴围巾企鹅、圆角高光控件）
   ths/         同花顺风格炒股主题（品牌红标题栏、行情状态栏、灰蓝数据终端面板）
   xp/          Windows XP (Luna) 复古主题（蓝色渐变窗口条、绿色开始按钮、米色状态栏、全局直角）
-  deepseek-whale/  DreamSkin「DeepSeek-鲸鱼娘」Codex 主题适配：鲸鱼插画背景（随亮/暗主题切换遮罩）+ periwinkle 靛蓝调色板 + 毛玻璃面板
+  blue-fantasy/   蓝色幻想：DreamSkin「DeepSeek-鲸鱼娘」Codex 主题适配——鲸鱼插画背景（随亮/暗主题切换遮罩）+ periwinkle 靛蓝调色板 + 半透明面板
 ```
 
 > ⚠️ 同一时刻只接线一个皮肤：两个皮肤都会注入标题栏/状态栏。换皮肤 = 把 `web.cordis.yml` 里的皮肤行换成另一个（见各皮肤 README）。
@@ -93,6 +93,6 @@ A collection of **DeepSeek Harness Web GUI** skins and UI plugins. Every skin is
 - **Quick use**: copy the skin dir into a DSH checkout's `packages/client/`, add a `dshClient` row to `apps/cli/config/web.cordis.yml`, add the package to `apps/cli/package.json` and `tsconfig.client.json`, `pnpm install`, restart `dsh web`, refresh. Wire **only one skin row at a time** — two skins both inject title/status bars.
 - **One-command switching**: `scripts/dsh-skin` rewrites the hot-reloaded `~/.dsh/cordis.patch.yml` and keeps the profile node_modules symlinks (`~/.dsh/profiles/node_modules/@deepseek-ai/`) in sync — `cp scripts/dsh-skin ~/.local/bin/`, then `dsh-skin use qq98|xp|ths`, `dsh-skin list`, `dsh-skin current`. The target skin gets its insert row, every other skin (including the bundle-layer-wired `ui-skin-xp`) gets a `disabled` row, so exactly one skin is ever live; the config watcher applies the switch within seconds — refresh the page.
 - **Add a skin**: clone `skins/qq98/`, scope your styles under your own body attribute, retract everything on dispose, verify the assembled look before submitting.
-- `skins/deepseek-whale/` — the DreamSkin "DeepSeek-鲸鱼娘" Codex desktop theme adapted: whale-art backdrop (scrim swaps live with the light/dark theme), periwinkle-indigo palette, frosted panes. Preview: [light](skins/deepseek-whale/preview/light.png) / [dark](skins/deepseek-whale/preview/dark.png).
+- `skins/blue-fantasy/` — 蓝色幻想 (Blue Fantasy): the DreamSkin "DeepSeek-鲸鱼娘" Codex desktop theme adapted: whale-art backdrop (scrim swaps live with the light/dark theme), periwinkle-indigo palette, translucent panes. Preview: [light](skins/blue-fantasy/preview/light.png) / [dark](skins/blue-fantasy/preview/dark.png).
 
 See `skins/qq98/README.md` for the full wiring walkthrough.

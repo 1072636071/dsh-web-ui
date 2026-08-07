@@ -1,30 +1,31 @@
-/* deepseek-whale skin — the "DeepSeek-鲸鱼娘" Codex desktop theme
-   (dreamskin.cc, MIT, author powerdog996) adapted for the dsh web GUI.
-   Everything is scoped under body[data-dsh-whale], which the plugin's
+/* blue-fantasy (蓝色幻想) skin — the DreamSkin「DeepSeek-鲸鱼娘」Codex
+   desktop theme (dreamskin.cc, MIT, author powerdog996) adapted for the
+   dsh web GUI.
+   Everything is scoped under body[data-dsh-blue-fantasy], which the plugin's
    apply() sets (and retracts on dispose), so the skin stays fully
    hot-pluggable. The whale art itself is applied by apply() as an inline
    background-image (base64 data URL from ./art.ts, with a readability
    scrim chosen by the current theme); this stylesheet carries the palette
    remap, the scrim-free surfaces, and the ambient pane frosting. The dark
-   palette (`body[data-dsh-whale][data-ds-dark-theme]`) is the night-whale
+   palette (`body[data-dsh-blue-fantasy][data-ds-dark-theme]`) is the night-whale
    take: deep indigo surfaces over a dimmed art, so the base theme system
    keeps working. */
 
 /* --- Base: fonts stay default; the app rides on the whale backdrop -------- */
 
-body[data-dsh-whale] {
+body[data-dsh-blue-fantasy] {
   color: #1d2539;
   background-color: #e8ecf5;
 }
 
-body[data-dsh-whale][data-ds-dark-theme] {
+body[data-dsh-blue-fantasy][data-ds-dark-theme] {
   color: #dbe2f2;
   background-color: #101624;
 }
 
 /* The app frame itself is transparent — the panes below carry the frosted
    glass over the art. */
-body[data-dsh-whale] [id='root'] {
+body[data-dsh-blue-fantasy] [id='root'] {
   background: transparent;
 }
 
@@ -33,7 +34,7 @@ body[data-dsh-whale] [id='root'] {
    grays carry the neutrals; the gold comes from the theme's accentAlt and
    the sea-green/red keep semantic safety. */
 
-body[data-dsh-whale] {
+body[data-dsh-blue-fantasy] {
   --dsw-static-amber-100: #f7ecd8;
   --dsw-static-amber-400: #d9a94f;
   --dsw-static-amber-500: #c08a33;
@@ -111,7 +112,7 @@ body[data-dsh-whale] {
 
 /* --- Static palette: dark (night whale) ------------------------------------ */
 
-body[data-dsh-whale][data-ds-dark-theme] {
+body[data-dsh-blue-fantasy][data-ds-dark-theme] {
   --dsw-static-amber-100: #4a3515;
   --dsw-static-amber-400: #d9a94f;
   --dsw-static-amber-500: #c08a33;
@@ -197,7 +198,7 @@ body[data-dsh-whale][data-ds-dark-theme] {
    descendants, which would trap overlays like the settings panel inside
    the sidebar column. */
 
-body[data-dsh-whale] {
+body[data-dsh-blue-fantasy] {
   --dsw-alias-bg-base: rgba(255, 255, 255, 0.45);
   --dsw-alias-bg-layer-1: rgba(243, 245, 251, 0.5);
   --dsw-alias-bg-layer-2: rgba(233, 237, 247, 0.55);
@@ -289,7 +290,7 @@ body[data-dsh-whale] {
 
 /* --- Alias palette: dark ----------------------------------------------------- */
 
-body[data-dsh-whale][data-ds-dark-theme] {
+body[data-dsh-blue-fantasy][data-ds-dark-theme] {
   --dsw-alias-bg-base: rgba(16, 22, 42, 0.5);
   --dsw-alias-bg-layer-1: rgba(26, 34, 56, 0.55);
   --dsw-alias-bg-layer-2: rgba(32, 42, 68, 0.6);
@@ -385,87 +386,87 @@ body[data-dsh-whale][data-ds-dark-theme] {
    inputs). backdrop-filter is deliberately unused — it would trap fixed
    overlays (e.g. the settings panel) inside their ancestor's box. */
 
-body[data-dsh-whale] [id='root'] {
+body[data-dsh-blue-fantasy] [id='root'] {
   background: transparent;
 }
 
 /* --- Chrome details ---------------------------------------------------------
    Scrollbars, selection, links, and focus rings in the whale inks. */
 
-body[data-dsh-whale] {
+body[data-dsh-blue-fantasy] {
   --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
   --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
-body[data-dsh-whale]::-webkit-scrollbar {
+body[data-dsh-blue-fantasy]::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
-body[data-dsh-whale]::-webkit-scrollbar-track {
+body[data-dsh-blue-fantasy]::-webkit-scrollbar-track {
   background: #eef1f9;
 }
 
-body[data-dsh-whale]::-webkit-scrollbar-thumb {
+body[data-dsh-blue-fantasy]::-webkit-scrollbar-thumb {
   background: #b4c3e8;
   border: 2px solid #eef1f9;
   border-radius: 5px;
 }
 
-body[data-dsh-whale]::-webkit-scrollbar-thumb:hover {
+body[data-dsh-blue-fantasy]::-webkit-scrollbar-thumb:hover {
   background: #7f96d2;
 }
 
-body[data-dsh-whale]::-webkit-scrollbar-corner {
+body[data-dsh-blue-fantasy]::-webkit-scrollbar-corner {
   background: #eef1f9;
 }
 
-body[data-dsh-whale][data-ds-dark-theme]::-webkit-scrollbar-track,
-body[data-dsh-whale][data-ds-dark-theme]::-webkit-scrollbar-corner {
+body[data-dsh-blue-fantasy][data-ds-dark-theme]::-webkit-scrollbar-track,
+body[data-dsh-blue-fantasy][data-ds-dark-theme]::-webkit-scrollbar-corner {
   background: #141a2b;
 }
 
-body[data-dsh-whale][data-ds-dark-theme]::-webkit-scrollbar-thumb {
+body[data-dsh-blue-fantasy][data-ds-dark-theme]::-webkit-scrollbar-thumb {
   background: #455678;
   border-color: #141a2b;
 }
 
-body[data-dsh-whale][data-ds-dark-theme]::-webkit-scrollbar-thumb:hover {
+body[data-dsh-blue-fantasy][data-ds-dark-theme]::-webkit-scrollbar-thumb:hover {
   background: #6276a5;
 }
 
-body[data-dsh-whale]::selection {
+body[data-dsh-blue-fantasy]::selection {
   background: #4a5fa8;
   color: #ffffff;
 }
 
-body[data-dsh-whale][data-ds-dark-theme]::selection {
+body[data-dsh-blue-fantasy][data-ds-dark-theme]::selection {
   background: #7f96d2;
   color: #10141f;
 }
 
-body[data-dsh-whale] a {
+body[data-dsh-blue-fantasy] a {
   color: #3c4e92;
 }
 
-body[data-dsh-whale] a:visited {
+body[data-dsh-blue-fantasy] a:visited {
   color: #6a5fa8;
 }
 
-body[data-dsh-whale][data-ds-dark-theme] a {
+body[data-dsh-blue-fantasy][data-ds-dark-theme] a {
   color: #94a8dc;
 }
 
-body[data-dsh-whale][data-ds-dark-theme] a:visited {
+body[data-dsh-blue-fantasy][data-ds-dark-theme] a:visited {
   color: #a58fdc;
 }
 
-body[data-dsh-whale] :focus-visible {
+body[data-dsh-blue-fantasy] :focus-visible {
   outline: 2px solid rgba(74, 95, 168, 0.55);
   outline-offset: 0;
 }
 
-body[data-dsh-whale][data-ds-dark-theme] :focus-visible {
+body[data-dsh-blue-fantasy][data-ds-dark-theme] :focus-visible {
   outline: 2px solid rgba(127, 150, 210, 0.6);
   outline-offset: 0;
 }

@@ -30,17 +30,17 @@ afterEach(async () => {
   fiber = undefined
   document.body.innerHTML = ''
   document.head.querySelectorAll('link[rel="icon"]').forEach((link) => { link.remove() })
-  delete document.body.dataset.dshWhale
+  delete document.body.dataset.dshBlueFantasy
   delete document.body.dataset.dsDarkTheme
   document.body.style.cssText = ''
   document.title = ''
 })
 
-describe('deepseek-whale skin apply', () => {
+describe('blue-fantasy skin apply', () => {
   it('mounts the ambient surface: attribute, backdrop, favicon', async () => {
     fiber = await mount()
 
-    expect(document.body.dataset.dshWhale).toBe('')
+    expect(document.body.dataset.dshBlueFantasy).toBe('')
     expect(document.body.style.getPropertyValue('background-image')).toContain('data:image/jpeg;base64')
     expect(document.body.style.getPropertyValue('background-size')).toBe('cover')
     expect(document.body.style.getPropertyValue('background-attachment')).toBe('fixed')
@@ -72,7 +72,7 @@ describe('deepseek-whale skin apply', () => {
     await fiber.dispose()
     fiber = undefined
 
-    expect(document.body.dataset.dshWhale).toBeUndefined()
+    expect(document.body.dataset.dshBlueFantasy).toBeUndefined()
     expect(document.body.style.getPropertyValue('background-image')).toContain('prior.png')
     expect(document.body.style.getPropertyValue('background-attachment')).toBe('scroll')
     expect(document.head.querySelector('link[rel="icon"]')).toBeNull()
