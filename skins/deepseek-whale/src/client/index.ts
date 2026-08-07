@@ -14,14 +14,18 @@
 import type { Context } from 'cordis'
 import { WHALE_ART } from './art.ts'
 
-/** Light scrim: a soft ice veil so text stays readable over the bright art. */
+/** Light scrim: a thin ice veil — the art is bright pastel, so a heavy
+ *  scrim would bury the subject; the translucent surfaces carry the
+ *  readability instead. Slightly stronger toward the bottom, where the
+ *  whale girl sits (darker art) and the composer lives. */
 const SCRIM_LIGHT = [
-  'linear-gradient(rgba(246, 248, 253, 0.5) 0%, rgba(240, 243, 251, 0.72) 55%, rgba(235, 239, 249, 0.8) 100%)',
+  'linear-gradient(rgba(246, 248, 253, 0.08) 0%, rgba(240, 243, 251, 0.14) 55%, rgba(235, 239, 249, 0.2) 100%)',
 ].join(', ')
 
-/** Dark scrim: a deep indigo veil, whale still visible underneath. */
+/** Dark scrim: a deep indigo veil — lighter than before so the whale girl
+ *  stays visible under the night palette. */
 const SCRIM_DARK = [
-  'linear-gradient(rgba(10, 14, 28, 0.55) 0%, rgba(13, 18, 34, 0.7) 60%, rgba(16, 22, 42, 0.8) 100%)',
+  'linear-gradient(rgba(10, 14, 28, 0.35) 0%, rgba(13, 18, 34, 0.45) 60%, rgba(16, 22, 42, 0.5) 100%)',
 ].join(', ')
 
 /** The whale mark as favicon, inline so the skin carries no static assets. */

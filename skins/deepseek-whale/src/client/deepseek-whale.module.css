@@ -198,16 +198,16 @@ body[data-dsh-whale][data-ds-dark-theme] {
    the sidebar column. */
 
 body[data-dsh-whale] {
-  --dsw-alias-bg-base: rgba(255, 255, 255, 0.78);
-  --dsw-alias-bg-layer-1: rgba(243, 245, 251, 0.82);
-  --dsw-alias-bg-layer-2: rgba(233, 237, 247, 0.84);
-  --dsw-alias-bg-layer-3: rgba(221, 227, 241, 0.85);
+  --dsw-alias-bg-base: rgba(255, 255, 255, 0.45);
+  --dsw-alias-bg-layer-1: rgba(243, 245, 251, 0.5);
+  --dsw-alias-bg-layer-2: rgba(233, 237, 247, 0.55);
+  --dsw-alias-bg-layer-3: rgba(221, 227, 241, 0.58);
   --dsw-alias-bg-mask-1: rgba(28, 37, 70, 0.4);
   --dsw-alias-bg-mask-2: rgba(28, 37, 70, 0.2);
   --dsw-alias-bg-mask-3: rgba(28, 37, 70, 0.5);
   --dsw-alias-bg-mask-photo: rgba(16, 20, 36, 0.88);
-  --dsw-alias-bg-module-platform: rgba(233, 237, 247, 0.84);
-  --dsw-alias-bg-multi-select: rgba(220, 227, 247, 0.9);
+  --dsw-alias-bg-module-platform: rgba(233, 237, 247, 0.55);
+  --dsw-alias-bg-multi-select: rgba(220, 227, 247, 0.8);
   --dsw-alias-bg-overlay: rgba(238, 241, 249, 0.92);
   --dsw-alias-bg-skeleton: rgba(28, 37, 70, 0.06);
   --dsw-alias-border-inverted2: rgba(255, 255, 255, 0.6);
@@ -249,14 +249,14 @@ body[data-dsh-whale] {
   --dsw-alias-label-primary: #1d2539;
   --dsw-alias-label-secondary: #3e4b6d;
   --dsw-alias-label-tertiary: #5f6e93;
-  --dsw-alias-markdown-citation: rgba(233, 237, 247, 0.88);
-  --dsw-alias-markdown-code-block-banner: rgba(243, 245, 251, 0.9);
-  --dsw-alias-markdown-code-block: rgba(243, 245, 251, 0.9);
-  --dsw-alias-markdown-code-segment-selected: #ffffff;
-  --dsw-alias-markdown-code-segment-unselected: rgba(238, 241, 249, 0.88);
-  --dsw-alias-markdown-inline-code: rgba(231, 236, 245, 0.9);
-  --dsw-alias-markdown-placeholder: rgba(243, 245, 251, 0.9);
-  --dsw-alias-markdown-tag: rgba(231, 236, 245, 0.9);
+  --dsw-alias-markdown-citation: rgba(233, 237, 247, 0.6);
+  --dsw-alias-markdown-code-block-banner: rgba(243, 245, 251, 0.58);
+  --dsw-alias-markdown-code-block: rgba(243, 245, 251, 0.58);
+  --dsw-alias-markdown-code-segment-selected: rgba(255, 255, 255, 0.8);
+  --dsw-alias-markdown-code-segment-unselected: rgba(238, 241, 249, 0.6);
+  --dsw-alias-markdown-inline-code: rgba(231, 236, 245, 0.6);
+  --dsw-alias-markdown-placeholder: rgba(243, 245, 251, 0.58);
+  --dsw-alias-markdown-tag: rgba(231, 236, 245, 0.6);
   --dsw-alias-scrollbar-bg-l1: #d8dfec;
   --dsw-alias-scrollbar-bg-l2: #d8dfec;
   --dsw-alias-scrollbar-hover-l1: #a5b7e2;
@@ -276,11 +276,11 @@ body[data-dsh-whale] {
   --dsw-alias-tooltip-bg: #ffffe1;
   --dsw-specific-bubble-highlight: #c3cfee;
   --dsw-specific-bubble: #dce3f7;
-  --dsw-specific-input-major: rgba(255, 255, 255, 0.85);
-  --dsw-specific-login-input: rgba(255, 255, 255, 0.85);
+  --dsw-specific-input-major: rgba(255, 255, 255, 0.6);
+  --dsw-specific-login-input: rgba(255, 255, 255, 0.6);
   --dsw-specific-menu: rgba(243, 245, 251, 0.94);
-  --dsw-specific-selector: rgba(228, 234, 247, 0.9);
-  --dsw-specific-sidebar-fill: rgba(74, 95, 168, 0.86);
+  --dsw-specific-selector: rgba(228, 234, 247, 0.85);
+  --dsw-specific-sidebar-fill: rgba(242, 245, 250, 0.5);
   --dsw-specific-sidebar-nav-item-active-accent: #a5b7e2;
   --dsw-specific-sidebar-nav-item-active: #dce3f7;
   --dsw-specific-sidebar-nav-item-hover: #e4eaf7;
@@ -290,16 +290,16 @@ body[data-dsh-whale] {
 /* --- Alias palette: dark ----------------------------------------------------- */
 
 body[data-dsh-whale][data-ds-dark-theme] {
-  --dsw-alias-bg-base: rgba(16, 22, 42, 0.8);
-  --dsw-alias-bg-layer-1: rgba(26, 34, 56, 0.82);
-  --dsw-alias-bg-layer-2: rgba(32, 42, 68, 0.84);
-  --dsw-alias-bg-layer-3: rgba(38, 50, 79, 0.85);
+  --dsw-alias-bg-base: rgba(16, 22, 42, 0.5);
+  --dsw-alias-bg-layer-1: rgba(26, 34, 56, 0.55);
+  --dsw-alias-bg-layer-2: rgba(32, 42, 68, 0.6);
+  --dsw-alias-bg-layer-3: rgba(38, 50, 79, 0.64);
   --dsw-alias-bg-mask-1: rgba(0, 0, 0, 0.55);
   --dsw-alias-bg-mask-2: rgba(0, 0, 0, 0.3);
   --dsw-alias-bg-mask-3: rgba(0, 0, 0, 0.6);
   --dsw-alias-bg-mask-photo: rgba(6, 9, 20, 0.9);
-  --dsw-alias-bg-module-platform: rgba(32, 42, 68, 0.84);
-  --dsw-alias-bg-multi-select: rgba(44, 55, 101, 0.9);
+  --dsw-alias-bg-module-platform: rgba(32, 42, 68, 0.6);
+  --dsw-alias-bg-multi-select: rgba(44, 55, 101, 0.8);
   --dsw-alias-bg-overlay: rgba(26, 34, 56, 0.92);
   --dsw-alias-bg-skeleton: rgba(255, 255, 255, 0.06);
   --dsw-alias-border-inverted2: rgba(255, 255, 255, 0.6);
@@ -341,14 +341,14 @@ body[data-dsh-whale][data-ds-dark-theme] {
   --dsw-alias-label-primary: #dbe2f2;
   --dsw-alias-label-secondary: #a9b7d0;
   --dsw-alias-label-tertiary: #8b9cbc;
-  --dsw-alias-markdown-citation: rgba(32, 42, 68, 0.88);
-  --dsw-alias-markdown-code-block-banner: rgba(23, 30, 51, 0.92);
-  --dsw-alias-markdown-code-block: rgba(23, 30, 51, 0.92);
-  --dsw-alias-markdown-code-segment-selected: rgba(38, 50, 79, 0.95);
-  --dsw-alias-markdown-code-segment-unselected: rgba(26, 34, 56, 0.9);
-  --dsw-alias-markdown-inline-code: rgba(30, 39, 64, 0.9);
-  --dsw-alias-markdown-placeholder: rgba(26, 34, 56, 0.9);
-  --dsw-alias-markdown-tag: rgba(30, 39, 64, 0.9);
+  --dsw-alias-markdown-citation: rgba(32, 42, 68, 0.62);
+  --dsw-alias-markdown-code-block-banner: rgba(23, 30, 51, 0.66);
+  --dsw-alias-markdown-code-block: rgba(23, 30, 51, 0.66);
+  --dsw-alias-markdown-code-segment-selected: rgba(38, 50, 79, 0.75);
+  --dsw-alias-markdown-code-segment-unselected: rgba(26, 34, 56, 0.6);
+  --dsw-alias-markdown-inline-code: rgba(30, 39, 64, 0.62);
+  --dsw-alias-markdown-placeholder: rgba(26, 34, 56, 0.6);
+  --dsw-alias-markdown-tag: rgba(30, 39, 64, 0.62);
   --dsw-alias-scrollbar-bg-l1: #33406a;
   --dsw-alias-scrollbar-bg-l2: #33406a;
   --dsw-alias-scrollbar-hover-l1: #4a5fa8;
@@ -368,11 +368,11 @@ body[data-dsh-whale][data-ds-dark-theme] {
   --dsw-alias-tooltip-bg: #ffffe1;
   --dsw-specific-bubble-highlight: #33417a;
   --dsw-specific-bubble: #2c3765;
-  --dsw-specific-input-major: rgba(26, 34, 56, 0.9);
-  --dsw-specific-login-input: rgba(26, 34, 56, 0.9);
+  --dsw-specific-input-major: rgba(26, 34, 56, 0.65);
+  --dsw-specific-login-input: rgba(26, 34, 56, 0.65);
   --dsw-specific-menu: rgba(26, 34, 56, 0.94);
-  --dsw-specific-selector: rgba(30, 39, 64, 0.9);
-  --dsw-specific-sidebar-fill: rgba(60, 78, 146, 0.86);
+  --dsw-specific-selector: rgba(30, 39, 64, 0.85);
+  --dsw-specific-sidebar-fill: rgba(29, 37, 57, 0.55);
   --dsw-specific-sidebar-nav-item-active-accent: #33417a;
   --dsw-specific-sidebar-nav-item-active: #2c3765;
   --dsw-specific-sidebar-nav-item-hover: #202a44;
