@@ -169,7 +169,7 @@ describe('liveTokenUsage projection', () => {
       chunk: { type: 'text-delta', index: 0, text: 'partial' },
     })
     session.append('step/end', { turn: 2, step: 1 })
-    session.append('turn/end', { turn: 2, reason: { kind: 'aborted' } })
+    session.append('turn/end', { turn: 2, reason: { kind: 'aborted', reason: { kind: 'user' } } })
     expect(projected(ctx, session)).toMatchObject({
       uncachedInputTokens: 20,
       outputTokens: 5,
@@ -343,7 +343,7 @@ describe('liveTokenUsage projection', () => {
     expect(projected(ctx, session)).toMatchObject({ outputTokens: 0, estimated: true })
   })
 
-  it('prices tool results and steering messages on the surface', async () => {
+  it('prices tool results and user messages on the surface', async () => {
     const { ctx, session } = await harness()
     session.append('tool/result', {
       turn: 1,
@@ -354,15 +354,12 @@ describe('liveTokenUsage projection', () => {
         isError: false,
       }),
     }, { surfaceOp: 'append' })
-    session.append('steering/message', {
-      turn: 1,
-      message: createUserMessage({
-        content: [{ type: 'text', text: 'efgh' }],
-        source: { kind: 'user' },
-      }),
-    }, { surfaceOp: 'append' })
+    session.append('user/message', createUserMessage({
+      content: [{ type: 'text', text: 'efgh' }],
+      source: { kind: 'user' },
+    }), { surfaceOp: 'append' })
     session.append('step/start', { turn: 1, step: 1 })
-    // Tool result: 5 (text) + 4 (block) + 4 (role); steering: 5 + 4 (role).
+    // Tool result: 5 (text) + 4 (block) + 4 (role); user message: 5 + 4 (role).
     expect(projected(ctx, session).uncachedInputTokens).toBe(22)
   })
 

@@ -96,7 +96,6 @@ function surfaceMessage(event: SurfaceEvent): Message {
       return event.data
     case 'assistant/message':
     case 'tool/result':
-    case 'steering/message':
       return event.data.message
   }
 }
