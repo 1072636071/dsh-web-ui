@@ -1,0 +1,159 @@
+#!/usr/bin/env node
+'use strict'
+
+/**
+ * dsh-skin — one-command skin switching for the DSH web GUI.
+ *
+ * Maintains the mutually-exclusive skin section of ~/.dsh/cordis.patch.yml
+ * (hot-reloaded by the config watcher, so switching takes effect in
+ * seconds without a restart) plus the profile node_modules symlinks that
+ * make each skin package resolvable from the web profile.
+ *
+ * Switch = rewrite the managed patch section → HMR re-scans → refresh the
+ * page. Only ONE skin row is ever enabled: every non-active skin gets an
+ * id-target `disabled: true` row (which also neutralizes skins wired at
+ * the bundle layer, e.g. ui-skin-xp), and the active skin gets its insert
+ * row (xp needs none — the bundle layer already carries it).
+ */
+
+const fs = require('node:fs')
+
+const HOME = process.env.HOME
+const PATCH = `${HOME}/.dsh/cordis.patch.yml`
+const PROFILE_MODULES = `${HOME}/.dsh/profiles/node_modules`
+const CHECKOUT = fs.existsSync(`${HOME}/.dsh/source/current`)
+  ? fs.realpathSync(`${HOME}/.dsh/source/current`)
+  : null
+
+/** Skin registry: name -> package, cordis row id, symlink resolve target. */
+const SKINS = {
+  qq98: { pkg: '@deepseek-ai/dsh-client-ui-skin-qq98', id: 'ui-skin-qq98', dir: `${HOME}/code/dsh-web-ui/skins/qq98` },
+  ths: { pkg: '@deepseek-ai/dsh-client-ui-skin-ths', id: 'ui-skin-ths', dir: `${CHECKOUT}/packages/client/ui-skin-ths` },
+  xp: { pkg: '@deepseek-ai/dsh-client-ui-skin-xp', id: 'ui-skin-xp', dir: `${CHECKOUT}/packages/client/ui-skin-xp` },
+}
+/** Skin wired at the bundle layer already (no insert row needed here). */
+const BUNDLE_WIRED = new Set(['xp'])
+
+const MANAGED_START = '# --- dsh-skin managed (auto-generated; do not edit) ---'
+const MANAGED_END = '# --- end dsh-skin managed ---'
+
+// --- patch file helpers -------------------------------------------------------
+
+function readPatch() {
+  if (!fs.existsSync(PATCH)) return ''
+  return fs.readFileSync(PATCH, 'utf8')
+}
+
+/** Drop legacy hand-written skin rows (insert rows with a name) and old touch comments. */
+function stripLegacySkinRows(patch) {
+  return patch
+    // insert rows for any ui-skin-* package, with their optional comment line
+    .replace(/^    # [^\n]*\n    - id: ui-skin-[^\n]+\n      name: '@deepseek-ai\/dsh-client-ui-skin-[^\n]+'\n/gm, '')
+    .replace(/^# \(touch\)[^\n]*\n?/gm, '')
+    .replace(/\n{3,}/g, '\n\n')
+}
+
+function stripManaged(patch) {
+  const start = patch.indexOf(MANAGED_START)
+  if (start === -1) return patch
+  const end = patch.indexOf(MANAGED_END, start)
+  if (end === -1) throw new Error('managed skin section is unterminated; fix ~/.dsh/cordis.patch.yml')
+  return patch.slice(0, start) + patch.slice(end + MANAGED_END.length)
+}
+
+function renderManaged(active) {
+  const lines = [MANAGED_START]
+  for (const name of Object.keys(SKINS)) {
+    if (name === active) continue
+    lines.push(`- id: ${SKINS[name].id}`, '  disabled: true')
+  }
+  if (!BUNDLE_WIRED.has(active)) {
+    lines.push('- insert:', `    - id: ${SKINS[active].id}`, `      name: '${SKINS[active].pkg}'`)
+  }
+  lines.push(MANAGED_END)
+  return lines.join('\n')
+}
+
+/** Which skin is currently enabled (from the patch's non-disabled skin row). */
+function currentActive(patch) {
+  const rows = [...patch.matchAll(/(?:^|\n) *- id: (ui-skin-[a-z0-9-]+)(\n *disabled: (true))?/g)]
+  const enabled = []
+  for (const m of rows) if (!m[3]) enabled.push(m[1])
+  return enabled.length ? enabled[enabled.length - 1].replace('ui-skin-', '') : null
+}
+
+// --- symlinks ------------------------------------------------------------------
+
+function ensureSymlink(name) {
+  const { pkg, dir } = SKINS[name]
+  if (!fs.existsSync(dir)) throw new Error(`skin source dir missing: ${dir}`)
+  const target = `${PROFILE_MODULES}/${pkg}`
+  let stat = null
+  try { stat = fs.lstatSync(target) } catch { /* absent */ }
+  if (stat) {
+    if (!stat.isSymbolicLink()) {
+      throw new Error(`${target} exists and is not a symlink — refusing to touch it`)
+    }
+    const cur = fs.readlinkSync(target)
+    if (cur === dir) return false
+    fs.unlinkSync(target)
+  }
+  fs.mkdirSync(PROFILE_MODULES, { recursive: true })
+  fs.symlinkSync(dir, target)
+  return true
+}
+
+// --- commands ------------------------------------------------------------------
+
+function cmdUse(name) {
+  if (!SKINS[name]) {
+    console.error(`unknown skin "${name}". Known: ${Object.keys(SKINS).join(', ')}`)
+    process.exit(1)
+  }
+  const linked = ensureSymlink(name)
+  if (linked) console.log(`linked ${SKINS[name].pkg} -> ${SKINS[name].dir}`)
+
+  const patch = stripLegacySkinRows(stripManaged(readPatch()))
+  const next = `${patch.replace(/\s+$/, '')}\n\n${renderManaged(name)}\n`
+  fs.writeFileSync(PATCH, next)
+  console.log(`wrote ${PATCH}`)
+  console.log(`skin switched to "${name}" — the config watcher applies it within seconds; refresh the page (or the manifest re-fetches) to see it.`)
+}
+
+function cmdList() {
+  const patch = readPatch()
+  const active = currentActive(patch)
+  for (const name of Object.keys(SKINS)) {
+    const { pkg, dir } = SKINS[name]
+    const target = `${PROFILE_MODULES}/${pkg}`
+    let linkState = 'no symlink'
+    try {
+      const cur = fs.readlinkSync(target)
+      linkState = cur === dir ? 'linked' : `links elsewhere: ${cur}`
+    } catch { /* absent */ }
+    console.log(`${name.padEnd(8)} ${active === name ? '[ACTIVE] ' : '        '}${pkg}  (${linkState})`)
+  }
+  if (!active) console.log('\nno skin enabled (stock look)')
+}
+
+function cmdCurrent() {
+  const active = currentActive(readPatch())
+  console.log(active ?? 'none')
+}
+
+const [,, cmd, arg] = process.argv
+switch (cmd) {
+  case 'use': cmdUse(arg); break
+  case 'list': cmdList(); break
+  case 'current': cmdCurrent(); break
+  default:
+    console.log('dsh-skin — one-command skin switching for the DSH web GUI')
+    console.log('')
+    console.log('usage:')
+    console.log('  dsh-skin use <name>   switch skins (writes the hot-reloaded patch + symlink)')
+    console.log('  dsh-skin list         show skins, the active one, and symlink state')
+    console.log('  dsh-skin current      print the active skin name')
+    console.log('')
+    console.log(`skins: ${Object.keys(SKINS).join(', ')}`)
+    process.exit(cmd ? 1 : 0)
+}
