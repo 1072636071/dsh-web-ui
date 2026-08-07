@@ -2,9 +2,9 @@
 
 English | [中文](README.zh.md)
 
-QQ98 retro skin for the dsh web GUI — the first skin collected in the dsh web ui family. Hot-pluggable as a client plugin: `apply()` sets the `data-dsh-retro` body attribute (the scope of the whole stylesheet), renders the fixed Win98 title bar and status bar, pins the document title and injects the penguin favicon; its effect disposer retracts every write (the attribute, both bars, the favicon, and the title unless a session title already replaced it). The stylesheet rides the bundle's CSS-modules auto-inject, so the loader removes it with the entry.
+QQ2008 retro skin for the dsh web GUI — the first skin collected in the dsh web ui family, upgraded from its original QQ98/OICQ edition to the QQ2008 crystal-blue era. Hot-pluggable as a client plugin: `apply()` sets the `data-dsh-retro` body attribute (the scope of the whole stylesheet), renders the fixed glassy-navy title bar and pale-blue status bar, pins the document title and injects the scarf-wearing penguin favicon; its effect disposer retracts every write (the attribute, both bars, the favicon, and the title unless a session title already replaced it). The stylesheet rides the bundle's CSS-modules auto-inject, so the loader removes it with the entry.
 
-The skin is presentation-only: no services are injected, no cordis events are emitted, and nothing reaches a model request. The dark palette (`body[data-dsh-retro][data-ds-dark-theme]`) is a darker "night" take on the same era, so the base theme system keeps flipping tokens underneath.
+The skin is presentation-only: no services are injected, no cordis events are emitted, and nothing reaches a model request. The dark palette (`body[data-dsh-retro][data-ds-dark-theme]`) is a deeper "night" take on the same crystal-blue look, so the base theme system keeps flipping tokens underneath.
 
 ## Wiring it into a checkout
 

@@ -10,7 +10,7 @@
 
 ```
 skins/
-  qq98/        第一个入库的皮肤：QQ98/OICQ 怀旧版（Win98 桌面、企鹅标题栏、宋体、立体控件）
+  qq98/        第一个入库的皮肤：QQ2008 怀旧版（水晶蓝桌面渐变、玻璃深蓝标题栏、戴围巾企鹅、圆角高光控件）
   ths/         同花顺风格炒股主题（品牌红标题栏、行情状态栏、灰蓝数据终端面板）
   xp/          Windows XP (Luna) 复古主题（蓝色渐变窗口条、绿色开始按钮、米色状态栏、全局直角）
 ```
@@ -67,7 +67,7 @@ A collection of **DeepSeek Harness Web GUI** skins and UI plugins. Every skin is
 
 > 🔒 This repository is private to the `dsh-external` organization — **organization members only**. Never commit credentials or sensitive material.
 
-- `skins/qq98/` — the first collected skin: the QQ98/OICQ retro edition (Win98 desktop, penguin title bar, 宋体 text, beveled controls). Ships a prebuilt `lib/client.js` (CSS inlined) plus source.
+- `skins/qq98/` — the first collected skin: the QQ2008 retro edition (crystal-blue desktop gradient, glassy navy title bar, scarf-wearing penguin, rounded highlighted controls). Ships a prebuilt `lib/client.js` (CSS inlined) plus source.
 - `skins/ths/` — the Tonghuashun-style (同花顺) stock-trading theme: brand-red title bar, quote status bar (红涨绿跌), gray-blue data-terminal panels. Ships a prebuilt `lib/client.js` (CSS inlined) plus source.
 - `skins/xp/` — the Windows XP (Luna) retro theme: blue gradient window chrome with caption buttons, green Start button, cream status bar with CAPS/NUM/SCRL indicators, square corners. Ships a prebuilt `lib/client.js` (CSS inlined) plus source.
 - **Quick use**: copy the skin dir into a DSH checkout's `packages/client/`, add a `dshClient` row to `apps/cli/config/web.cordis.yml`, add the package to `apps/cli/package.json` and `tsconfig.client.json`, `pnpm install`, restart `dsh web`, refresh. Wire **only one skin row at a time** — two skins both inject title/status bars.

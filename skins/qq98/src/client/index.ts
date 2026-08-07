@@ -1,22 +1,23 @@
 /**
- * QQ98 skin — the first skin in the dsh web ui family, as a hot-pluggable
- * client plugin. apply() owns the whole retro surface and retracts it on
- * dispose (the ThemePresenter retraction discipline: the plugin only ever
- * removes what it wrote): the `data-dsh-retro` body attribute the
- * stylesheet is scoped on, the fixed title/status bars, the injected
- * favicon, and the document title the shell's DocumentTitle will capture
- * as the product title. The CSS rides the bundle's CSS-modules auto-inject
- * (style tag owned by the loader, removed on entry dispose). No services
- * are injected: the skin needs only the DOM.
+ * QQ98 skin, upgraded to the QQ2008 era — the first skin in the dsh web ui
+ * family, as a hot-pluggable client plugin. apply() owns the whole retro
+ * surface and retracts it on dispose (the ThemePresenter retraction
+ * discipline: the plugin only ever removes what it wrote): the
+ * `data-dsh-retro` body attribute the stylesheet is scoped on, the fixed
+ * title/status bars, the injected favicon, and the document title the
+ * shell's DocumentTitle will capture as the product title. The CSS rides
+ * the bundle's CSS-modules auto-inject (style tag owned by the loader,
+ * removed on entry dispose). No services are injected: the skin needs only
+ * the DOM.
  */
 import type { Context } from 'cordis'
 import css from './qq98.module.css'
 
 /** The product title the skin pins (captured by the shell's DocumentTitle after settle). */
-const SKIN_TITLE = 'OICQ · DeepSeek 在线'
+const SKIN_TITLE = 'QQ2008 · DeepSeek 在线'
 
 /** Status bar cells; the spacer cell splits left and right groups. */
-const STATUS_CELLS = ['QQ 10000', '就绪', '已连接', '在线', 'OICQ 1998 · 怀旧版'] as const
+const STATUS_CELLS = ['QQ 2008', '就绪', '已连接', '在线', 'QQ2008 正式版'] as const
 
 /** Title bar window buttons (decorative glyphs, aria-hidden). */
 const TITLEBAR_GLYPHS = ['–', '□', '✕'] as const
@@ -29,26 +30,28 @@ const TITLEBAR_GLYPHS = ['–', '□', '✕'] as const
  */
 const cls = (name: keyof typeof css): string => css[name] ?? ''
 
-/** OICQ-era penguin mark, inline so the skin carries no static assets. */
+/** QQ2008-era penguin mark (scarfed, rounded), inline so the skin carries no static assets. */
 const PENGUIN_SVG = [
   '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">',
-  '<ellipse cx="24" cy="27" rx="15" ry="18" fill="#1a1a2e"/>',
-  '<ellipse cx="24" cy="31" rx="9" ry="13" fill="#f5f5f5"/>',
-  '<ellipse cx="24" cy="12" rx="12" ry="11" fill="#1a1a2e"/>',
-  '<ellipse cx="24" cy="14" rx="8" ry="6.5" fill="#f5f5f5"/>',
-  '<circle cx="20" cy="12" r="2.2" fill="#fff"/><circle cx="20" cy="12" r="1.1" fill="#000"/>',
-  '<circle cx="28" cy="12" r="2.2" fill="#fff"/><circle cx="28" cy="12" r="1.1" fill="#000"/>',
-  '<polygon points="24,15 21,18 24,20 27,18" fill="#ff8c00"/>',
-  '<ellipse cx="10.5" cy="26" rx="3.5" ry="9" fill="#1a1a2e" transform="rotate(12 10.5 26)"/>',
-  '<ellipse cx="37.5" cy="26" rx="3.5" ry="9" fill="#1a1a2e" transform="rotate(-12 37.5 26)"/>',
-  '<ellipse cx="19" cy="45" rx="5" ry="2.6" fill="#ff8c00"/>',
-  '<ellipse cx="29" cy="45" rx="5" ry="2.6" fill="#ff8c00"/>',
+  '<ellipse cx="24" cy="26" rx="16" ry="19" fill="#2e3440"/>',
+  '<ellipse cx="24" cy="30" rx="10" ry="13" fill="#f2f4f7"/>',
+  '<ellipse cx="24" cy="12" rx="12" ry="11" fill="#2e3440"/>',
+  '<ellipse cx="24" cy="14" rx="8" ry="6.5" fill="#f2f4f7"/>',
+  '<circle cx="20" cy="12" r="2.2" fill="#fff"/><circle cx="20" cy="12" r="1.1" fill="#10141c"/>',
+  '<circle cx="28" cy="12" r="2.2" fill="#fff"/><circle cx="28" cy="12" r="1.1" fill="#10141c"/>',
+  '<polygon points="24,14.8 21.8,17.2 24,18.8 26.2,17.2" fill="#ff8c1a"/>',
+  '<ellipse cx="10.5" cy="26" rx="3.5" ry="9" fill="#2e3440" transform="rotate(12 10.5 26)"/>',
+  '<ellipse cx="37.5" cy="26" rx="3.5" ry="9" fill="#2e3440" transform="rotate(-12 37.5 26)"/>',
+  '<rect x="13" y="19" width="22" height="5.5" rx="2.5" fill="#ff7f27"/>',
+  '<path d="M13.5 24 q-2.6 4.2 -1.2 8.5 q2.2 -1 3 -5.6 Z" fill="#ff7f27"/>',
+  '<ellipse cx="19" cy="45" rx="5" ry="2.6" fill="#ff8c1a"/>',
+  '<ellipse cx="29" cy="45" rx="5" ry="2.6" fill="#ff8c1a"/>',
   '</svg>',
 ].join('')
 
 /**
- * Apply the QQ98 skin: body attribute, chrome bars, title, favicon. All
- * writes are retracted by the effect disposer on dispose.
+ * Apply the QQ98 skin (QQ2008 edition): body attribute, chrome bars, title,
+ * favicon. All writes are retracted by the effect disposer on dispose.
  * @param ctx - owning context (the effect lifecycle owns retraction).
  */
 export function apply(ctx: Context): void {
@@ -101,5 +104,5 @@ export function apply(ctx: Context): void {
     // Only restore when the skin's own title still stands — a session title
     // projected by the shell must not be clobbered by skin teardown.
     if (document.title === SKIN_TITLE) document.title = originalTitle
-  }, 'ui-skin-qq98: retro chrome')
+  }, 'ui-skin-qq98: QQ2008 chrome')
 }

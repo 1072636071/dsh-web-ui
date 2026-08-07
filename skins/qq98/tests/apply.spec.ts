@@ -37,9 +37,9 @@ describe('QQ98 skin apply', () => {
     const statusbar = document.body.querySelector('[class*="retroStatusbar"]')
     expect(titlebar).not.toBeNull()
     expect(statusbar).not.toBeNull()
-    expect(titlebar?.textContent).toContain('OICQ · DeepSeek 在线')
-    expect(statusbar?.textContent).toContain('OICQ 1998 · 怀旧版')
-    expect(document.title).toBe('OICQ · DeepSeek 在线')
+    expect(titlebar?.textContent).toContain('QQ2008 · DeepSeek 在线')
+    expect(statusbar?.textContent).toContain('QQ2008 正式版')
+    expect(document.title).toBe('QQ2008 · DeepSeek 在线')
     expect(document.head.querySelector('link[rel="icon"]')).not.toBeNull()
   })
 
@@ -58,10 +58,10 @@ describe('QQ98 skin apply', () => {
 
   it('never clobbers a session title projected over the skin title on teardown', async () => {
     fiber = await mount()
-    document.title = '我的会话 — OICQ · DeepSeek 在线'
+    document.title = '我的会话 — QQ2008 · DeepSeek 在线'
     await fiber.dispose()
     fiber = undefined
 
-    expect(document.title).toBe('我的会话 — OICQ · DeepSeek 在线')
+    expect(document.title).toBe('我的会话 — QQ2008 · DeepSeek 在线')
   })
 })

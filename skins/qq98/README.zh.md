@@ -2,9 +2,9 @@
 
 [English](README.md) | 中文
 
-dsh web GUI 的 QQ98 怀旧皮肤——dsh web ui 家族里收录的第一个皮肤。作为客户端插件热插拔：`apply()` 设置 `data-dsh-retro` body 属性（整张样式表的生效范围）、渲染固定的 Win98 标题栏和状态栏、固定文档标题并注入企鹅 favicon；其 effect 清理器会收回全部写入（属性、两条栏、favicon，以及标题——除非会话标题已经覆盖了它）。样式表随 bundle 的 CSS-modules 自动注入，loader 会随条目一并移除。
+dsh web GUI 的 QQ2008 怀旧皮肤——dsh web ui 家族里收录的第一个皮肤，已从最初的 QQ98/OICQ 版升级到 QQ2008 水晶蓝年代。作为客户端插件热插拔：`apply()` 设置 `data-dsh-retro` body 属性（整张样式表的生效范围）、渲染固定的玻璃深蓝标题栏和浅蓝状态栏、固定文档标题并注入戴围巾的企鹅 favicon；其 effect 清理器会收回全部写入（属性、两条栏、favicon，以及标题——除非会话标题已经覆盖了它）。样式表随 bundle 的 CSS-modules 自动注入，loader 会随条目一并移除。
 
-皮肤纯属呈现层：不注入任何服务、不发出任何 cordis 事件、不触及模型请求。深色调色板（`body[data-dsh-retro][data-ds-dark-theme]`）是同一年代的「深夜」变体，基础主题系统依然在其下正常切换 token。
+皮肤纯属呈现层：不注入任何服务、不发出任何 cordis 事件、不触及模型请求。深色调色板（`body[data-dsh-retro][data-ds-dark-theme]`）是同款水晶蓝外观的「深夜」变体，基础主题系统依然在其下正常切换 token。
 
 ## 接入一个 checkout
 

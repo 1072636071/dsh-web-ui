@@ -1,51 +1,62 @@
-/* QQ98 retro skin — the first skin collected in the dsh web ui family.
-   OICQ/QQ 1998-era chrome: Win98 teal desktop, navy title bar, silver
-   window frame and status bar, 宋体 text, crisp corners and beveled
-   controls. Everything is scoped under body[data-dsh-retro], which the
-   plugin's apply() sets (and retracts on dispose), so the skin is fully
-   hot-pluggable: load the bundle, set the attribute, remove the attribute.
-   The dark palette (`body[data-dsh-retro][data-ds-dark-theme]`) is a darker
-   "night" take on the same era, so the base theme system keeps working.
+/* QQ98 skin upgraded to the QQ2008 era — the first skin collected in the
+   dsh web ui family, now wearing QQ2008 chrome: crystal-blue login-desktop
+   gradient, glassy navy title bar, pale blue window body, rounded controls
+   with soft highlight instead of the Win98 bevels. Everything is scoped
+   under body[data-dsh-retro], which the plugin's apply() sets (and
+   retracts on dispose), so the skin stays fully hot-pluggable: load the
+   bundle, set the attribute, remove the attribute. The dark palette
+   (`body[data-dsh-retro][data-ds-dark-theme]`) is a deeper "night" take
+   on the same crystal-blue look, so the base theme system keeps working.
    Classes are consumed by the plugin's chrome through the module class map;
    global selectors pass through the CSS-modules transform untouched. */
 
 /* --- Desktop, fonts ---------------------------------------------------------- */
 
 body[data-dsh-retro] {
-  --dsw-font-family: 'SimSun', 'Songti SC', 'NSimSun', 'MS Sans Serif', 'Microsoft YaHei', sans-serif;
-  --ds-font-family-code: 'Courier New', 'SimSun', 'Songti SC', monospace;
-  color: #000;
-  background-color: #008080;
-  background-image: repeating-conic-gradient(rgba(255, 255, 255, 0.03) 0% 25%, transparent 0% 50%);
-  background-size: 4px 4px;
+  --dsw-font-family: 'Microsoft YaHei', 'PingFang SC', 'SimSun', 'Songti SC', 'MS Sans Serif', sans-serif;
+  --ds-font-family-code: 'Consolas', 'Courier New', 'SimSun', 'Songti SC', monospace;
+  color: #dcebfa;
+  background-color: #0e2f5e;
+  /* The QQ2008 login backdrop: deep blue gradient with soft light blooms. */
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.1), transparent 42%),
+    radial-gradient(circle at 82% 24%, rgba(120, 180, 255, 0.14), transparent 38%),
+    radial-gradient(circle at 55% 92%, rgba(60, 130, 240, 0.18), transparent 45%),
+    linear-gradient(165deg, #0a2447 0%, #123d76 48%, #1a5bb8 100%);
   /* The fixed title/status bars reserve room; #root becomes the window. */
   padding: 34px 8px 32px;
   box-sizing: border-box;
 }
 
 body[data-dsh-retro][data-ds-dark-theme] {
-  color: #e4e4e4;
-  background-color: #004040;
+  color: #c2d6ec;
+  background-color: #081a33;
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.06), transparent 42%),
+    radial-gradient(circle at 82% 24%, rgba(90, 150, 230, 0.1), transparent 38%),
+    radial-gradient(circle at 55% 92%, rgba(40, 100, 200, 0.14), transparent 45%),
+    linear-gradient(165deg, #050f1f 0%, #0a1f3d 48%, #0d2f5c 100%);
 }
 
-/* #root is the window body: black outer edge, raised silver bevel, then the
-   AppFrame. */
+/* #root is the window body: pale crystal-blue surface framed by a QQ-blue
+   border and a soft drop shadow over the deep desktop. */
 body[data-dsh-retro] [id='root'] {
   box-sizing: border-box;
-  background: #c0c0c0;
-  border: 1px solid #000;
-  box-shadow: inset 2px 2px 0 #dfdfdf, inset -2px -2px 0 #404040;
+  background: linear-gradient(180deg, #eef6fd 0%, #f7fbff 110px, #ffffff 100%);
+  border: 1px solid #7fb0e0;
+  box-shadow: 0 8px 28px rgba(8, 30, 64, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
 body[data-dsh-retro][data-ds-dark-theme] [id='root'] {
-  background: #333;
-  box-shadow: inset 2px 2px 0 #585858, inset -2px -2px 0 #1a1a1a;
+  background: linear-gradient(180deg, #12263f 0%, #142a44 110px, #101c2b 100%);
+  border-color: #1f4468;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 /* --- Static palette: light -----------------------------------------------------
-   Remap the deepseek/blue families to classic QQ blues and the neutral
-   families to the Win98 silver scale, so components that read --dsw-static-*
-   directly still land in the era. */
+   Remap the deepseek/blue families to the QQ2008 crystal blues and the
+   neutral-bluish family to a blue-gray scale, so components that read
+   --dsw-static-* directly still land in the era. */
 
 body[data-dsh-retro] {
   --dsw-static-amber-100: #f8ecd9;
@@ -53,28 +64,28 @@ body[data-dsh-retro] {
   --dsw-static-amber-500: #b07600;
   --dsw-static-amber-600: #966300;
   --dsw-static-amber-900: #3f2f10;
-  --dsw-static-blue-100: #d9e8f6;
-  --dsw-static-blue-300: #a9c8e8;
-  --dsw-static-blue-400: #7faede;
-  --dsw-static-blue-450: #5d97d1;
-  --dsw-static-blue-500: #3a7cc0;
-  --dsw-static-blue-50: #eef4fb;
-  --dsw-static-blue-50p: #e4eef8;
-  --dsw-static-blue-600: #2e66a3;
-  --dsw-static-blue-75: #e9f0f8;
-  --dsw-static-blue-800: #1f4a7d;
-  --dsw-static-blue-950: #122c4a;
-  --dsw-static-deepseek-100: #d4e2f2;
-  --dsw-static-deepseek-200: #bcd4ec;
-  --dsw-static-deepseek-300: #9fc0e4;
-  --dsw-static-deepseek-400: #6fa0d4;
-  --dsw-static-deepseek-450: #4f8ccb;
-  --dsw-static-deepseek-500: #2e6db4;
-  --dsw-static-deepseek-50: #e8eef7;
-  --dsw-static-deepseek-600: #25578f;
-  --dsw-static-deepseek-700-delete: #1d3f66;
-  --dsw-static-deepseek-800: #1d3f66;
-  --dsw-static-deepseek-900: #162f4d;
+  --dsw-static-blue-100: #cfe4f8;
+  --dsw-static-blue-300: #9cc9ef;
+  --dsw-static-blue-400: #6fa9e4;
+  --dsw-static-blue-450: #4f90d9;
+  --dsw-static-blue-500: #2b7cd9;
+  --dsw-static-blue-50: #f0f7fe;
+  --dsw-static-blue-50p: #e4f0fc;
+  --dsw-static-blue-600: #1e63b8;
+  --dsw-static-blue-75: #dcecfb;
+  --dsw-static-blue-800: #164a8c;
+  --dsw-static-blue-950: #0d2f5e;
+  --dsw-static-deepseek-100: #cfe4f8;
+  --dsw-static-deepseek-200: #b6d6f4;
+  --dsw-static-deepseek-300: #9cc9ef;
+  --dsw-static-deepseek-400: #6fa9e4;
+  --dsw-static-deepseek-450: #4f90d9;
+  --dsw-static-deepseek-500: #2b7cd9;
+  --dsw-static-deepseek-50: #eef6fe;
+  --dsw-static-deepseek-600: #1e63b8;
+  --dsw-static-deepseek-700-delete: #164a8c;
+  --dsw-static-deepseek-800: #164a8c;
+  --dsw-static-deepseek-900: #0d3d75;
   --dsw-static-green-100: #dff0df;
   --dsw-static-green-400: #58b058;
   --dsw-static-green-500: #2e8b2e;
@@ -97,23 +108,24 @@ body[data-dsh-retro] {
   --dsw-static-neutral-900: #202020;
   --dsw-static-neutral-bluish-00: #fff;
   --dsw-static-neutral-bluish-1000: #000;
-  --dsw-static-neutral-bluish-100: #e3e3e3;
-  --dsw-static-neutral-bluish-150: #dcdcdc;
-  --dsw-static-neutral-bluish-200: #d4d4d4;
-  --dsw-static-neutral-bluish-300: #c0c0c0;
-  --dsw-static-neutral-bluish-400: #a0a0a0;
-  --dsw-static-neutral-bluish-500: #808080;
-  --dsw-static-neutral-bluish-50: #f5f5f5;
-  --dsw-static-neutral-bluish-600: #606060;
-  --dsw-static-neutral-bluish-60: #f0f0f0;
-  --dsw-static-neutral-bluish-700: #4f4f4f;
-  --dsw-static-neutral-bluish-750: #404040;
-  --dsw-static-neutral-bluish-75: #e9e9e9;
-  --dsw-static-neutral-bluish-800: #333;
-  --dsw-static-neutral-bluish-850: #2a2a2a;
-  --dsw-static-neutral-bluish-875: #222;
-  --dsw-static-neutral-bluish-900: #1a1a1a;
-  --dsw-static-neutral-bluish-950: #111;
+  --dsw-static-neutral-bluish-100: #e8eef5;
+  --dsw-static-neutral-bluish-150: #dfe8f2;
+  --dsw-static-neutral-bluish-200: #d5e0ec;
+  --dsw-static-neutral-bluish-250: #cbd8e6;
+  --dsw-static-neutral-bluish-300: #b8c8da;
+  --dsw-static-neutral-bluish-400: #94a8bf;
+  --dsw-static-neutral-bluish-500: #7088a3;
+  --dsw-static-neutral-bluish-50: #f2f6fa;
+  --dsw-static-neutral-bluish-600: #58718e;
+  --dsw-static-neutral-bluish-60: #edf2f8;
+  --dsw-static-neutral-bluish-700: #445a73;
+  --dsw-static-neutral-bluish-750: #3a4f66;
+  --dsw-static-neutral-bluish-75: #e6edf5;
+  --dsw-static-neutral-bluish-800: #2f4257;
+  --dsw-static-neutral-bluish-850: #283a4c;
+  --dsw-static-neutral-bluish-875: #223243;
+  --dsw-static-neutral-bluish-900: #1b2938;
+  --dsw-static-neutral-bluish-950: #131e2a;
   --dsw-static-red-100: #f7d9d9;
   --dsw-static-red-400: #e05c5c;
   --dsw-static-red-500: #c00000;
@@ -130,28 +142,28 @@ body[data-dsh-retro][data-ds-dark-theme] {
   --dsw-static-amber-500: #b07600;
   --dsw-static-amber-600: #966300;
   --dsw-static-amber-900: #3f2f10;
-  --dsw-static-blue-100: #1f3a58;
-  --dsw-static-blue-300: #2c4a6e;
-  --dsw-static-blue-400: #3a5f8c;
-  --dsw-static-blue-450: #4a73a6;
-  --dsw-static-blue-500: #5d8fc4;
-  --dsw-static-blue-50: #16283c;
-  --dsw-static-blue-50p: #182c44;
-  --dsw-static-blue-600: #6fa0d4;
-  --dsw-static-blue-75: #1a2f47;
-  --dsw-static-blue-800: #7faede;
-  --dsw-static-blue-950: #a9c8e8;
-  --dsw-static-deepseek-100: #1c2d47;
-  --dsw-static-deepseek-200: #223653;
-  --dsw-static-deepseek-300: #2b4365;
-  --dsw-static-deepseek-400: #3c5f8f;
+  --dsw-static-blue-100: #1e3a5e;
+  --dsw-static-blue-300: #2b4f7d;
+  --dsw-static-blue-400: #3a63a0;
+  --dsw-static-blue-450: #4a7cc4;
+  --dsw-static-blue-500: #5d9fe8;
+  --dsw-static-blue-50: #14263e;
+  --dsw-static-blue-50p: #162b47;
+  --dsw-static-blue-600: #6aa8f0;
+  --dsw-static-blue-75: #182f4d;
+  --dsw-static-blue-800: #85b8f0;
+  --dsw-static-blue-950: #a9cdf2;
+  --dsw-static-deepseek-100: #1b3554;
+  --dsw-static-deepseek-200: #224064;
+  --dsw-static-deepseek-300: #2b4f7d;
+  --dsw-static-deepseek-400: #3a63a0;
   --dsw-static-deepseek-450: #4f7fb8;
-  --dsw-static-deepseek-500: #5d97d1;
-  --dsw-static-deepseek-50: #17253a;
-  --dsw-static-deepseek-600: #6fa0d4;
-  --dsw-static-deepseek-700-delete: #7faede;
-  --dsw-static-deepseek-800: #8fb4e0;
-  --dsw-static-deepseek-900: #9fc0e4;
+  --dsw-static-deepseek-500: #5d9fe8;
+  --dsw-static-deepseek-50: #14263e;
+  --dsw-static-deepseek-600: #6aa8f0;
+  --dsw-static-deepseek-700-delete: #85b8f0;
+  --dsw-static-deepseek-800: #8fbcf2;
+  --dsw-static-deepseek-900: #9cc9ef;
   --dsw-static-green-100: #243f24;
   --dsw-static-green-400: #58b058;
   --dsw-static-green-500: #2e8b2e;
@@ -174,23 +186,24 @@ body[data-dsh-retro][data-ds-dark-theme] {
   --dsw-static-neutral-900: #dadada;
   --dsw-static-neutral-bluish-00: #262626;
   --dsw-static-neutral-bluish-1000: #efefef;
-  --dsw-static-neutral-bluish-100: #3a3a3a;
-  --dsw-static-neutral-bluish-150: #404040;
-  --dsw-static-neutral-bluish-200: #464646;
-  --dsw-static-neutral-bluish-300: #555;
-  --dsw-static-neutral-bluish-400: #6a6a6a;
-  --dsw-static-neutral-bluish-500: #808080;
-  --dsw-static-neutral-bluish-50: #2c2c2c;
-  --dsw-static-neutral-bluish-600: #949494;
-  --dsw-static-neutral-bluish-60: #303030;
-  --dsw-static-neutral-bluish-700: #a6a6a6;
-  --dsw-static-neutral-bluish-750: #b0b0b0;
-  --dsw-static-neutral-bluish-75: #353535;
-  --dsw-static-neutral-bluish-800: #bcbcbc;
-  --dsw-static-neutral-bluish-850: #c6c6c6;
-  --dsw-static-neutral-bluish-875: #d0d0d0;
-  --dsw-static-neutral-bluish-900: #dadada;
-  --dsw-static-neutral-bluish-950: #e4e4e4;
+  --dsw-static-neutral-bluish-100: #2c3e55;
+  --dsw-static-neutral-bluish-150: #30435c;
+  --dsw-static-neutral-bluish-200: #354964;
+  --dsw-static-neutral-bluish-250: #3b506d;
+  --dsw-static-neutral-bluish-300: #445b7a;
+  --dsw-static-neutral-bluish-400: #557091;
+  --dsw-static-neutral-bluish-500: #68859f;
+  --dsw-static-neutral-bluish-50: #26364c;
+  --dsw-static-neutral-bluish-600: #7d97ae;
+  --dsw-static-neutral-bluish-60: #2a3b53;
+  --dsw-static-neutral-bluish-700: #93a9bd;
+  --dsw-static-neutral-bluish-750: #9fb3c6;
+  --dsw-static-neutral-bluish-75: #283a52;
+  --dsw-static-neutral-bluish-800: #adbfd0;
+  --dsw-static-neutral-bluish-850: #b9c9d8;
+  --dsw-static-neutral-bluish-875: #c2d0dd;
+  --dsw-static-neutral-bluish-900: #cdd8e3;
+  --dsw-static-neutral-bluish-950: #d9e1ea;
   --dsw-static-red-100: #4a2222;
   --dsw-static-red-400: #e07070;
   --dsw-static-red-500: #d05050;
@@ -203,70 +216,70 @@ body[data-dsh-retro][data-ds-dark-theme] {
 
 body[data-dsh-retro] {
   --dsw-alias-bg-base: #fff;
-  --dsw-alias-bg-layer-1: #f4f4f4;
-  --dsw-alias-bg-layer-2: #ece9d8;
-  --dsw-alias-bg-layer-3: #e0e0e0;
-  --dsw-alias-bg-mask-1: rgba(0, 0, 0, 0.4);
-  --dsw-alias-bg-mask-2: rgba(0, 0, 0, 0.2);
-  --dsw-alias-bg-mask-3: rgba(0, 0, 0, 0.5);
-  --dsw-alias-bg-mask-photo: rgba(0, 0, 0, 0.88);
-  --dsw-alias-bg-module-platform: #ece9d8;
-  --dsw-alias-bg-multi-select: #e9e9e9;
-  --dsw-alias-bg-overlay: #ece9d8;
-  --dsw-alias-bg-skeleton: rgba(0, 0, 0, 0.05);
+  --dsw-alias-bg-layer-1: #f2f7fc;
+  --dsw-alias-bg-layer-2: #e8f1fa;
+  --dsw-alias-bg-layer-3: #dce9f5;
+  --dsw-alias-bg-mask-1: rgba(10, 40, 80, 0.4);
+  --dsw-alias-bg-mask-2: rgba(10, 40, 80, 0.2);
+  --dsw-alias-bg-mask-3: rgba(10, 40, 80, 0.5);
+  --dsw-alias-bg-mask-photo: rgba(8, 26, 52, 0.88);
+  --dsw-alias-bg-module-platform: #e8f1fa;
+  --dsw-alias-bg-multi-select: #dcecfb;
+  --dsw-alias-bg-overlay: #eef4fa;
+  --dsw-alias-bg-skeleton: rgba(10, 40, 80, 0.06);
   --dsw-alias-border-inverted2: rgba(255, 255, 255, 0.6);
   --dsw-alias-border-inverted: rgba(255, 255, 255, 0.4);
-  --dsw-alias-border-l1: rgba(0, 0, 0, 0.15);
-  --dsw-alias-border-l2-darkmode-thin: rgba(0, 0, 0, 0.2);
-  --dsw-alias-border-l2: rgba(0, 0, 0, 0.2);
-  --dsw-alias-border-l3: rgba(0, 0, 0, 0.3);
-  --dsw-alias-border-l4: rgba(0, 0, 0, 0.4);
+  --dsw-alias-border-l1: rgba(20, 60, 110, 0.15);
+  --dsw-alias-border-l2-darkmode-thin: rgba(20, 60, 110, 0.2);
+  --dsw-alias-border-l2: rgba(20, 60, 110, 0.22);
+  --dsw-alias-border-l3: rgba(20, 60, 110, 0.32);
+  --dsw-alias-border-l4: rgba(20, 60, 110, 0.42);
   --dsw-alias-brand-primary-invert: #fff;
-  --dsw-alias-brand-primary-new-colorprimary-new-color: #2e6db4;
-  --dsw-alias-brand-primary: #2e6db4;
-  --dsw-alias-brand-text: #000080;
-  --dsw-alias-button-contrast-fill: #404040;
+  --dsw-alias-brand-primary-new-colorprimary-new-color: #2b7cd9;
+  --dsw-alias-brand-primary: #2b7cd9;
+  --dsw-alias-brand-text: #0d3d75;
+  --dsw-alias-button-contrast-fill: #1e63b8;
   --dsw-alias-button-elevated-fill: #fff;
   --dsw-alias-button-floating-fill: #fff;
-  --dsw-alias-button-floating-hover: #e9e9e9;
-  --dsw-alias-button-ghost-active-border: #808080;
-  --dsw-alias-button-ghost-active-fill: #dcdcdc;
-  --dsw-alias-button-ghost-active-hover: #d0d0d0;
-  --dsw-alias-button-info-fill: #2e6db4;
-  --dsw-alias-button-info-hover: #3f7ec8;
-  --dsw-alias-button-primary-dimmed: #dcdcdc;
-  --dsw-alias-button-primary-fill: #2e6db4;
-  --dsw-alias-button-primary-hover: #3f7ec8;
-  --dsw-alias-button-tool-bar-fill-invisible: rgba(96, 96, 96, 0.36);
-  --dsw-alias-button-tool-bar-fill: rgba(96, 96, 96, 0.5);
-  --dsw-alias-button-tool-bar-hover: rgba(96, 96, 96, 0.6);
-  --dsw-alias-interactive-bg-active: rgba(0, 64, 128, 0.12);
-  --dsw-alias-interactive-bg-hover-accent: rgba(0, 64, 128, 0.16);
+  --dsw-alias-button-floating-hover: #e8f1fa;
+  --dsw-alias-button-ghost-active-border: #8ab8e8;
+  --dsw-alias-button-ghost-active-fill: #dcecfb;
+  --dsw-alias-button-ghost-active-hover: #cfe4f8;
+  --dsw-alias-button-info-fill: #2b7cd9;
+  --dsw-alias-button-info-hover: #3f8ee6;
+  --dsw-alias-button-primary-dimmed: #cfe4f8;
+  --dsw-alias-button-primary-fill: #2b7cd9;
+  --dsw-alias-button-primary-hover: #3f8ee6;
+  --dsw-alias-button-tool-bar-fill-invisible: rgba(43, 124, 217, 0.36);
+  --dsw-alias-button-tool-bar-fill: rgba(43, 124, 217, 0.5);
+  --dsw-alias-button-tool-bar-hover: rgba(43, 124, 217, 0.6);
+  --dsw-alias-interactive-bg-active: rgba(43, 124, 217, 0.14);
+  --dsw-alias-interactive-bg-hover-accent: rgba(43, 124, 217, 0.18);
   --dsw-alias-interactive-bg-hover-danger: rgba(192, 0, 0, 0.06);
-  --dsw-alias-interactive-bg-hover-solid: #e9e9e9;
-  --dsw-alias-interactive-bg-hover: rgba(0, 64, 128, 0.07);
-  --dsw-alias-label-caption: #808080;
-  --dsw-alias-label-dimmed: #a0a0a0;
-  --dsw-alias-label-primary-dimmed: #333;
+  --dsw-alias-interactive-bg-hover-solid: #e4f0fc;
+  --dsw-alias-interactive-bg-hover: rgba(43, 124, 217, 0.08);
+  --dsw-alias-label-caption: #8099b0;
+  --dsw-alias-label-dimmed: #94a8bf;
+  --dsw-alias-label-primary-dimmed: #3d566e;
   --dsw-alias-label-primary-foreground: #fff;
   --dsw-alias-label-primary-inverted: #fff;
-  --dsw-alias-label-primary: #000;
-  --dsw-alias-label-secondary: #333;
-  --dsw-alias-label-tertiary: #555;
-  --dsw-alias-markdown-citation: #e9e9e9;
-  --dsw-alias-markdown-code-block-banner: #f4f4f4;
-  --dsw-alias-markdown-code-block: #f4f4f4;
+  --dsw-alias-label-primary: #17293c;
+  --dsw-alias-label-secondary: #3d566e;
+  --dsw-alias-label-tertiary: #5f7890;
+  --dsw-alias-markdown-citation: #e8f1fa;
+  --dsw-alias-markdown-code-block-banner: #f2f7fc;
+  --dsw-alias-markdown-code-block: #f2f7fc;
   --dsw-alias-markdown-code-segment-selected: #fff;
-  --dsw-alias-markdown-code-segment-unselected: #ececec;
-  --dsw-alias-markdown-inline-code: #e9e9e9;
-  --dsw-alias-markdown-placeholder: #f0f0f0;
-  --dsw-alias-markdown-tag: #ececec;
-  --dsw-alias-scrollbar-bg-l1: #c0c0c0;
-  --dsw-alias-scrollbar-bg-l2: #c0c0c0;
-  --dsw-alias-scrollbar-hover-l1: #a8a8a8;
-  --dsw-alias-scrollbar-hover-l2: #a8a8a8;
-  --dsw-alias-state-business-primary: #2e6db4;
-  --dsw-alias-state-business-tertiary: #d4e2f2;
+  --dsw-alias-markdown-code-segment-unselected: #eef4fa;
+  --dsw-alias-markdown-inline-code: #e8f1fa;
+  --dsw-alias-markdown-placeholder: #f2f7fc;
+  --dsw-alias-markdown-tag: #e8f1fa;
+  --dsw-alias-scrollbar-bg-l1: #dbe7f2;
+  --dsw-alias-scrollbar-bg-l2: #dbe7f2;
+  --dsw-alias-scrollbar-hover-l1: #b8cfe4;
+  --dsw-alias-scrollbar-hover-l2: #b8cfe4;
+  --dsw-alias-state-business-primary: #2b7cd9;
+  --dsw-alias-state-business-tertiary: #cfe4f8;
   --dsw-alias-state-error-primary: #c00000;
   --dsw-alias-state-error-secondary: #e05c5c;
   --dsw-alias-state-success-primary: #2e8b2e;
@@ -276,90 +289,90 @@ body[data-dsh-retro] {
   --dsw-alias-state-warn-primary: #b07600;
   --dsw-alias-state-warn-secondary: #d69a3a;
   --dsw-alias-state-warn-tertiary: #f8ecd9;
-  --dsw-alias-toast-bg: #404040;
-  /* Win98 tooltips were the classic yellow note. */
+  --dsw-alias-toast-bg: #1e63b8;
+  /* QQ-era tooltips were the classic yellow note. */
   --dsw-alias-tooltip-bg: #ffffe1;
-  --dsw-specific-bubble-highlight: #b8d4f0;
-  --dsw-specific-bubble: #dce9f7;
+  --dsw-specific-bubble-highlight: #b6d6f4;
+  --dsw-specific-bubble: #dcecfb;
   --dsw-specific-input-major: #fff;
   --dsw-specific-login-input: #fff;
-  --dsw-specific-menu: #efefef;
-  --dsw-specific-selector: #e9e9e9;
-  --dsw-specific-sidebar-fill: #2e6db4;
-  --dsw-specific-sidebar-nav-item-active-accent: #b8d4f0;
-  --dsw-specific-sidebar-nav-item-active: #dce9f7;
-  --dsw-specific-sidebar-nav-item-hover: #e9f0fa;
-  --dsw-specific-tip: #f0f0f0;
+  --dsw-specific-menu: #f2f7fc;
+  --dsw-specific-selector: #e4f0fc;
+  --dsw-specific-sidebar-fill: #2b7cd9;
+  --dsw-specific-sidebar-nav-item-active-accent: #9cc9ef;
+  --dsw-specific-sidebar-nav-item-active: #cfe4f8;
+  --dsw-specific-sidebar-nav-item-hover: #e4f0fc;
+  --dsw-specific-tip: #f2f7fc;
 }
 
 /* --- Alias layer: dark ---------------------------------------------------------- */
 
 body[data-dsh-retro][data-ds-dark-theme] {
-  --dsw-alias-bg-base: #2a2a2a;
-  --dsw-alias-bg-layer-1: #303030;
-  --dsw-alias-bg-layer-2: #353535;
-  --dsw-alias-bg-layer-3: #3c3c3c;
-  --dsw-alias-bg-mask-1: rgba(0, 0, 0, 0.5);
-  --dsw-alias-bg-mask-2: rgba(0, 0, 0, 0.25);
-  --dsw-alias-bg-mask-3: rgba(0, 0, 0, 0.55);
+  --dsw-alias-bg-base: #101c2b;
+  --dsw-alias-bg-layer-1: #15233a;
+  --dsw-alias-bg-layer-2: #1a2a42;
+  --dsw-alias-bg-layer-3: #1f324d;
+  --dsw-alias-bg-mask-1: rgba(0, 0, 0, 0.55);
+  --dsw-alias-bg-mask-2: rgba(0, 0, 0, 0.3);
+  --dsw-alias-bg-mask-3: rgba(0, 0, 0, 0.6);
   --dsw-alias-bg-mask-photo: rgba(0, 0, 0, 0.88);
-  --dsw-alias-bg-module-platform: #353535;
-  --dsw-alias-bg-multi-select: #3a3a3a;
-  --dsw-alias-bg-overlay: #353535;
+  --dsw-alias-bg-module-platform: #1a2a42;
+  --dsw-alias-bg-multi-select: #1b3554;
+  --dsw-alias-bg-overlay: #15233a;
   --dsw-alias-bg-skeleton: rgba(255, 255, 255, 0.06);
   --dsw-alias-border-inverted2: rgba(255, 255, 255, 0.6);
   --dsw-alias-border-inverted: rgba(255, 255, 255, 0.4);
-  --dsw-alias-border-l1: rgba(255, 255, 255, 0.1);
-  --dsw-alias-border-l2-darkmode-thin: rgba(255, 255, 255, 0.12);
-  --dsw-alias-border-l2: rgba(255, 255, 255, 0.16);
-  --dsw-alias-border-l3: rgba(255, 255, 255, 0.24);
-  --dsw-alias-border-l4: rgba(255, 255, 255, 0.32);
+  --dsw-alias-border-l1: rgba(160, 200, 240, 0.12);
+  --dsw-alias-border-l2-darkmode-thin: rgba(160, 200, 240, 0.15);
+  --dsw-alias-border-l2: rgba(160, 200, 240, 0.18);
+  --dsw-alias-border-l3: rgba(160, 200, 240, 0.26);
+  --dsw-alias-border-l4: rgba(160, 200, 240, 0.34);
   --dsw-alias-brand-primary-invert: #0a0a0a;
-  --dsw-alias-brand-primary-new-colorprimary-new-color: #6fa0d4;
-  --dsw-alias-brand-primary: #6fa0d4;
-  --dsw-alias-brand-text: #9fc0e4;
-  --dsw-alias-button-contrast-fill: #c0c0c0;
-  --dsw-alias-button-elevated-fill: #3a3a3a;
-  --dsw-alias-button-floating-fill: #353535;
-  --dsw-alias-button-floating-hover: #3f3f3f;
-  --dsw-alias-button-ghost-active-border: #888;
-  --dsw-alias-button-ghost-active-fill: #444;
-  --dsw-alias-button-ghost-active-hover: #484848;
-  --dsw-alias-button-info-fill: #25578f;
-  --dsw-alias-button-info-hover: #2e66a3;
-  --dsw-alias-button-primary-dimmed: #484848;
-  --dsw-alias-button-primary-fill: #25578f;
-  --dsw-alias-button-primary-hover: #2e66a3;
-  --dsw-alias-button-tool-bar-fill-invisible: rgba(180, 180, 180, 0.36);
-  --dsw-alias-button-tool-bar-fill: rgba(180, 180, 180, 0.5);
-  --dsw-alias-button-tool-bar-hover: rgba(180, 180, 180, 0.6);
-  --dsw-alias-interactive-bg-active: rgba(180, 200, 230, 0.14);
-  --dsw-alias-interactive-bg-hover-accent: rgba(180, 200, 230, 0.2);
+  --dsw-alias-brand-primary-new-colorprimary-new-color: #6aa8f0;
+  --dsw-alias-brand-primary: #6aa8f0;
+  --dsw-alias-brand-text: #9cc9ef;
+  --dsw-alias-button-contrast-fill: #1e63b8;
+  --dsw-alias-button-elevated-fill: #1a2a42;
+  --dsw-alias-button-floating-fill: #15233a;
+  --dsw-alias-button-floating-hover: #1b3554;
+  --dsw-alias-button-ghost-active-border: #4a7cc4;
+  --dsw-alias-button-ghost-active-fill: #1e3a5e;
+  --dsw-alias-button-ghost-active-hover: #224064;
+  --dsw-alias-button-info-fill: #1e63b8;
+  --dsw-alias-button-info-hover: #2b7cd9;
+  --dsw-alias-button-primary-dimmed: #2b4f7d;
+  --dsw-alias-button-primary-fill: #1e63b8;
+  --dsw-alias-button-primary-hover: #2b7cd9;
+  --dsw-alias-button-tool-bar-fill-invisible: rgba(160, 200, 240, 0.36);
+  --dsw-alias-button-tool-bar-fill: rgba(160, 200, 240, 0.5);
+  --dsw-alias-button-tool-bar-hover: rgba(160, 200, 240, 0.6);
+  --dsw-alias-interactive-bg-active: rgba(160, 200, 240, 0.14);
+  --dsw-alias-interactive-bg-hover-accent: rgba(160, 200, 240, 0.2);
   --dsw-alias-interactive-bg-hover-danger: rgba(224, 92, 92, 0.12);
-  --dsw-alias-interactive-bg-hover-solid: #3a3a3a;
+  --dsw-alias-interactive-bg-hover-solid: #1b3554;
   --dsw-alias-interactive-bg-hover: rgba(255, 255, 255, 0.07);
-  --dsw-alias-label-caption: #8a8a8a;
-  --dsw-alias-label-dimmed: #6a6a6a;
-  --dsw-alias-label-primary-dimmed: #c6c6c6;
+  --dsw-alias-label-caption: #68859f;
+  --dsw-alias-label-dimmed: #557091;
+  --dsw-alias-label-primary-dimmed: #b9c9d8;
   --dsw-alias-label-primary-foreground: #fff;
-  --dsw-alias-label-primary-inverted: #111;
-  --dsw-alias-label-primary: #e4e4e4;
-  --dsw-alias-label-secondary: #b8b8b8;
-  --dsw-alias-label-tertiary: #949494;
-  --dsw-alias-markdown-citation: #3a3a3a;
-  --dsw-alias-markdown-code-block-banner: #2f2f2f;
-  --dsw-alias-markdown-code-block: #2f2f2f;
-  --dsw-alias-markdown-code-segment-selected: #3c3c3c;
-  --dsw-alias-markdown-code-segment-unselected: #333;
-  --dsw-alias-markdown-inline-code: #383838;
-  --dsw-alias-markdown-placeholder: #303030;
-  --dsw-alias-markdown-tag: #383838;
-  --dsw-alias-scrollbar-bg-l1: #555;
-  --dsw-alias-scrollbar-bg-l2: #555;
-  --dsw-alias-scrollbar-hover-l1: #6a6a6a;
-  --dsw-alias-scrollbar-hover-l2: #6a6a6a;
-  --dsw-alias-state-business-primary: #5d97d1;
-  --dsw-alias-state-business-tertiary: #223653;
+  --dsw-alias-label-primary-inverted: #0d1a2c;
+  --dsw-alias-label-primary: #d8e6f4;
+  --dsw-alias-label-secondary: #a9c0d8;
+  --dsw-alias-label-tertiary: #7f9ab5;
+  --dsw-alias-markdown-citation: #1a2a42;
+  --dsw-alias-markdown-code-block-banner: #14233a;
+  --dsw-alias-markdown-code-block: #14233a;
+  --dsw-alias-markdown-code-segment-selected: #1f324d;
+  --dsw-alias-markdown-code-segment-unselected: #15233a;
+  --dsw-alias-markdown-inline-code: #182b45;
+  --dsw-alias-markdown-placeholder: #15233a;
+  --dsw-alias-markdown-tag: #182b45;
+  --dsw-alias-scrollbar-bg-l1: #33506e;
+  --dsw-alias-scrollbar-bg-l2: #33506e;
+  --dsw-alias-scrollbar-hover-l1: #40638a;
+  --dsw-alias-scrollbar-hover-l2: #40638a;
+  --dsw-alias-state-business-primary: #5d9fe8;
+  --dsw-alias-state-business-tertiary: #1b3554;
   --dsw-alias-state-error-primary: #e05c5c;
   --dsw-alias-state-error-secondary: #e07070;
   --dsw-alias-state-success-primary: #58b058;
@@ -369,74 +382,87 @@ body[data-dsh-retro][data-ds-dark-theme] {
   --dsw-alias-state-warn-primary: #d69a3a;
   --dsw-alias-state-warn-secondary: #d69a3a;
   --dsw-alias-state-warn-tertiary: #3a2d14;
-  --dsw-alias-toast-bg: #505050;
-  /* Win98 tooltips were the classic yellow note. */
+  --dsw-alias-toast-bg: #224064;
+  /* QQ-era tooltips were the classic yellow note. */
   --dsw-alias-tooltip-bg: #ffffe1;
-  --dsw-specific-bubble-highlight: #2b4365;
-  --dsw-specific-bubble: #1f3a58;
-  --dsw-specific-input-major: #2a2a2a;
-  --dsw-specific-login-input: #2a2a2a;
-  --dsw-specific-menu: #3a3a3a;
-  --dsw-specific-selector: #383838;
-  --dsw-specific-sidebar-fill: #1d4f8f;
-  --dsw-specific-sidebar-nav-item-active-accent: #2b4365;
-  --dsw-specific-sidebar-nav-item-active: #223653;
-  --dsw-specific-sidebar-nav-item-hover: #26374f;
-  --dsw-specific-tip: #333;
+  --dsw-specific-bubble-highlight: #2b4f7d;
+  --dsw-specific-bubble: #1e3a5e;
+  --dsw-specific-input-major: #15233a;
+  --dsw-specific-login-input: #15233a;
+  --dsw-specific-menu: #1a2a42;
+  --dsw-specific-selector: #182b45;
+  --dsw-specific-sidebar-fill: #1e4f8f;
+  --dsw-specific-sidebar-nav-item-active-accent: #2b4f7d;
+  --dsw-specific-sidebar-nav-item-active: #1e3a5e;
+  --dsw-specific-sidebar-nav-item-hover: #1b3554;
+  --dsw-specific-tip: #15233a;
 }
 
 /* --- Geometry -------------------------------------------------------------------
-   The modern UI is rounded; the era was square. A small 3px corner keeps
-   the crisp period feel without the harshness of hard 0px everywhere. */
+   The modern UI is rounded; QQ2008 was softly rounded too. A 4px corner
+   gives the crystal look without fighting the component shapes. */
 
 body[data-dsh-retro] * {
-  border-radius: 3px !important;
+  border-radius: 4px !important;
 }
 
-/* Controls: raised bevel on every button, pressed inset on active.
-   Fills and colors stay on the component tokens (primary blue, warn
-   amber, ghost transparency) — forcing a silver fill would flatten the
-   semantic status actions. */
+/* Controls: no Win98 bevels — every button gets a crystal highlight (a
+   translucent white sheen on top) over whatever fill the component
+   carries; pressing sinks it inward. */
 body[data-dsh-retro] button {
-  box-shadow: -1px -1px 0 0 #fff, 1px 1px 0 0 #808080;
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.12) 45%, rgba(255, 255, 255, 0));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 1px 2px rgba(10, 40, 80, 0.12);
+}
+
+body[data-dsh-retro] button:hover:not(:disabled) {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.16) 45%, rgba(255, 255, 255, 0));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 1px 3px rgba(10, 40, 80, 0.18);
 }
 
 body[data-dsh-retro] button:active:not(:disabled) {
-  box-shadow: -1px -1px 0 0 #808080, 1px 1px 0 0 #fff;
+  background-image: linear-gradient(180deg, rgba(10, 40, 80, 0.08), rgba(10, 40, 80, 0) 60%);
+  box-shadow: inset 0 2px 4px rgba(10, 40, 80, 0.22);
 }
 
 body[data-dsh-retro][data-ds-dark-theme] button {
-  box-shadow: -1px -1px 0 0 #808080, 1px 1px 0 0 #202020;
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.04) 45%, rgba(255, 255, 255, 0));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+body[data-dsh-retro][data-ds-dark-theme] button:hover:not(:disabled) {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.06) 45%, rgba(255, 255, 255, 0));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 body[data-dsh-retro][data-ds-dark-theme] button:active:not(:disabled) {
-  box-shadow: -1px -1px 0 0 #202020, 1px 1px 0 0 #808080;
+  background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0) 60%);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35);
 }
 
 body[data-dsh-retro] input:not([type='checkbox']):not([type='radio']),
 body[data-dsh-retro] textarea,
 body[data-dsh-retro] select {
-  box-shadow: inset 1px 1px 0 0 #808080, inset -1px -1px 0 0 #fff;
+  box-shadow: inset 0 1px 2px rgba(10, 40, 80, 0.08);
   background: #fff;
-  color: #000;
+  color: #17293c;
 }
 
 body[data-dsh-retro][data-ds-dark-theme] input:not([type='checkbox']):not([type='radio']),
 body[data-dsh-retro][data-ds-dark-theme] textarea,
 body[data-dsh-retro][data-ds-dark-theme] select {
-  box-shadow: inset 1px 1px 0 0 #202020, inset -1px -1px 0 0 #808080;
-  background: #262626;
-  color: #e4e4e4;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+  background: #15233a;
+  color: #d8e6f4;
 }
 
 body[data-dsh-retro] :focus-visible {
-  outline: 1px dotted #000;
-  outline-offset: -1px;
+  outline: 2px solid rgba(43, 124, 217, 0.55);
+  outline-offset: 0;
 }
 
-/* --- Scrollbars: chunky Win98 bars -----------------------------------------
+/* --- Scrollbars: slim QQ-blue bars -----------------------------------------
    The indirection rebinds to the l2 elevation pair (already remapped to the
-   silver scale above), so the surface contract in scrollbar.css holds. */
+   blue scale above), so the surface contract in scrollbar.css holds. */
 
 body[data-dsh-retro] {
   --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
@@ -444,69 +470,70 @@ body[data-dsh-retro] {
 }
 
 body[data-dsh-retro] ::-webkit-scrollbar {
-  width: 14px;
-  height: 14px;
+  width: 10px;
+  height: 10px;
 }
 
 body[data-dsh-retro] ::-webkit-scrollbar-track {
-  background: #d4d0c8;
+  background: #eaf2fa;
 }
 
 body[data-dsh-retro] ::-webkit-scrollbar-thumb {
-  background: #c0c0c0;
-  border: 2px solid;
-  border-color: #fff #808080 #808080 #fff;
-  border-radius: 0;
+  background: #a8c8e8;
+  border: 2px solid #eaf2fa;
+  border-radius: 5px;
 }
 
 body[data-dsh-retro] ::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: #7faee0;
 }
 
 body[data-dsh-retro] ::-webkit-scrollbar-corner {
-  background: #d4d0c8;
+  background: #eaf2fa;
 }
 
 body[data-dsh-retro][data-ds-dark-theme] ::-webkit-scrollbar-track,
 body[data-dsh-retro][data-ds-dark-theme] ::-webkit-scrollbar-corner {
-  background: #303030;
+  background: #14233a;
 }
 
 body[data-dsh-retro][data-ds-dark-theme] ::-webkit-scrollbar-thumb {
-  background: #555;
-  border-color: #808080 #202020 #202020 #808080;
+  background: #33506e;
+  border-color: #14233a;
 }
 
 body[data-dsh-retro][data-ds-dark-theme] ::-webkit-scrollbar-thumb:hover {
-  background: #6a6a6a;
+  background: #40638a;
 }
 
 /* --- Selection, links ------------------------------------------------------- */
 
 body[data-dsh-retro] ::selection {
-  background: #000080;
+  background: #2b7cd9;
   color: #fff;
 }
 
 body[data-dsh-retro] a {
-  color: #0000ee;
+  color: #1e63b8;
 }
 
 body[data-dsh-retro] a:visited {
-  color: #551a8b;
+  color: #6a4fb0;
 }
 
 body[data-dsh-retro][data-ds-dark-theme] a {
-  color: #6fa0d4;
+  color: #6aa8f0;
 }
 
 body[data-dsh-retro][data-ds-dark-theme] a:visited {
-  color: #7a6ab8;
+  color: #9a8ae0;
 }
 
 /* --- Window chrome: title bar and status bar -----------------------------------
    Fixed strips above/below #root (the plugin renders them; #root itself is
-   the window body via the rules above). */
+   the window body via the rules above). The title bar is the QQ2008 glassy
+   navy band with a white sheen; the status bar reads as the chat window's
+   pale-blue toolbar. */
 
 .retroTitlebar {
   position: fixed;
@@ -517,14 +544,21 @@ body[data-dsh-retro][data-ds-dark-theme] a:visited {
   display: flex;
   align-items: center;
   gap: 6px;
-  height: 26px;
-  padding: 0 4px 0 6px;
-  background: linear-gradient(90deg, #000080, #1084d0);
-  border-bottom: 1px solid #000;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  height: 28px;
+  padding: 0 6px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0) 55%), linear-gradient(90deg, #1a56a6 0%, #2b7cd9 55%, #4a9ae8 100%);
+  border-bottom: 1px solid #0d3d75;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 2px 8px rgba(8, 30, 64, 0.35);
   color: #fff;
-  font: bold 12px/26px 'SimSun', 'Songti SC', sans-serif;
+  font: bold 12px/28px 'Microsoft YaHei', 'SimSun', sans-serif;
+  text-shadow: 0 1px 1px rgba(0, 20, 50, 0.35);
   user-select: none;
+}
+
+body[data-dsh-retro][data-ds-dark-theme] .retroTitlebar {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 55%), linear-gradient(90deg, #0e3a75 0%, #15559f 55%, #1f6fc7 100%);
+  border-bottom-color: #081f42;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 8px rgba(0, 0, 0, 0.45);
 }
 
 .retroTitlebarTitle {
@@ -532,13 +566,13 @@ body[data-dsh-retro][data-ds-dark-theme] a:visited {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
 }
 
 .retroTitlebarIcon {
   flex: none;
   display: inline-flex;
   align-items: center;
+  filter: drop-shadow(0 1px 1px rgba(0, 20, 50, 0.4));
 }
 
 .retroTitlebarBtn {
@@ -546,21 +580,28 @@ body[data-dsh-retro][data-ds-dark-theme] a:visited {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 17px;
+  width: 22px;
+  height: 18px;
   margin-left: 2px;
-  background: #c0c0c0;
-  color: #000;
-  border: 1px solid;
-  border-color: #fff #404040 #404040 #fff;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 3px;
+  color: #fff;
   font-size: 10px;
   line-height: 1;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
-body[data-dsh-retro][data-ds-dark-theme] .retroTitlebarBtn {
-  background: #404040;
-  color: #e4e4e4;
-  border-color: #808080 #202020 #202020 #808080;
+.retroTitlebarBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+/* The last glyph is the close button — QQ2008 turns it red on hover. */
+.retroTitlebarBtn:last-child:hover {
+  background: linear-gradient(180deg, #ff8a78, #e85443);
+  border-color: #c84535;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .retroStatusbar {
@@ -572,35 +613,42 @@ body[data-dsh-retro][data-ds-dark-theme] .retroTitlebarBtn {
   display: flex;
   align-items: center;
   gap: 4px;
-  height: 22px;
-  padding: 2px;
+  height: 24px;
+  padding: 2px 4px;
   box-sizing: border-box;
-  background: #c0c0c0;
-  border-top: 1px solid #000;
-  color: #000;
-  font: 11px/1 'SimSun', 'Songti SC', sans-serif;
+  background: linear-gradient(180deg, #e8f3fd, #cfe4f8);
+  border-top: 1px solid #9cc9ef;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  color: #1c4a7a;
+  font: 11px/1 'Microsoft YaHei', 'SimSun', sans-serif;
   user-select: none;
 }
 
 body[data-dsh-retro][data-ds-dark-theme] .retroStatusbar {
-  background: #3a3a3a;
-  color: #e4e4e4;
+  background: linear-gradient(180deg, #17304e, #1e3f63);
+  border-top-color: #2b5277;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: #b9d4f0;
 }
 
 .retroStatusbarCell {
   flex: none;
   height: 16px;
   padding: 0 8px;
-  background: #d4d0c8;
-  border: 1px solid;
-  border-color: #808080 #fff #fff #808080;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid #9cc9ef;
+  border-radius: 3px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  color: #1c4a7a;
   line-height: 16px;
   white-space: nowrap;
 }
 
 body[data-dsh-retro][data-ds-dark-theme] .retroStatusbarCell {
-  background: #353535;
-  border-color: #202020 #808080 #808080 #202020;
+  background: rgba(10, 30, 55, 0.5);
+  border-color: #2b5277;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  color: #b9d4f0;
 }
 
 .retroStatusbarSpacer {
@@ -609,42 +657,43 @@ body[data-dsh-retro][data-ds-dark-theme] .retroStatusbarCell {
 
 /* --- Pane chrome --------------------------------------------------------------
    The AppFrame columns carry data-pane hooks (ui-layout); give each the
-   era-appropriate surface. The sidebar becomes the classic QQ main panel:
-   a deep-blue header band (the user strip) over a calm blue-to-white
+   era-appropriate surface. The sidebar becomes the QQ2008 main panel: a
+   glassy navy header band (the user strip) over a pale blue-to-white
    gradient body. The conversation header reads as the chat window's title
    band. Without the hooks these rules simply do not match. */
 
 body[data-dsh-retro] [data-pane='sidebar'] > div {
-  background: linear-gradient(180deg, #dcebf8 0%, #eef5fc 42%, #f8fbfe 100%);
+  background: linear-gradient(180deg, #eaf4fd 0%, #f4f9fe 40%, #ffffff 100%);
 }
 
 body[data-dsh-retro][data-ds-dark-theme] [data-pane='sidebar'] > div {
-  background: linear-gradient(180deg, #223653 0%, #1c2d47 45%, #17253a 100%);
+  background: linear-gradient(180deg, #15233a 0%, #12243e 45%, #101c2b 100%);
 }
 
-/* Sidebar header band: the first child (logo row) becomes the deep-blue
-   OICQ user strip; everything inside renders white. */
+/* Sidebar header band: the first child (logo row) becomes the QQ2008 navy
+   user strip with a glass sheen; everything inside renders white. */
 body[data-dsh-retro] [data-pane='sidebar'] > div > :first-child,
 body[data-dsh-retro] [data-pane='sidebar'] > div > :first-child * {
   color: #fff;
 }
 
 body[data-dsh-retro] [data-pane='sidebar'] > div > :first-child {
-  background: linear-gradient(180deg, #1d4f8f, #2e6db4);
-  border-bottom: 1px solid #1d4f8f;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 60%), linear-gradient(180deg, #1a56a6, #2b7cd9);
+  border-bottom: 1px solid #0d3d75;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 body[data-dsh-retro][data-ds-dark-theme] [data-pane='sidebar'] > div > :first-child {
-  background: linear-gradient(180deg, #10253f, #1d4f8f);
-  border-bottom-color: #10253f;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 60%), linear-gradient(180deg, #0e3a75, #15559f);
+  border-bottom-color: #081f42;
 }
 
 /* Header-band buttons stay flat and transparent (no silver squares on the
-   blue strip). */
+   navy strip). */
 body[data-dsh-retro] [data-pane='sidebar'] > div > :first-child button {
   background: transparent;
   color: #fff;
+  background-image: none;
   box-shadow: none;
 }
 
@@ -656,39 +705,39 @@ body[data-dsh-retro] [data-pane='sidebar'] > div > :first-child button:hover {
    The pill follows currentColor (white here) while the badge letters use
    the inverted-primary token — white on white in light mode, invisible.
    Pin the pill to the deep navy and force the letters white in both
-   themes, so the badge reads on the blue strip. */
+   themes, so the badge reads on the navy strip. */
 body[data-dsh-retro] [data-pane='sidebar'] > div > :first-child svg rect[fill='currentColor'] {
-  fill: #122c4a;
+  fill: #0d3d75;
 }
 
 body[data-dsh-retro] [data-pane='sidebar'] > div > :first-child svg [fill='var(--dsw-alias-label-primary-inverted)'] {
   fill: #fff;
 }
 
-/* Conversation: white chat surface with a soft blue title band on the
+/* Conversation: white chat surface with a pale blue title band on the
    session header. */
 body[data-dsh-retro] [data-pane='conversation'] {
   background: #fff;
 }
 
 body[data-dsh-retro][data-ds-dark-theme] [data-pane='conversation'] {
-  background: #2a2a2a;
+  background: #101c2b;
 }
 
 body[data-dsh-retro] [data-pane='conversation'] > div > header {
-  background: linear-gradient(180deg, #f2f7fc, #dce9f7);
-  border-bottom: 1px solid #b8c8d8;
+  background: linear-gradient(180deg, #eef6fe, #d8eafb);
+  border-bottom: 1px solid #a9cdf0;
 }
 
 body[data-dsh-retro][data-ds-dark-theme] [data-pane='conversation'] > div > header {
-  background: linear-gradient(180deg, #223653, #1c2d47);
-  border-bottom-color: #2b4365;
+  background: linear-gradient(180deg, #1a2e4a, #152338);
+  border-bottom-color: #2b4f7d;
 }
 
 body[data-dsh-retro] [data-pane='details'] {
-  background: #f2f2f2;
+  background: #f2f7fc;
 }
 
 body[data-dsh-retro][data-ds-dark-theme] [data-pane='details'] {
-  background: #2f2f2f;
+  background: #14233a;
 }
