@@ -652,6 +652,19 @@ body[data-dsh-retro] [data-pane='sidebar'] > div > :first-child button:hover {
   background: rgba(255, 255, 255, 0.18);
 }
 
+/* The brand lockup is vector text: "DeepSeek" + a "HARNESS" badge pill.
+   The pill follows currentColor (white here) while the badge letters use
+   the inverted-primary token — white on white in light mode, invisible.
+   Pin the pill to the deep navy and force the letters white in both
+   themes, so the badge reads on the blue strip. */
+body[data-dsh-retro] [data-pane='sidebar'] > div > :first-child svg rect[fill='currentColor'] {
+  fill: #122c4a;
+}
+
+body[data-dsh-retro] [data-pane='sidebar'] > div > :first-child svg [fill='var(--dsw-alias-label-primary-inverted)'] {
+  fill: #fff;
+}
+
 /* Conversation: white chat surface with a soft blue title band on the
    session header. */
 body[data-dsh-retro] [data-pane='conversation'] {
