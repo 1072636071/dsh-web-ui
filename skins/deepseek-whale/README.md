@@ -2,7 +2,7 @@
 
 English | [中文](README.zh.md)
 
-The **DeepSeek-鲸鱼娘** Codex desktop theme (DreamSkin, MIT, author powerdog996) adapted for the dsh web GUI: the whale-art backdrop rides behind frosted panes, with a live scrim that flips with the base light/dark theme and a periwinkle-indigo palette remapped onto every dsh token. Hot-pluggable as a client plugin: `apply()` sets the `data-dsh-whale` body attribute (the scope of the whole stylesheet), applies the whale art as a fixed full-viewport backdrop (base64 data URL with a readability scrim chosen by the current theme, swapped live on `data-ds-dark-theme` changes), and injects the whale favicon; its effect disposer retracts every write (the attribute, the backdrop inline styles — restoring whatever was there before — and the favicon). The stylesheet rides the bundle's CSS-modules auto-inject, so the loader removes it with the entry.
+The **DeepSeek-鲸鱼娘** Codex desktop theme (DreamSkin, MIT, author powerdog996) adapted for the dsh web GUI: the whale-art backdrop rides behind translucent panes (the big surfaces are alpha-blended tokens, so the art glows through), with a live scrim that flips with the base light/dark theme and a periwinkle-indigo palette remapped onto every dsh token. Hot-pluggable as a client plugin: `apply()` sets the `data-dsh-whale` body attribute (the scope of the whole stylesheet), applies the whale art as a fixed full-viewport backdrop (base64 data URL with a readability scrim chosen by the current theme, swapped live on `data-ds-dark-theme` changes), and injects the whale favicon; its effect disposer retracts every write (the attribute, the backdrop inline styles — restoring whatever was there before — and the favicon). The stylesheet rides the bundle's CSS-modules auto-inject, so the loader removes it with the entry.
 
 The skin is presentation-only: no services are injected, no cordis events are emitted, and nothing reaches a model request. The dark palette (`body[data-dsh-whale][data-ds-dark-theme]`) is a night-whale take on the same art — a deep indigo veil over the dimmed backdrop — so the base theme system keeps working underneath.
 
@@ -25,7 +25,7 @@ Light ([preview/light.png](preview/light.png)) · Dark ([preview/dark.png](previ
 
 ## Requirements
 
-The pane-level frosted glass keys on the `data-pane` attributes the AppFrame columns carry in `ui-layout`; without them the skin still applies (palette + backdrop), minus the per-pane translucency.
+The ambient translucency is token-level (`--dsw-alias-bg-*`, `--dsw-specific-sidebar-fill`), so it applies regardless of pane layout. `backdrop-filter` is deliberately unused: a blurred ancestor becomes the containing block for fixed-position overlays (the settings panel would render trapped inside the sidebar column).
 
 ## Model Experience
 

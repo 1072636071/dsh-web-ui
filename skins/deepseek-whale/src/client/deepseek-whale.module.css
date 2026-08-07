@@ -189,20 +189,26 @@ body[data-dsh-whale][data-ds-dark-theme] {
 
 /* --- Alias palette: light ---------------------------------------------------
    The semantic surface the components actually read; every hue derives
-   from the whale indigo/cyan/gold families above. */
+   from the whale indigo/cyan/gold families above. The big surfaces
+   (bg-base, the layer stack, sidebar fill) are translucent on purpose: the
+   app rides on the whale art, so panels let it glow through instead of
+   covering it. Deliberately NO backdrop-filter anywhere — an ancestor
+   with backdrop-filter becomes the containing block for fixed-position
+   descendants, which would trap overlays like the settings panel inside
+   the sidebar column. */
 
 body[data-dsh-whale] {
-  --dsw-alias-bg-base: #ffffff;
-  --dsw-alias-bg-layer-1: #f3f5fb;
-  --dsw-alias-bg-layer-2: #e9edf7;
-  --dsw-alias-bg-layer-3: #dde3f1;
+  --dsw-alias-bg-base: rgba(255, 255, 255, 0.78);
+  --dsw-alias-bg-layer-1: rgba(243, 245, 251, 0.82);
+  --dsw-alias-bg-layer-2: rgba(233, 237, 247, 0.84);
+  --dsw-alias-bg-layer-3: rgba(221, 227, 241, 0.85);
   --dsw-alias-bg-mask-1: rgba(28, 37, 70, 0.4);
   --dsw-alias-bg-mask-2: rgba(28, 37, 70, 0.2);
   --dsw-alias-bg-mask-3: rgba(28, 37, 70, 0.5);
   --dsw-alias-bg-mask-photo: rgba(16, 20, 36, 0.88);
-  --dsw-alias-bg-module-platform: #e9edf7;
-  --dsw-alias-bg-multi-select: #dce3f7;
-  --dsw-alias-bg-overlay: #eef1f9;
+  --dsw-alias-bg-module-platform: rgba(233, 237, 247, 0.84);
+  --dsw-alias-bg-multi-select: rgba(220, 227, 247, 0.9);
+  --dsw-alias-bg-overlay: rgba(238, 241, 249, 0.92);
   --dsw-alias-bg-skeleton: rgba(28, 37, 70, 0.06);
   --dsw-alias-border-inverted2: rgba(255, 255, 255, 0.6);
   --dsw-alias-border-inverted: rgba(255, 255, 255, 0.4);
@@ -243,14 +249,14 @@ body[data-dsh-whale] {
   --dsw-alias-label-primary: #1d2539;
   --dsw-alias-label-secondary: #3e4b6d;
   --dsw-alias-label-tertiary: #5f6e93;
-  --dsw-alias-markdown-citation: #e9edf7;
-  --dsw-alias-markdown-code-block-banner: #f3f5fb;
-  --dsw-alias-markdown-code-block: #f3f5fb;
+  --dsw-alias-markdown-citation: rgba(233, 237, 247, 0.88);
+  --dsw-alias-markdown-code-block-banner: rgba(243, 245, 251, 0.9);
+  --dsw-alias-markdown-code-block: rgba(243, 245, 251, 0.9);
   --dsw-alias-markdown-code-segment-selected: #ffffff;
-  --dsw-alias-markdown-code-segment-unselected: #eef1f9;
-  --dsw-alias-markdown-inline-code: #e7ecf5;
-  --dsw-alias-markdown-placeholder: #f3f5fb;
-  --dsw-alias-markdown-tag: #e7ecf5;
+  --dsw-alias-markdown-code-segment-unselected: rgba(238, 241, 249, 0.88);
+  --dsw-alias-markdown-inline-code: rgba(231, 236, 245, 0.9);
+  --dsw-alias-markdown-placeholder: rgba(243, 245, 251, 0.9);
+  --dsw-alias-markdown-tag: rgba(231, 236, 245, 0.9);
   --dsw-alias-scrollbar-bg-l1: #d8dfec;
   --dsw-alias-scrollbar-bg-l2: #d8dfec;
   --dsw-alias-scrollbar-hover-l1: #a5b7e2;
@@ -270,11 +276,11 @@ body[data-dsh-whale] {
   --dsw-alias-tooltip-bg: #ffffe1;
   --dsw-specific-bubble-highlight: #c3cfee;
   --dsw-specific-bubble: #dce3f7;
-  --dsw-specific-input-major: #ffffff;
-  --dsw-specific-login-input: #ffffff;
-  --dsw-specific-menu: #f3f5fb;
-  --dsw-specific-selector: #e4eaf7;
-  --dsw-specific-sidebar-fill: #4a5fa8;
+  --dsw-specific-input-major: rgba(255, 255, 255, 0.85);
+  --dsw-specific-login-input: rgba(255, 255, 255, 0.85);
+  --dsw-specific-menu: rgba(243, 245, 251, 0.94);
+  --dsw-specific-selector: rgba(228, 234, 247, 0.9);
+  --dsw-specific-sidebar-fill: rgba(74, 95, 168, 0.86);
   --dsw-specific-sidebar-nav-item-active-accent: #a5b7e2;
   --dsw-specific-sidebar-nav-item-active: #dce3f7;
   --dsw-specific-sidebar-nav-item-hover: #e4eaf7;
@@ -284,17 +290,17 @@ body[data-dsh-whale] {
 /* --- Alias palette: dark ----------------------------------------------------- */
 
 body[data-dsh-whale][data-ds-dark-theme] {
-  --dsw-alias-bg-base: #141a2b;
-  --dsw-alias-bg-layer-1: #1a2238;
-  --dsw-alias-bg-layer-2: #202a44;
-  --dsw-alias-bg-layer-3: #26324f;
+  --dsw-alias-bg-base: rgba(16, 22, 42, 0.8);
+  --dsw-alias-bg-layer-1: rgba(26, 34, 56, 0.82);
+  --dsw-alias-bg-layer-2: rgba(32, 42, 68, 0.84);
+  --dsw-alias-bg-layer-3: rgba(38, 50, 79, 0.85);
   --dsw-alias-bg-mask-1: rgba(0, 0, 0, 0.55);
   --dsw-alias-bg-mask-2: rgba(0, 0, 0, 0.3);
   --dsw-alias-bg-mask-3: rgba(0, 0, 0, 0.6);
   --dsw-alias-bg-mask-photo: rgba(6, 9, 20, 0.9);
-  --dsw-alias-bg-module-platform: #202a44;
-  --dsw-alias-bg-multi-select: #2c3765;
-  --dsw-alias-bg-overlay: #1a2238;
+  --dsw-alias-bg-module-platform: rgba(32, 42, 68, 0.84);
+  --dsw-alias-bg-multi-select: rgba(44, 55, 101, 0.9);
+  --dsw-alias-bg-overlay: rgba(26, 34, 56, 0.92);
   --dsw-alias-bg-skeleton: rgba(255, 255, 255, 0.06);
   --dsw-alias-border-inverted2: rgba(255, 255, 255, 0.6);
   --dsw-alias-border-inverted: rgba(255, 255, 255, 0.4);
@@ -335,14 +341,14 @@ body[data-dsh-whale][data-ds-dark-theme] {
   --dsw-alias-label-primary: #dbe2f2;
   --dsw-alias-label-secondary: #a9b7d0;
   --dsw-alias-label-tertiary: #8b9cbc;
-  --dsw-alias-markdown-citation: #202a44;
-  --dsw-alias-markdown-code-block-banner: #171e33;
-  --dsw-alias-markdown-code-block: #171e33;
-  --dsw-alias-markdown-code-segment-selected: #26324f;
-  --dsw-alias-markdown-code-segment-unselected: #1a2238;
-  --dsw-alias-markdown-inline-code: #1e2740;
-  --dsw-alias-markdown-placeholder: #1a2238;
-  --dsw-alias-markdown-tag: #1e2740;
+  --dsw-alias-markdown-citation: rgba(32, 42, 68, 0.88);
+  --dsw-alias-markdown-code-block-banner: rgba(23, 30, 51, 0.92);
+  --dsw-alias-markdown-code-block: rgba(23, 30, 51, 0.92);
+  --dsw-alias-markdown-code-segment-selected: rgba(38, 50, 79, 0.95);
+  --dsw-alias-markdown-code-segment-unselected: rgba(26, 34, 56, 0.9);
+  --dsw-alias-markdown-inline-code: rgba(30, 39, 64, 0.9);
+  --dsw-alias-markdown-placeholder: rgba(26, 34, 56, 0.9);
+  --dsw-alias-markdown-tag: rgba(30, 39, 64, 0.9);
   --dsw-alias-scrollbar-bg-l1: #33406a;
   --dsw-alias-scrollbar-bg-l2: #33406a;
   --dsw-alias-scrollbar-hover-l1: #4a5fa8;
@@ -362,11 +368,11 @@ body[data-dsh-whale][data-ds-dark-theme] {
   --dsw-alias-tooltip-bg: #ffffe1;
   --dsw-specific-bubble-highlight: #33417a;
   --dsw-specific-bubble: #2c3765;
-  --dsw-specific-input-major: #1a2238;
-  --dsw-specific-login-input: #1a2238;
-  --dsw-specific-menu: #1a2238;
-  --dsw-specific-selector: #1e2740;
-  --dsw-specific-sidebar-fill: #3c4e92;
+  --dsw-specific-input-major: rgba(26, 34, 56, 0.9);
+  --dsw-specific-login-input: rgba(26, 34, 56, 0.9);
+  --dsw-specific-menu: rgba(26, 34, 56, 0.94);
+  --dsw-specific-selector: rgba(30, 39, 64, 0.9);
+  --dsw-specific-sidebar-fill: rgba(60, 78, 146, 0.86);
   --dsw-specific-sidebar-nav-item-active-accent: #33417a;
   --dsw-specific-sidebar-nav-item-active: #2c3765;
   --dsw-specific-sidebar-nav-item-hover: #202a44;
@@ -374,44 +380,13 @@ body[data-dsh-whale][data-ds-dark-theme] {
 }
 
 /* --- Ambient surfaces -------------------------------------------------------
-   The app rides on the art: the panes become frosted glass (translucent
-   fill + backdrop blur) so the whale shows through while content stays
-   readable. The conversation pane is a touch more opaque for long reads. */
+   No pane-level rules here: the app rides on the whale art through the
+   translucent tokens above (bg-base, the layer stack, sidebar fill, menus,
+   inputs). backdrop-filter is deliberately unused — it would trap fixed
+   overlays (e.g. the settings panel) inside their ancestor's box. */
 
-body[data-dsh-whale] [data-pane='sidebar'] > div {
-  background-color: rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(18px) saturate(1.15);
-  -webkit-backdrop-filter: blur(18px) saturate(1.15);
-}
-
-body[data-dsh-whale] [data-pane='conversation'] {
-  background-color: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(18px) saturate(1.1);
-  -webkit-backdrop-filter: blur(18px) saturate(1.1);
-}
-
-body[data-dsh-whale] [data-pane='details'] {
-  background-color: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(18px) saturate(1.1);
-  -webkit-backdrop-filter: blur(18px) saturate(1.1);
-}
-
-body[data-dsh-whale][data-ds-dark-theme] [data-pane='sidebar'] > div {
-  background-color: rgba(20, 26, 43, 0.62);
-  backdrop-filter: blur(18px) saturate(1.1);
-  -webkit-backdrop-filter: blur(18px) saturate(1.1);
-}
-
-body[data-dsh-whale][data-ds-dark-theme] [data-pane='conversation'] {
-  background-color: rgba(17, 23, 40, 0.74);
-  backdrop-filter: blur(18px) saturate(1.05);
-  -webkit-backdrop-filter: blur(18px) saturate(1.05);
-}
-
-body[data-dsh-whale][data-ds-dark-theme] [data-pane='details'] {
-  background-color: rgba(22, 29, 50, 0.64);
-  backdrop-filter: blur(18px) saturate(1.05);
-  -webkit-backdrop-filter: blur(18px) saturate(1.05);
+body[data-dsh-whale] [id='root'] {
+  background: transparent;
 }
 
 /* --- Chrome details ---------------------------------------------------------

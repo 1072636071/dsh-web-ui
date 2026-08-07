@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write packages/client/ui-skin-deepseek-whale/README.md
-README.md: 21079fc623c1140cedd46911c3835ec34ee6f211
-README.zh.md: c398b74db9d2437b3be3b50788ede63dc09af4ea
+README.md: 7536d090c31a74c93deeb006381941a9033f5839
+README.zh.md: e04f89acac7ac6ee2cb8352b3413dbb4ad93afd4
