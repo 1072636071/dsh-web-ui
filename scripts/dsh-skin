@@ -30,9 +30,22 @@ const SKINS = {
   qq98: { pkg: '@deepseek-ai/dsh-client-ui-skin-qq98', id: 'ui-skin-qq98', dir: `${HOME}/code/dsh-web-ui/skins/qq98` },
   ths: { pkg: '@deepseek-ai/dsh-client-ui-skin-ths', id: 'ui-skin-ths', dir: `${CHECKOUT}/packages/client/ui-skin-ths` },
   xp: { pkg: '@deepseek-ai/dsh-client-ui-skin-xp', id: 'ui-skin-xp', dir: `${CHECKOUT}/packages/client/ui-skin-xp` },
+  // blue-fantasy 需要先按 README 把包装进 checkout（packages/client/ui-skin-blue-fantasy），
+  // 否则 use 会写入指向未安装包的 insert 行。
+  'blue-fantasy': { pkg: '@deepseek-ai/dsh-client-ui-skin-blue-fantasy', id: 'ui-skin-blue-fantasy', dir: `${HOME}/code/dsh-web-ui/skins/blue-fantasy` },
 }
 /** Skin wired at the bundle layer already (no insert row needed here). */
 const BUNDLE_WIRED = new Set(['xp'])
+
+/** Warn (not fail) when a skin's package dir is absent from the checkout —
+    the insert row would then reference an uninstalled package. */
+function checkInstalled(name) {
+  if (!CHECKOUT) return
+  const pkgDir = `${CHECKOUT}/packages/client/${SKINS[name].id}`
+  if (!fs.existsSync(pkgDir)) {
+    console.warn(`⚠  ${SKINS[name].id} 不在 checkout（${pkgDir} 缺失）；请先把皮肤包装进 checkout，否则加载会失败。`)
+  }
+}
 
 const MANAGED_START = '# --- dsh-skin managed (auto-generated; do not edit) ---'
 const MANAGED_END = '# --- end dsh-skin managed ---'
@@ -112,6 +125,7 @@ function cmdUse(name) {
   }
   const linked = ensureSymlink(name)
   if (linked) console.log(`linked ${SKINS[name].pkg} -> ${SKINS[name].dir}`)
+  checkInstalled(name)
 
   const patch = stripLegacySkinRows(stripManaged(readPatch()))
   const next = `${patch.replace(/\s+$/, '')}\n\n${renderManaged(name)}\n`
@@ -131,7 +145,8 @@ function cmdList() {
       const cur = fs.readlinkSync(target)
       linkState = cur === dir ? 'linked' : `links elsewhere: ${cur}`
     } catch { /* absent */ }
-    console.log(`${name.padEnd(8)} ${active === name ? '[ACTIVE] ' : '        '}${pkg}  (${linkState})`)
+    console.log(`${name.padEnd(13)} ${active === name ? '[ACTIVE] ' : '        '}${pkg}  (${linkState})`)
+    if (active === name) checkInstalled(name)
   }
   if (!active) console.log('\nno skin enabled (stock look)')
 }
