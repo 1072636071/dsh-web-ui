@@ -14,10 +14,13 @@ skins/
   ths/         同花顺风格炒股主题（品牌红标题栏、行情状态栏、灰蓝数据终端面板）
   xp/          Windows XP (Luna) 复古主题（蓝色渐变窗口条、绿色开始按钮、米色状态栏、全局直角）
   blue-fantasy/   蓝色幻想：DreamSkin「DeepSeek-鲸鱼娘」Codex 主题适配——鲸鱼插画背景（随亮/暗主题切换遮罩）+ periwinkle 靛蓝调色板 + 半透明面板
+  skin-center/    GUI 内嵌皮肤中心插件：设置页 Skins 分区，真实 GUI 内试穿 + 亮暗预览 + 复制应用命令
 gallery/      皮肤主题库预览页（index.html 首页 + preview.html 试穿模拟器，双击即可打开）
+docs/e2e/     皮肤中心 e2e 截图
 scripts/
   dsh-skin          一键切换皮肤的 CLI
   gallery-build     扫描 skins/*/skin.json 重新生成 gallery 静态产物
+  skin-center-bundles  重新生成 skin-center 内嵌的皮肤注册表（skins.ts）
   capture-previews  用无头浏览器重拍所有皮肤的亮/暗预览截图
   export-official-facade  从运行中的官方 dsh web GUI 导出样式 + 脱敏 DOM 快照
 ```
@@ -94,6 +97,33 @@ dsh-skin current                    # 打印当前皮肤
 ⚠️ 皮肤名与 `skins/` 目录一一对应；换机器或换 checkout 后，改脚本顶部的 `SKINS` 注册表即可。
 `blue-fantasy` 需先把包装进 checkout 才可切换，`dsh-skin list/use` 会给出提示。
 
+## GUI 内嵌皮肤中心（设置页 Skins 分区）
+
+`skins/skin-center/` 是一个 client 插件（`@deepseek-ai/dsh-client-ui-skin-center`，id `ui-skin-center`），
+把皮肤列表/试穿/应用内嵌进真实 GUI 的设置页：
+
+- **列表**：全部皮肤（名称/tagline/强调色），当前激活皮肤带 **Active** 标记（读 `window.__DSH_BOOT__`）。
+- **试穿**：真实执行所选皮肤的 client bundle（走页面自己的 `__ModuleLoader__` +
+  `window.__DSH_MODULES__.import`），chrome 立即生效；亮/暗切换走官方 theme 服务；
+  **退出试穿完全还原**——激活皮肤的样式、DOM、favicon、标题、背景全部恢复。
+- **互斥**：试穿期间按配方收回激活皮肤的视觉写面（body 属性、背景内联样式、body 直接子节点中的
+  chrome、xp 的 footer taskbar），退出后原样恢复；同一时刻只有一套皮肤。
+- **应用**：浏览器无持久化通道（调研结论），「Apply」复制 `dsh-skin use <name>` 命令，终端执行生效。
+
+接线（个人环境，不在 checkout 提交）：
+
+```sh
+ln -sfn ~/code/dsh-web-ui/skins/skin-center \
+  ~/.dsh/profiles/node_modules/@deepseek-ai/dsh-client-ui-skin-center
+# ~/.dsh/cordis.patch.yml 增加（放在 dsh-skin managed 段之外）：
+#   - insert:
+#       - id: ui-skin-center
+#         name: '@deepseek-ai/dsh-client-ui-skin-center'
+```
+
+皮肤/元数据变更后重跑 `node scripts/skin-center-bundles`（重新内嵌 bundle 文本），并按
+`skins/skin-center/README.md` 在 checkout 里重建。e2e 截图见 `docs/e2e/skin-center/`。
+
 ## 从源码开发
 
 把皮肤包放进 checkout 后：
@@ -135,5 +165,6 @@ A collection of **DeepSeek Harness Web GUI** skins and UI plugins. Every skin is
 - **One-command switching**: `scripts/dsh-skin` rewrites the hot-reloaded `~/.dsh/cordis.patch.yml` and keeps the profile node_modules symlinks (`~/.dsh/profiles/node_modules/@deepseek-ai/`) in sync — `cp scripts/dsh-skin ~/.local/bin/`, then `dsh-skin use qq98|xp|ths|blue-fantasy`, `dsh-skin list`, `dsh-skin current`. The target skin gets its insert row, every other skin (including the bundle-layer-wired `ui-skin-xp`) gets a `disabled` row, so exactly one skin is ever live; the config watcher applies the switch within seconds — refresh the page. `blue-fantasy` needs its package installed into the checkout first (the script warns otherwise).
 - **Add a skin**: clone `skins/qq98/`, write `skin.json` (the gallery/dsh-skin contract), scope your styles under your own body attribute, retract everything on dispose, then re-run `gallery-build` + `capture-previews` and commit the regenerated assets.
 - `skins/blue-fantasy/` — 蓝色幻想 (Blue Fantasy): the DreamSkin "DeepSeek-鲸鱼娘" Codex desktop theme adapted: whale-art backdrop (scrim swaps live with the light/dark theme), periwinkle-indigo palette, translucent panes. Preview: [light](skins/blue-fantasy/preview/light.png) / [dark](skins/blue-fantasy/preview/dark.png).
+- **In-GUI skin center** (`skins/skin-center/`): a client plugin (`@deepseek-ai/dsh-client-ui-skin-center`) adding a **Skins** section to the real GUI's settings page — lists every skin (Active badge from `window.__DSH_BOOT__`), **Try on** executes the actual skin client bundle through the page's own `__ModuleLoader__`/`__DSH_MODULES__` (real chrome, light/dark via the official theme service), **Exit try-on** fully restores the active skin (attribute, backdrop, chrome, favicon, title), and **Apply** copies the `dsh-skin use <name>` command (the GUI has no persisted-config write channel — researched). Mutual exclusion is recipe-based retraction of the active skin's visual writes. Regenerate its embedded registry with `node scripts/skin-center-bundles`; build instructions in `skins/skin-center/README.md`; e2e screenshots in `docs/e2e/skin-center/`.
 
 See `skins/qq98/README.md` for the full wiring walkthrough.
