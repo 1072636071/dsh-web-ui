@@ -15,6 +15,10 @@
  */
 import type { Context } from 'cordis'
 import { WHALE_ART, WHALE_ICON } from './art.ts'
+// The palette remap + the frosted panes (incl. the [id='root'] transparency
+// that lets the whale art show through) ride this stylesheet; the bundle
+// preset inlines it as a loader-owned <style data-plugin-css> tag.
+import './blue-fantasy.module.css'
 
 /** Light scrim: a thin ice veil — the art is bright pastel, so a heavy
  *  scrim would bury the subject; the translucent surfaces carry the
