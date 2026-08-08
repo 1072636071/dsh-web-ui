@@ -19,6 +19,7 @@ scripts/
   dsh-skin          一键切换皮肤的 CLI
   gallery-build     扫描 skins/*/skin.json 重新生成 gallery 静态产物
   capture-previews  用无头浏览器重拍所有皮肤的亮/暗预览截图
+  export-official-facade  从运行中的官方 dsh web GUI 导出样式 + 脱敏 DOM 快照
 ```
 
 > ⚠️ 同一时刻只接线一个皮肤：两个皮肤都会注入标题栏/状态栏。换皮肤 = 把 `web.cordis.yml` 里的皮肤行换成另一个（见各皮肤 README）。
@@ -40,18 +41,25 @@ open gallery/index.html        # 或任意静态服务器托管整个仓库
 ```
 
 - **浏览**：卡片网格展示全部皮肤——真实预览截图（悬停切换亮/暗）、名称、作者、标签、强调色。
-- **试穿**：点「试穿」打开内置模拟器——它**真实执行**所选皮肤的 client bundle（shim 掉
-  `__ModuleLoader__` 捕获 `exports.apply`，用最小 ctx 调用），皮肤注入的标题栏、状态栏、样式表
-  全部真实渲染，支持亮/暗主题切换。模拟器页也可单独打开：`gallery/preview.html?skin=qq98&theme=dark`。
+- **试穿**：点「试穿」打开内置模拟器——模拟器的**默认外观就是官方 dsh web GUI 本身**：
+  `scripts/export-official-facade` 从运行中的官方 GUI 导出样式表与脱敏 DOM 快照
+  （`gallery/official-facade.js`），再**真实执行**所选皮肤的 client bundle（shim 掉
+  `__ModuleLoader__` 捕获 `exports.apply`，用最小 ctx 调用），皮肤注入的标题栏、状态栏、
+  样式表全部真实渲染，支持亮/暗主题切换。模拟器页也可单独打开：
+  `gallery/preview.html?skin=qq98&theme=dark`。
 - **应用**：点「复制应用命令」得到 `dsh-skin use <name>`，终端执行即可（对应 DreamSkin 的「一键换肤」，
   dsh 的等价物是本地 CLI）。
 
-两个静态产物由 `scripts/gallery-build` 生成（提交入库，改皮肤后记得重跑并附新截图）：
+三个静态产物由脚本生成（提交入库，改皮肤/GUI 后记得重跑）：
 
 ```sh
-node scripts/gallery-build     # 重新生成 gallery/manifest.js + gallery/bundles.js
-node scripts/capture-previews  # 重拍全部预览图（需 playwright + chromium）
+node scripts/gallery-build              # 重新生成 gallery/manifest.js + gallery/bundles.js
+node scripts/export-official-facade     # 从运行中的 dsh web GUI 重新导出官方快照（升级 checkout 后必跑）
+node scripts/capture-previews           # 重拍全部预览图（需 playwright + chromium）
 ```
+
+> 升级 dsh checkout 后，官方界面类名/样式可能变化，请重跑 `export-official-facade` 并提交新的
+> `gallery/official-facade.js`，模拟器即与官方界面同步。
 
 ## 快速接入（预构建 bundle）
 
@@ -121,8 +129,8 @@ A collection of **DeepSeek Harness Web GUI** skins and UI plugins. Every skin is
 - `skins/qq98/` — the first collected skin: the QQ2008 retro edition (crystal-blue desktop gradient, glassy navy title bar, scarf-wearing penguin, rounded highlighted controls). Ships a prebuilt `lib/client.js` (CSS inlined) plus source.
 - `skins/ths/` — the Tonghuashun-style (同花顺) stock-trading theme: brand-red title bar, quote status bar (红涨绿跌), gray-blue data-terminal panels. Ships a prebuilt `lib/client.js` (CSS inlined) plus source.
 - `skins/xp/` — the Windows XP (Luna) retro theme: blue gradient window chrome with caption buttons, green Start button, cream status bar with CAPS/NUM/SCRL indicators, square corners. Ships a prebuilt `lib/client.js` (CSS inlined) plus source.
-- **Theme gallery with try-on** (inspired by Codex-Dream-Skin's DreamSkin.cc): open `gallery/index.html` — zero dependencies, works from `file://` or any static host. Cards show every skin's real light/dark screenshots (hover to flip), metadata from `skins/<name>/skin.json`, and two actions: **试穿 (try-on)** opens a simulator that *actually executes the skin's client bundle* (`__ModuleLoader__` + minimal `ctx` shims) — injected title bars, status bars and styles all render for real, with light/dark toggle; **复制应用命令 (copy apply command)** gives `dsh-skin use <name>`. The simulator alone: `gallery/preview.html?skin=qq98&theme=dark`.
-- **Regeneration**: `node scripts/gallery-build` re-scans `skins/*/skin.json` and rewrites `gallery/manifest.js` + `gallery/bundles.js`; `node scripts/capture-previews` re-shoots every light/dark preview PNG (needs `npm i` + `npx playwright install chromium`). Commit regenerated assets with skin changes.
+- **Theme gallery with try-on** (inspired by Codex-Dream-Skin's DreamSkin.cc): open `gallery/index.html` — zero dependencies, works from `file://` or any static host. Cards show every skin's real light/dark screenshots (hover to flip), metadata from `skins/<name>/skin.json`, and two actions: **试穿 (try-on)** opens a simulator whose *stock look is the official dsh web GUI itself* — `scripts/export-official-facade` snapshots the running official GUI's stylesheet + sanitized DOM into `gallery/official-facade.js`, then the simulator *actually executes the skin's client bundle* (`__ModuleLoader__` + minimal `ctx` shims) — injected title bars, status bars and styles all render for real, with light/dark toggle; **复制应用命令 (copy apply command)** gives `dsh-skin use <name>`. The simulator alone: `gallery/preview.html?skin=qq98&theme=dark`.
+- **Regeneration**: `node scripts/gallery-build` re-scans `skins/*/skin.json` and rewrites `gallery/manifest.js` + `gallery/bundles.js`; `node scripts/export-official-facade` re-snapshots the official GUI (re-run after a checkout upgrade); `node scripts/capture-previews` re-shoots every light/dark preview PNG (needs `npm i` + `npx playwright install chromium`). Commit regenerated assets with changes.
 - **Quick use**: copy the skin dir into a DSH checkout's `packages/client/`, add a `dshClient` row to `apps/cli/config/web.cordis.yml`, add the package to `apps/cli/package.json` and `tsconfig.client.json`, `pnpm install`, restart `dsh web`, refresh. Wire **only one skin row at a time** — two skins both inject title/status bars.
 - **One-command switching**: `scripts/dsh-skin` rewrites the hot-reloaded `~/.dsh/cordis.patch.yml` and keeps the profile node_modules symlinks (`~/.dsh/profiles/node_modules/@deepseek-ai/`) in sync — `cp scripts/dsh-skin ~/.local/bin/`, then `dsh-skin use qq98|xp|ths|blue-fantasy`, `dsh-skin list`, `dsh-skin current`. The target skin gets its insert row, every other skin (including the bundle-layer-wired `ui-skin-xp`) gets a `disabled` row, so exactly one skin is ever live; the config watcher applies the switch within seconds — refresh the page. `blue-fantasy` needs its package installed into the checkout first (the script warns otherwise).
 - **Add a skin**: clone `skins/qq98/`, write `skin.json` (the gallery/dsh-skin contract), scope your styles under your own body attribute, retract everything on dispose, then re-run `gallery-build` + `capture-previews` and commit the regenerated assets.
