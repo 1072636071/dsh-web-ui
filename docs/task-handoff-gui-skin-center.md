@@ -1,5 +1,8 @@
 # 任务交接：DSH Web GUI 内嵌「皮肤中心」（client 插件）
 
+> **✅ 已完成（2026-08-08，提交 8577428）**：本任务已按本文实施完毕并通过全部验收——
+> 见文末「完成记录」。以下内容保留为实施档案与维护参考。
+>
 > 给下一个 Agent / 新会话的任务 Prompt。本会话已完成「网页 Gallery + 试穿模拟器」阶段，
 > 本任务做约定的第二阶段：把皮肤预览/切换内嵌进真实 dsh Web GUI。
 > 执行前请通读本文件；与本文件冲突时，以 dsh-customize skill 和当前 checkout 实际代码为准。
@@ -135,3 +138,34 @@ hot-pluggable client 插件，风格与现有皮肤一致。
 - 参考实现：`gallery/preview.html`（模拟器 loadSkin）、`scripts/dsh-skin`（patch 格式）、
   `skins/qq98/`（插件模板）、`packages/client/locale`（settings slot 先例）、
   `packages/client/modules`（client 模块系统）
+
+---
+
+## 完成记录（2026-08-08，提交 8577428）
+
+**三项调研结论**：
+
+1. **动态加载**：非 boot 皮肤 bundle 端点 404（`clientModuleHost` 只为启用条目服务）。
+   采用路径 B 的**真实 loader 版**：`;(0, eval)(bundle)` 注册到页面自身
+   `window.__ModuleLoader__`，`window.__DSH_MODULES__.import(package)` 物化（CSS 自动注入），
+   `surface.apply(miniCtx)` 挂载；bundle 文本内嵌进皮肤中心自己的 client bundle
+   （`scripts/skin-center-bundles` 生成 `skins/skin-center/src/client/generated/skins.ts`）。
+2. **应用持久化**：无干净通道——settings API 只覆盖注册命名空间（非 loader 配置）、apiProxy
+   固定、无配置写端点；按约定降级为「Apply」复制 `dsh-skin use <name>` 命令（en/zh 文案）。
+3. **皮肤枚举**：内嵌注册表（skin.json 契约）+ 激活检测读 `window.__DSH_BOOT__.entries`（仅启用条目）。
+
+**实现**：`skins/skin-center/`（`@deepseek-ai/dsh-client-ui-skin-center`，id `ui-skin-center`）——
+设置页 `settings.section` 注册 Skins 分区；试穿引擎 `try-on.ts` 按配方收回激活皮肤视觉写面
+（body 属性 / 背景内联样式 / body 直接子 chrome / xp footer taskbar 中性化 CSS），退出后快照
+原样恢复；中性化观察器防 blue-fantasy 幽灵背景写回。接线：profile symlink +
+`cordis.patch.yml` 的独立 `# --- dsh-web-ui skin center ---` 段（dsh-skin managed 段之外，
+已回归验证重写不破坏）。
+
+**验收**：全部满足——设置页入口、≥4 皮肤列表 + Active 标记、qq98/xp/ths 试穿真实生效
+（像素采样验证：qq98 #4981c6/#28558e、ths #e10011、xp 渐变顶）、亮/暗、退出完全还原、
+双向互斥（blue-fantasy 激活试穿 qq98 / qq98 激活试穿 ths）、无泄漏（最终仅 blue-fantasy +
+skin-center 自身 style 标签）、dsh-skin CLI 与网页 Gallery 回归通过。e2e 截图
+`docs/e2e/skin-center/`（12 张）入库。
+
+**维护要点**：皮肤 bundle/元数据变更后重跑 `node scripts/skin-center-bundles` 并按
+`skins/skin-center/README.md` 在 checkout worktree 重建 lib。
