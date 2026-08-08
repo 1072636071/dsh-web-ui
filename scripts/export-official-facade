@@ -59,15 +59,19 @@ async function collect() {
       const root = document.getElementById('root')
       if (!root) throw new Error('no #root — 页面不在主界面（需要登录/会话）')
       const KEEP_ATTR = new Set([
-        'class', 'style', 'type', 'disabled', 'tabindex', 'role',
+        'class', 'style', 'type', 'disabled', 'tabindex', 'role', 'id',
         'placeholder', 'rows', 'cols', 'wrap', 'spellcheck', 'autocomplete',
         'aria-selected', 'aria-expanded', 'aria-checked', 'aria-current',
         'aria-haspopup', 'aria-hidden', 'aria-disabled', 'aria-live', 'aria-atomic',
       ])
       const clone = root.cloneNode(true)
       const walk = (el) => {
-        for (const a of [...el.attributes]) {
-          if (!(KEEP_ATTR.has(a.name) || a.name.startsWith('data-'))) el.removeAttribute(a.name)
+        // SVG 子树：保留全部呈现属性（viewBox/d/fill/stroke/href…），否则图标会变空壳
+        const inSvg = el.closest && el.closest('svg')
+        if (!inSvg) {
+          for (const a of [...el.attributes]) {
+            if (!(KEEP_ATTR.has(a.name) || a.name.startsWith('data-'))) el.removeAttribute(a.name)
+          }
         }
         for (const t of [...el.childNodes]) {
           if (t.nodeType === 3) t.textContent = ''

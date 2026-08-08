@@ -94,6 +94,40 @@
     document.getElementById('root').innerHTML = window.OFFICIAL_FACADE.skeleton
   }
 
+  /** 给官方骨架填模拟数据（真实 GUI 快照是脱敏的：无文本/无用户数据）。
+      只填空的叶子节点，绝不覆盖任何已有内容。品牌标题是矢量字标（SVG path），无需注入。 */
+  function injectDemoData() {
+    var fill = function (el, text) {
+      if (!el || (el.textContent || '').trim()) return
+      el.textContent = text
+    }
+
+    fill(document.querySelector('[class*="newSessionLabel"]'), 'New Session')
+    fill(document.querySelector('[class*="sectionLabel"]'), 'Workspaces')
+
+    // 工作区树（项目行）
+    var projects = ['dsh-web-ui', 'deepseek-harness', 'codex-dream-skin', 'demo', 'CITKABE']
+    var metas = ['4 sessions', '2 sessions', '1 session', '0 sessions', '9 sessions']
+    document.querySelectorAll('[class*="projectRow"]').forEach(function (row, i) {
+      fill(row.querySelector('[class*="title"]'), projects[i % projects.length])
+      fill(row.querySelector('[class*="meta"]'), metas[i % metas.length])
+    })
+
+    // 会话行
+    var sessions = ['Refactor the skin layer', 'Fix deploy script', 'Tidy up gallery README', 'Demo session']
+    var times = ['now', '10h', '2d', '3d']
+    document.querySelectorAll('[class*="sessionRow"]').forEach(function (row, i) {
+      fill(row.querySelector('[class*="title"]'), sessions[i % sessions.length])
+      fill(row.querySelector('[class*="time"]'), times[i % times.length])
+    })
+
+    // 起始页 hero
+    fill(document.querySelector('[class*="headlineText"]'), "Let's start building")
+    fill(document.querySelector('[class*="previewBadge"]'), 'Preview')
+    fill(document.querySelector('[class*="workspaceLabel"]'), 'dsh-web-ui')
+    fill(document.querySelector('[class*="triggerLabel"]'), 'Plan')
+  }
+
   function setTheme(dark) {
     if (dark) document.body.dataset.dsDarkTheme = ''
     else delete document.body.dataset.dsDarkTheme
@@ -135,10 +169,13 @@
 
   function boot() {
     mountOfficialFacade()
+    injectDemoData()
     setTheme(params.theme === 'dark')   // 先于 apply：blue-fantasy 在 apply 里读主题
     if (params.skin !== 'stock') {
       try { loadSkin(params.skin) } catch (err) { fail(err && err.message || String(err)) }
     }
+    // stock 时钉住官方标题；皮肤会用自己的标题覆盖它
+    if (params.skin === 'stock') document.title = 'DeepSeek Harness'
   }
 
   // --- 工具栏 ----------------------------------------------------------------
