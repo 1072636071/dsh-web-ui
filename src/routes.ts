@@ -1,0 +1,239 @@
+/**
+ * The /api/pair route family + the desktop status stream. Exact routes
+ * under /api: the webserver matches exact paths before the connection
+ * plugin's /api prefix, so these handlers own the full response lifecycle
+ * and apply their own trust fence (loopback-only for control endpoints;
+ * loopback-or-LAN for the phone-facing accept/heartbeat/status). The
+ * cookie set on accept is the device identity the api/gate listener checks
+ * on every other /api request.
+ */
+
+import type { IncomingMessage, ServerResponse } from 'node:http'
+import type { WebRoute } from '@deepseek-ai/dsh-host-webserver'
+import { isTrustedApiRequest } from '@deepseek-ai/dsh-client-connection'
+import type { PairingService, PairingSnapshot } from './pairing.ts'
+import { readCookie } from './gate.ts'
+
+/** Cap on pairing request bodies (tokens and workspace ids are tiny). */
+const MAX_BODY_BYTES = 4096
+
+/** Cookie lifetime: one year; revoked sessions die at the gate regardless. */
+const COOKIE_MAX_AGE_SEC = 365 * 24 * 60 * 60
+
+/** Route paths (exact matches under /api). */
+export const PAIR_PATHS = {
+  issue: '/api/pair/issue',
+  accept: '/api/pair/accept',
+  stop: '/api/pair/stop',
+  heartbeat: '/api/pair/heartbeat',
+  status: '/api/pair/status',
+  events: '/api/pair/events',
+} as const
+
+/** One JSON response. */
+function writeJson(res: ServerResponse, status: number, body: unknown): void {
+  const payload = JSON.stringify(body)
+  res.writeHead(status, { 'content-type': 'application/json; charset=utf-8' })
+  res.end(payload)
+}
+
+/** Read a request body up to MAX_BODY_BYTES and parse it as JSON. */
+async function readJsonBody(req: IncomingMessage): Promise<Record<string, unknown> | undefined> {
+  const chunks: Buffer[] = []
+  let size = 0
+  for await (const chunk of req) {
+    const buffer = chunk as Buffer
+    size += buffer.length
+    if (size > MAX_BODY_BYTES) return undefined
+    chunks.push(buffer)
+  }
+  try {
+    const parsed: unknown = JSON.parse(Buffer.concat(chunks).toString('utf8'))
+    return typeof parsed === 'object' && parsed !== null ? parsed as Record<string, unknown> : undefined
+  } catch {
+    return undefined
+  }
+}
+
+/** One open desktop status stream. */
+interface StatusStream {
+  res: ServerResponse
+  closed: boolean
+}
+
+/** The SSE fan-out for desktop panel status. */
+export class PairingEventsStream {
+  private readonly streams = new Set<StatusStream>()
+
+  /**
+   * @param service - the pairing service whose snapshots are fanned out.
+   */
+  constructor(service: PairingService) {
+    service.onState((snapshot) => { this.push(snapshot) })
+  }
+
+  /** Open one stream; the response is owned to completion. */
+  open(req: IncomingMessage, res: ServerResponse): void {
+    res.writeHead(200, {
+      'content-type': 'text/event-stream; charset=utf-8',
+      'cache-control': 'no-cache',
+      connection: 'keep-alive',
+    })
+    const stream: StatusStream = { res, closed: false }
+    this.streams.add(stream)
+    const close = (): void => {
+      if (stream.closed) return
+      stream.closed = true
+      this.streams.delete(stream)
+    }
+    res.on('close', close)
+    req.on('close', close)
+  }
+
+  /** Push one frame to every open stream (contained per stream). */
+  push(snapshot: PairingSnapshot): void {
+    const frame = `data: ${JSON.stringify({ type: 'state', ...snapshot })}\n\n`
+    for (const stream of this.streams) {
+      try {
+        stream.res.write(frame)
+      } catch {
+        stream.closed = true
+        this.streams.delete(stream)
+      }
+    }
+  }
+
+  /** Stream count (tests/diagnostics). */
+  get size(): number {
+    return this.streams.size
+  }
+}
+
+/** Route-family dependencies (test seam). */
+export interface PairRoutesDeps {
+  /** The pairing service. */
+  service: PairingService
+  /** The LAN IP literals the fence accepts (derived from the bind host). */
+  lanAddresses: readonly string[]
+}
+
+/**
+ * Build the /api/pair route family.
+ * @param deps - service + fence inputs.
+ * @returns the exact routes to register on httpServer.
+ */
+export function makeRoutes(deps: PairRoutesDeps): WebRoute[] {
+  const { service, lanAddresses } = deps
+  const events = new PairingEventsStream(service)
+
+  /** Loopback-only fence: the desktop panel's control endpoints. */
+  const loopbackFence = (req: IncomingMessage): boolean => isTrustedApiRequest(req, [])
+  /** Phone-facing fence: loopback or the derived LAN literals. */
+  const lanFence = (req: IncomingMessage): boolean => isTrustedApiRequest(req, lanAddresses)
+
+  const requireMethod = (req: IncomingMessage, res: ServerResponse, method: string): boolean => {
+    if (req.method === method) return true
+    res.writeHead(405)
+    res.end()
+    return false
+  }
+
+  const handleIssue = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
+    if (!requireMethod(req, res, 'POST')) return
+    if (!loopbackFence(req)) {
+      writeJson(res, 403, { ok: false, code: 'forbidden' })
+      return
+    }
+    const body = await readJsonBody(req)
+    const workspaceId = body === undefined || typeof body.workspaceId !== 'string' || body.workspaceId === ''
+      ? undefined
+      : body.workspaceId
+    try {
+      const { token, expiresAt } = service.issue(workspaceId)
+      const base = service.lanBaseUrl
+      if (base === undefined) throw new Error('remote-web-ui: lan base unavailable')
+      const workspaceQuery = workspaceId === undefined ? '' : `&workspace=${encodeURIComponent(workspaceId)}`
+      writeJson(res, 200, { ok: true, url: `${base}/?pair=${token}${workspaceQuery}`, token, expiresAt })
+    } catch {
+      writeJson(res, 409, { ok: false, code: 'lan-required' })
+    }
+  }
+
+  const handleAccept = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
+    if (!requireMethod(req, res, 'POST')) return
+    if (!lanFence(req)) {
+      writeJson(res, 403, { ok: false, code: 'forbidden' })
+      return
+    }
+    const body = await readJsonBody(req)
+    const token = typeof body?.token === 'string' ? body.token : ''
+    const result = service.accept(token)
+    if (!result.ok) {
+      writeJson(res, result.code === 'used' ? 409 : 404, { ok: false, code: result.code })
+      return
+    }
+    res.writeHead(200, {
+      'content-type': 'application/json; charset=utf-8',
+      'set-cookie': [
+        `${service.config.cookieName}=${result.deviceId}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${String(COOKIE_MAX_AGE_SEC)}`,
+      ],
+    })
+    res.end(JSON.stringify({ ok: true, deviceId: result.deviceId }))
+  }
+
+  const handleStop = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
+    if (!requireMethod(req, res, 'POST')) return
+    if (!loopbackFence(req)) {
+      writeJson(res, 403, { ok: false, code: 'forbidden' })
+      return
+    }
+    await readJsonBody(req)
+    service.stop()
+    writeJson(res, 200, { ok: true })
+  }
+
+  const handleHeartbeat = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
+    if (!requireMethod(req, res, 'POST')) return
+    if (!lanFence(req)) {
+      writeJson(res, 403, { ok: false, code: 'forbidden' })
+      return
+    }
+    await readJsonBody(req)
+    const deviceId = readCookie(req.headers.cookie, service.config.cookieName)
+    if (deviceId === undefined || !service.heartbeat(deviceId)) {
+      writeJson(res, 401, { ok: false, code: 'unpaired' })
+      return
+    }
+    writeJson(res, 200, { ok: true })
+  }
+
+  const handleStatus = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
+    if (!requireMethod(req, res, 'GET')) return
+    if (!lanFence(req)) {
+      writeJson(res, 403, { ok: false, code: 'forbidden' })
+      return
+    }
+    const deviceId = readCookie(req.headers.cookie, service.config.cookieName)
+    writeJson(res, 200, { ok: true, paired: deviceId !== undefined && service.hasDevice(deviceId), ...service.snapshot() })
+  }
+
+  const handleEvents = (req: IncomingMessage, res: ServerResponse): void => {
+    if (!requireMethod(req, res, 'GET')) return
+    if (!loopbackFence(req)) {
+      writeJson(res, 403, { ok: false, code: 'forbidden' })
+      return
+    }
+    events.open(req, res)
+    // Snapshot on open: a late-opening panel converges without history.
+    events.push(service.snapshot())
+  }
+
+  return [
+    { kind: 'exact', path: PAIR_PATHS.issue, handler: handleIssue },
+    { kind: 'exact', path: PAIR_PATHS.accept, handler: handleAccept },
+    { kind: 'exact', path: PAIR_PATHS.stop, handler: handleStop },
+    { kind: 'exact', path: PAIR_PATHS.heartbeat, handler: handleHeartbeat },
+    { kind: 'exact', path: PAIR_PATHS.status, handler: handleStatus },
+    { kind: 'exact', path: PAIR_PATHS.events, handler: handleEvents },
+  ]
+}

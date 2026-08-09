@@ -1,0 +1,141 @@
+/**
+ * Browser-side wire helpers for the /api/pair surface. Plain fetch over
+ * same-origin /api (like the connection client); JSON bodies, string
+ * responses for the error codes.
+ */
+
+/** issue() response. */
+export interface IssueResult {
+  ok: true
+  url: string
+  token: string
+  expiresAt: number
+}
+
+/** issue() refusal: the server is not LAN-reachable. */
+export interface IssueLanRequired {
+  ok: false
+  code: 'lan-required'
+}
+
+export type IssueResponse = IssueResult | IssueLanRequired
+
+/** accept() refusal codes. */
+export type AcceptFailure = { ok: false; code: 'invalid' | 'used' | 'forbidden' }
+
+/** One /api/pair/events frame. */
+export interface PairStateFrame {
+  type: 'state'
+  phase: 'lan-required' | 'stopped' | 'waiting' | 'connected' | 'disconnected'
+  lanAvailable: boolean
+  tokenId?: string
+  tokenExpiresAt?: number
+  deviceCount: number
+  onlineCount: number
+}
+
+/**
+ * Mint a fresh pairing token (one active token at a time — this invalidates
+ * any previous link).
+ * @param workspaceId - optional current workspace to deep-link the phone into.
+ * @returns the issued link or the lan-required refusal.
+ */
+export async function issuePair(workspaceId?: string): Promise<IssueResponse> {
+  const response = await fetch('/api/pair/issue', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(workspaceId === undefined ? {} : { workspaceId }),
+  })
+  if (!response.ok) {
+    if (response.status === 409) return { ok: false, code: 'lan-required' }
+    throw new Error(`remote-web-ui: issue failed with ${String(response.status)}`)
+  }
+  return await response.json() as IssueResult
+}
+
+/**
+ * Accept a pairing token (the phone's first open of the QR link). Success
+ * sets the device cookie; the page then reloads to boot with it.
+ * @param token - the token from the URL.
+ * @returns the wire result.
+ */
+export async function acceptPair(token: string): Promise<{ ok: true } | AcceptFailure> {
+  const response = await fetch('/api/pair/accept', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ token }),
+  })
+  if (response.ok) return { ok: true }
+  if (response.status === 404) return { ok: false, code: 'invalid' }
+  if (response.status === 409) return { ok: false, code: 'used' }
+  return { ok: false, code: 'forbidden' }
+}
+
+/** Revoke mobile access (paired devices + the current token). */
+export async function stopPair(): Promise<void> {
+  const response = await fetch('/api/pair/stop', { method: 'POST' })
+  if (!response.ok) throw new Error(`remote-web-ui: stop failed with ${String(response.status)}`)
+}
+
+/** Presence heartbeat from a paired phone (unpaired heartbeats 401 harmlessly). */
+export async function sendHeartbeat(): Promise<void> {
+  await fetch('/api/pair/heartbeat', { method: 'POST' })
+}
+
+/** Whether the current page URL carries a pairing token / workspace target. */
+export function readPairParams(search: string): { pair?: string; workspace?: string } {
+  const params = new URLSearchParams(search)
+  const pair = params.get('pair')
+  const workspace = params.get('workspace')
+  return {
+    ...(pair !== null && pair !== '' ? { pair } : {}),
+    ...(workspace !== null && workspace !== '' ? { workspace } : {}),
+  }
+}
+
+/**
+ * Strip one query parameter from the current URL without reloading.
+ * @param name - the parameter to remove.
+ * @returns the new search string ('' when empty).
+ */
+export function stripParam(name: string): string {
+  const url = new URL(window.location.href)
+  url.searchParams.delete(name)
+  return url.search
+}/** Human-readable expiry clock, e.g. "10:35". */
+export function formatClock(epochMs: number): string {
+  const date = new Date(epochMs)
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${hours}:${minutes}`
+}
+
+/**
+ * Copy text to the clipboard with a fallback for insecure contexts
+ * (plain-HTTP LAN origins lack navigator.clipboard).
+ * @param text - the text to copy.
+ * @returns whether the copy succeeded.
+ */
+export async function copyText(text: string): Promise<boolean> {
+  if (typeof navigator !== 'undefined' && navigator.clipboard !== undefined) {
+    try {
+      await navigator.clipboard.writeText(text)
+      return true
+    } catch {
+      // fall through to the execCommand path
+    }
+  }
+  try {
+    const area = document.createElement('textarea')
+    area.value = text
+    area.style.position = 'fixed'
+    area.style.opacity = '0'
+    document.body.appendChild(area)
+    area.select()
+    const ok = document.execCommand('copy')
+    area.remove()
+    return ok
+  } catch {
+    return false
+  }
+}

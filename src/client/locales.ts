@@ -1,0 +1,54 @@
+/** `remote` namespace dictionaries: the mobile remote-control surface copy. */
+
+/** Simplified Chinese dictionary (the key-set source of truth). */
+export const zh = {
+  'entry.label': '移动端远程控制',
+  'title': '移动端远程控制',
+  'subtitle': '扫码或在手机上打开链接，即可远程控制当前工作区',
+  'card.title': '手机扫码连接',
+  'status.waiting': '等待手机连接',
+  'status.connected': '已连接 {n} 台设备',
+  'status.disconnected': '已配对设备离线',
+  'status.stopped': '已停止移动端访问',
+  'status.lanRequired': '此功能需要以 --host 0.0.0.0 启动 dsh web 才能使用',
+  'status.lanRequiredHint': '当前服务仅绑定在 127.0.0.1，手机无法访问。请用 dsh web --host 0.0.0.0 重新启动后重试。',
+  'pair.hint': '无法扫码？可以在手机上打开链接',
+  'pair.expires': '二维码有效至 {time}',
+  'pair.expired': '二维码已过期，请刷新',
+  'pair.failed.title': '配对失败',
+  'pair.failed.detail': '链接无效或已使用，请回到电脑端刷新二维码后重新扫码。',
+  'action.stop': '停止',
+  'action.refresh': '刷新二维码',
+  'action.copy': '复制链接',
+  'action.copied': '已复制',
+  'stopped.hint': '已停止移动端访问。点击"刷新二维码"重新开启。',
+  'close.label': '关闭移动端远程控制面板',
+} satisfies Record<string, string>
+
+/** The remote namespace key union. */
+export type RemoteKey = keyof typeof zh
+
+/** English dictionary, checked complete against the zh key set. */
+export const en = {
+  'entry.label': 'Mobile remote control',
+  'title': 'Mobile remote control',
+  'subtitle': 'Scan the QR code or open the link on your phone to control this workspace remotely',
+  'card.title': 'Scan to connect',
+  'status.waiting': 'Waiting for a phone',
+  'status.connected': '{n} device(s) connected',
+  'status.disconnected': 'Paired devices offline',
+  'status.stopped': 'Mobile access stopped',
+  'status.lanRequired': 'This feature needs dsh web started with --host 0.0.0.0',
+  'status.lanRequiredHint': 'The server is bound to 127.0.0.1, which a phone cannot reach. Restart with dsh web --host 0.0.0.0 and try again.',
+  'pair.hint': 'Cannot scan? Open the link on your phone',
+  'pair.expires': 'QR code valid until {time}',
+  'pair.expired': 'QR code expired — refresh it',
+  'pair.failed.title': 'Pairing failed',
+  'pair.failed.detail': 'The link is invalid or was already used. Refresh the QR code on your computer and scan again.',
+  'action.stop': 'Stop',
+  'action.refresh': 'Refresh QR',
+  'action.copy': 'Copy link',
+  'action.copied': 'Copied',
+  'stopped.hint': 'Mobile access is stopped. Click "Refresh QR" to re-enable it.',
+  'close.label': 'Close mobile remote control panel',
+} satisfies Record<RemoteKey, string>
