@@ -1,17 +1,17 @@
 # Skin Center（GUI 内嵌皮肤中心）
 
-`@deepseek-ai/dsh-client-ui-skin-center`（cordis 插件 id `ui-skin-center`）——把皮肤列表/试穿/应用
-内嵌进真实 dsh Web GUI 的设置页，作为独立的 **Skins（皮肤）** 分区。
+`@deepseek-ai/dsh-client-ui-skin-center`（cordis 插件 id `ui-skin-center`）把皮肤列表/试穿/应用
+内嵌进真实 dsh Web GUI 的设置页，作为独立的 Skins（皮肤）分区。
 
-- **列表**：展示仓库里全部皮肤（qq98 / ths / xp / blue-fantasy）的名称、tagline、强调色；
-  当前激活的皮肤（boot 图里启用中的那个）带 **Active** 标记。
-- **试穿**：点击「Try on」后**真实执行该皮肤的 client bundle**（走页面自己的
+- 列表：展示仓库里全部皮肤（qq98 / ths / xp / blue-fantasy）的名称、tagline、强调色；
+  当前激活的皮肤带 Active 标记。
+- 试穿：点击「Try on」后真实执行该皮肤的 client bundle（走页面自己的
   `window.__ModuleLoader__` + `window.__DSH_MODULES__.import`，不是模拟器），chrome 立即生效；
   亮/暗切换走官方 theme 服务；「Exit try-on」完全还原——当前皮肤的样式、DOM、favicon、
   标题、body 内联样式全部恢复。
-- **互斥**：试穿期间会按配方暂时收回当前激活皮肤的视觉写面（body 属性、背景内联样式、
+- 互斥：试穿期间会按配方暂时收回当前激活皮肤的视觉写面（body 属性、背景内联样式、
   chrome 子节点、xp 的 footer taskbar），退出后原样恢复；同一时刻页面上只有一套皮肤。
-- **应用**：浏览器无法写 `~/.dsh/cordis.patch.yml`（调研结论：cordis loader 配置没有浏览器
+- 应用：浏览器无法写 `~/.dsh/cordis.patch.yml`（调研结论：cordis loader 配置没有浏览器
   可用的写通道），所以「Apply」复制一条命令 `dsh-skin use <name>`，终端执行即持久化并热重载。
 
 ## 安装（官方 plugin bundle 方式）
@@ -50,15 +50,15 @@ skins/skin-center/
 
 ## 机制要点
 
-- **皮肤枚举**：`generated/skins.ts` 由 `scripts/skin-center-bundles` 生成（读
+- 皮肤枚举：`generated/skins.ts` 由 `scripts/skin-center-bundles` 生成（读
   `skins/<name>/skin.json` + `lib/client.js`）。bundle 文本内嵌进皮肤中心自己的 client bundle，
-  因为 `/plugins/<id>/client.js` 端点只为**启用中**的皮肤服务（禁用条目 404）。
-- **试穿加载**：`;(0, eval)(bundle)` 把 factory 注册到页面真实的 `__ModuleLoader__`；
+  因为 `/plugins/<id>/client.js` 端点只为启用中的皮肤服务（禁用条目 404）。
+- 试穿加载：`;(0, eval)(bundle)` 把 factory 注册到页面真实的 `__ModuleLoader__`；
   `window.__DSH_MODULES__.import(package)` 物化模块（CSS `<style data-plugin>` 自动注入）；
   `surface.apply(miniCtx)` 挂载，miniCtx 只实现 `effect(cb)`（皮肤唯一依赖）。
-- **退出还原**：先跑皮肤的 disposer（属性/chrome/favicon/标题/背景全撤回），再
+- 退出还原：先跑皮肤的 disposer（属性/chrome/favicon/标题/背景全撤回），再
   `invalidate(package)` + 删 style 标签，最后把激活皮肤的视觉快照原样恢复。
-- **激活皮肤检测**：`window.__DSH_BOOT__.entries` 只含启用条目 → 与注册表 package 比对。
+- 激活皮肤检测：`window.__DSH_BOOT__.entries` 只含启用条目，与注册表 package 比对。
 
 ## 构建（bundle 由 checkout 的 tsdown 预设产出）
 

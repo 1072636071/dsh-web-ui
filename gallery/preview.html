@@ -62,7 +62,7 @@
 
   <div class="skinChrome" id="skinChrome">
     <select id="skinSel" aria-label="皮肤"></select>
-    <button type="button" id="themeBtn" aria-label="切换明暗">🌙 暗色</button>
+    <button type="button" id="themeBtn" aria-label="切换明暗">暗色</button>
     <a href="index.html" target="_blank" rel="noopener">主题库</a>
   </div>
 
@@ -200,11 +200,11 @@
       u.searchParams.set('skin', sel.value)
       location.href = u
     })
-    themeBtn.textContent = params.theme === 'dark' ? '☀ 亮色' : '🌙 暗色'
+    themeBtn.textContent = params.theme === 'dark' ? '亮色' : '暗色'
     themeBtn.addEventListener('click', function () {
       setTheme(params.theme !== 'dark')
       params.theme = params.theme === 'dark' ? 'light' : 'dark'
-      themeBtn.textContent = params.theme === 'dark' ? '☀ 亮色' : '🌙 暗色'
+      themeBtn.textContent = params.theme === 'dark' ? '亮色' : '暗色'
     })
   } else {
     chrome.remove()

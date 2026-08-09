@@ -2,20 +2,19 @@
 
 English | [中文](README.zh.md)
 
-Tonghuashun-style (同花顺) stock-trading skin for the dsh web GUI. Hot-pluggable as a client plugin: `apply()` sets the `data-dsh-ths` body attribute (the scope of the whole stylesheet), renders the fixed brand-red title bar with a live-quote chip (上证指数), the quote status bar (上证指数 / 深证成指 / 创业板指, colored 红涨绿跌), a watchlist-style sidebar (red market rule, quote rows) and a terminal-style settings panel; pins the document title and injects the 同 favicon; its effect disposer retracts every write (the attribute, both bars, the favicon, and the title unless a session title already replaced it). The stylesheet rides the bundle's CSS-modules auto-inject, so the loader removes it with the entry.
+Tonghuashun-style (同花顺) stock-trading skin for the dsh web GUI. It plugs in as a client plugin: `apply()` sets the `data-dsh-ths` body attribute (the whole stylesheet's scope), renders the fixed brand-red title bar with a live-quote chip (上证指数), the quote status bar (上证指数 / 深证成指 / 创业板指, colored 红涨绿跌), a watchlist-style sidebar (red market rule, quote rows) and a terminal-style settings panel, pins the document title and injects the 同 favicon. Its effect disposer retracts every write — the attribute, both bars, the favicon, and the title unless a session title already replaced it. The stylesheet ships inside the bundle via CSS-modules auto-inject, so the loader removes it when the entry is disposed.
 
-The skin is presentation-only: no services are injected, no cordis events are emitted, and nothing reaches a model request. The dark palette (`body[data-dsh-ths][data-ds-dark-theme]`) is the night-trading variant, so the base theme system keeps flipping tokens underneath. Scrollbar aliases stay on the base theme, keeping the stock scrollbar contract under the skin.
+The skin is presentation-only: no services are injected, no cordis events are emitted, nothing reaches a model request. The dark palette (`body[data-dsh-ths][data-ds-dark-theme]`) is the night-trading variant, so the base theme system keeps flipping tokens underneath. Scrollbar aliases stay on the base theme, keeping the stock scrollbar contract under the skin.
 
 ## Installing (official bundle)
 
 This package is an official `dsh` plugin bundle (declared via `dsh.bundle.patch` in `package.json` — see `docs/user/develop/basic/publish.md`). Install it with `dsh plugin`:
 
-1. **From git** — `dsh plugin --profile <name> add github:<org>/dsh-web-ui#<sha>`.
-   With pnpm ≥ 10 the first install will fail on `prepare` authorization; add the package key pnpm prints into that profile's `pnpm-workspace.yaml` `allowBuilds` and retry (`prepare` runs a self-contained build producing `lib/`).
-2. **From a local path** — `dsh plugin --profile <name> add /path/to/dsh-web-ui/skins/ths` (`lib/` is pre-built and committed).
+1. From git: `dsh plugin --profile <name> add github:<org>/dsh-web-ui#<sha>`. With pnpm ≥10 the first install will fail on `prepare` authorization; add the package key pnpm prints into that profile's `pnpm-workspace.yaml` `allowBuilds` and retry (`prepare` runs a self-contained build producing `lib/`).
+2. From a local path: `dsh plugin --profile <name> add /path/to/dsh-web-ui/skins/ths` (`lib/` is pre-built and committed).
 3. Switch with `dsh-skin use ths`; only one skin is active at a time.
 
-Only one skin row should be wired at a time — two skins would both inject chrome. Removing the row (and the package) returns the GUI to its stock look.
+Only one skin row should be wired at a time; two skins would both inject chrome. Removing the row (and the package) returns the GUI to its stock look.
 
 ## Requirements
 
@@ -29,8 +28,8 @@ None. The skin mutates only the browser DOM; nothing here reaches a model reques
 
 None; this package neither assembles nor sends a provider request.
 
-## Known Limitations and Deferred Work
+## Known limitations
 
-- **The loading page is stock** — the shell's boot page renders before plugin bundles exist, so the skin starts at the settled UI (the boot page still gets the window frame once the attribute is set, but its inner card keeps the modern look).
-- **Theme setting semantics** — the skin pins its own palette under both `data-ds-dark-theme` states; switching Appearance themes flips between the light and dark terminal palettes, not to a non-skin look.
-- **Quote cells are decorative** — the index values in the status bar are static text for the look; they do not track live market data.
+- The loading page stays stock. The shell's boot page renders before plugin bundles exist, so the skin starts at the settled UI (the boot page still gets the window frame once the attribute is set, but its inner card keeps the modern look).
+- Theme switching is skin-internal. The skin pins its own palette under both `data-ds-dark-theme` states; switching Appearance themes flips between the light and dark terminal palettes, not to a non-skin look.
+- Quote cells are decorative. The index values in the status bar are static text for the look; they do not track live market data.

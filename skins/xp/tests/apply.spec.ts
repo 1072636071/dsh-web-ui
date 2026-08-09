@@ -39,7 +39,7 @@ describe('Windows XP-style skin apply', () => {
     expect(titlebar).not.toBeNull()
     expect(statusbar).not.toBeNull()
     expect(titlebar?.textContent).toContain('Windows XP · DeepSeek 在线')
-    expect(titlebar?.querySelector('[class*="xpTitlebarBtnClose"]')?.textContent).toBe('✕')
+    expect(titlebar?.querySelector('[class*="xpTitlebarBtnClose"]')?.textContent).toBe('×')
     expect(statusbar?.textContent).toContain('就绪')
     expect(statusbar?.querySelectorAll('[class*="xpStatusbarKey"]').length).toBe(3)
     expect(statusbar?.querySelectorAll('[class*="xpStatusbarKey"]')[2]?.textContent).toBe('滚动')

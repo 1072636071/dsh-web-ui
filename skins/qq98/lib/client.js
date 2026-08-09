@@ -39,7 +39,7 @@ window.__ModuleLoader__.load({
 		const TITLEBAR_GLYPHS = [
 			"–",
 			"□",
-			"✕"
+			"×"
 		];
 		/**
 		* Resolve one module class name. The css-modules record types as

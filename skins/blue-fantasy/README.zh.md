@@ -2,9 +2,11 @@
 
 English | [中文](README.zh.md)
 
-**蓝色幻想**——DreamSkin 社区「DeepSeek-鲸鱼娘」Codex 桌面主题（MIT，作者 powerdog996）适配到 dsh web GUI：鲸鱼插画背景垫在半透明面板之下（大面积表面用带透明度的 token，画作透光），遮罩随基础亮/暗主题实时切换，periwinkle 靛蓝调色板重映射到全部 dsh token。可热插拔客户端插件：`apply()` 设置 `data-dsh-blue-fantasy` body 属性（整张样式表的作用域）、以固定全视口背景应用鲸鱼图（base64 data URL + 按当前主题选择的阅读遮罩，`data-ds-dark-theme` 变化时实时切换）、注入官方 DeepSeek 蓝色鲸鱼 favicon（deepseek.com 原版图标，PNG data URL，非 SVG）；effect disposer 全部收回（属性、背景内联样式——恢复原值——与 favicon）。样式表随 bundle 的 CSS-modules 自动注入，入口卸载即移除。
+蓝色幻想是 DreamSkin 社区「DeepSeek-鲸鱼娘」Codex 桌面主题（MIT，作者 powerdog996）在 dsh web GUI 上的移植：鲸鱼插画背景垫在半透明面板之下（大面积表面用带透明度的 token，画作透光），遮罩随基础亮/暗主题实时切换，periwinkle 靛蓝调色板重映射到全部 dsh token。
 
-皮肤纯呈现层：不注入服务、不发事件、不触及模型请求。深色形态（`body[data-dsh-blue-fantasy][data-ds-dark-theme]`）是同一张图的夜航版本——深靛蓝纱幕盖在压暗的背景上——基础主题系统在底下照常工作。
+以客户端插件方式热插拔。`apply()` 设置 `data-dsh-blue-fantasy` body 属性（整张样式表的作用域）、以固定全视口背景绘制鲸鱼图（base64 data URL + 按当前主题选择的阅读遮罩，`data-ds-dark-theme` 变化时实时切换）、注入官方 DeepSeek 蓝色鲸鱼 favicon（deepseek.com 原版图标，PNG data URL，非 SVG）；effect disposer 全部收回：属性、背景内联样式（恢复原值）与 favicon。样式表随 bundle 的 CSS-modules 自动注入，入口卸载时由 loader 一并移除。
+
+皮肤只做呈现：不注入服务、不发 cordis 事件、不触及模型请求。深色形态（`body[data-dsh-blue-fantasy][data-ds-dark-theme]`）是同一张图的夜航版本——深靛蓝纱幕盖在压暗的背景上——基础主题系统在底下照常工作。
 
 ## 安装（官方 bundle 方式）
 

@@ -106,7 +106,7 @@ async function main() {
       await page.waitForTimeout(350) // 让背景图/过渡稳定
       const out = path.join(dir, `${theme}.png`)
       await page.screenshot({ path: out })
-      console.log(`  ✓ ${skin.id}/${theme} → ${path.relative(ROOT, out)}`)
+      console.log(`  ok ${skin.id}/${theme} → ${path.relative(ROOT, out)}`)
     }
   }
 

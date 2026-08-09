@@ -36,7 +36,7 @@ window.__ModuleLoader__.load({
 		const TITLEBAR_GLYPHS = [
 			"–",
 			"□",
-			"✕"
+			"×"
 		];
 		/** Status bar cells; the key cells are the classic CAPS/NUM/SCRL indicators. */
 		const STATUS_CELLS = [
@@ -111,7 +111,7 @@ window.__ModuleLoader__.load({
 			titlebar.append(icon, title);
 			for (const glyph of TITLEBAR_GLYPHS) {
 				const btn = document.createElement("span");
-				btn.className = cls(glyph === "✕" ? "xpTitlebarBtnClose" : "xpTitlebarBtn");
+				btn.className = cls(glyph === "×" ? "xpTitlebarBtnClose" : "xpTitlebarBtn");
 				btn.setAttribute("aria-hidden", "true");
 				btn.textContent = glyph;
 				titlebar.append(btn);

@@ -20,7 +20,7 @@ const SKIN_TITLE = 'QQ2008 · DeepSeek 在线'
 const STATUS_CELLS = ['QQ 2008', '就绪', '已连接', '在线', 'QQ2008 正式版'] as const
 
 /** Title bar window buttons (decorative glyphs, aria-hidden). */
-const TITLEBAR_GLYPHS = ['–', '□', '✕'] as const
+const TITLEBAR_GLYPHS = ['–', '□', '×'] as const
 
 /**
  * Resolve one module class name. The css-modules record types as

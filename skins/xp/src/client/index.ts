@@ -16,7 +16,7 @@ import css from './xp.module.css'
 const SKIN_TITLE = 'Windows XP · DeepSeek 在线'
 
 /** Title bar caption buttons (decorative glyphs, aria-hidden). */
-const TITLEBAR_GLYPHS = ['–', '□', '✕'] as const
+const TITLEBAR_GLYPHS = ['–', '□', '×'] as const
 
 /** Status bar cells; the key cells are the classic CAPS/NUM/SCRL indicators. */
 const STATUS_CELLS: ReadonlyArray<{ text: string; key: boolean }> = [
@@ -82,7 +82,7 @@ export function apply(ctx: Context): void {
   titlebar.append(icon, title)
   for (const glyph of TITLEBAR_GLYPHS) {
     const btn = document.createElement('span')
-    btn.className = cls(glyph === '✕' ? 'xpTitlebarBtnClose' : 'xpTitlebarBtn')
+    btn.className = cls(glyph === '×' ? 'xpTitlebarBtnClose' : 'xpTitlebarBtn')
     btn.setAttribute('aria-hidden', 'true')
     btn.textContent = glyph
     titlebar.append(btn)

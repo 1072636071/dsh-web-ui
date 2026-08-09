@@ -65,7 +65,7 @@ window.__ModuleLoader__.load({
 		const TITLEBAR_GLYPHS = [
 			"–",
 			"□",
-			"✕"
+			"×"
 		];
 		/** Live-quote chip shown in the title bar before the window buttons. */
 		const TICKER = {

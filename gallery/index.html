@@ -215,9 +215,9 @@
   <div class="mbar">
     <span class="t" id="mTitle">试穿</span>
     <select id="mSkin" aria-label="选择皮肤"></select>
-    <button type="button" id="mTheme">🌙 暗色</button>
+    <button type="button" id="mTheme">暗色</button>
     <button type="button" id="mOpen" title="在新窗口打开模拟器">↗</button>
-    <button type="button" class="close-x" id="mClose">✕</button>
+    <button type="button" class="close-x" id="mClose">×</button>
   </div>
   <div class="frame-box">
     <div class="frame-loading" id="mLoading"><span class="spinner"></span>正在渲染皮肤…</div>
@@ -284,7 +284,7 @@
     dark.onerror = function () { this.style.display = 'none' }
     var tag = document.createElement('span')
     tag.className = 'mode-tag'
-    tag.innerHTML = '<span class="l">☀ 悬停看暗色</span><span class="d">🌙 暗色</span>'
+    tag.innerHTML = '<span class="l">悬停看暗色</span><span class="d">暗色</span>'
     shot.append(light, dark, tag)
     card.appendChild(shot)
 
@@ -330,7 +330,7 @@
     useBtn.textContent = '复制应用命令'
     useBtn.addEventListener('click', function () {
       copy('dsh-skin use ' + s.id)
-      useBtn.textContent = '已复制 ✓'
+      useBtn.textContent = '已复制'
       setTimeout(function () { useBtn.textContent = '复制应用命令' }, 1400)
     })
     actions.append(tryBtn, useBtn)
@@ -371,7 +371,7 @@
     state.skin = s.id
     state.dark = false
     mSkin.value = s.id
-    mTheme.textContent = '🌙 暗色'
+    mTheme.textContent = '暗色'
     mTitle.textContent = '试穿 · ' + s.name
     mCmd.textContent = 'dsh-skin use ' + s.id
     modal.classList.add('open')
@@ -388,7 +388,7 @@
   })
   mTheme.addEventListener('click', function () {
     state.dark = !state.dark
-    mTheme.textContent = state.dark ? '☀ 亮色' : '🌙 暗色'
+    mTheme.textContent = state.dark ? '亮色' : '暗色'
     refreshFrame()
   })
   document.getElementById('mClose').addEventListener('click', function () {
@@ -402,7 +402,7 @@
   document.getElementById('mCopy').addEventListener('click', function () {
     copy(mCmd.textContent)
     var b = document.getElementById('mCopy')
-    b.textContent = '已复制 ✓'
+    b.textContent = '已复制'
     setTimeout(function () { b.textContent = '复制命令' }, 1400)
   })
   modal.addEventListener('click', function (e) {

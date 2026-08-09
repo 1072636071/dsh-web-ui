@@ -132,7 +132,7 @@ async function main() {
     }
     const drift = Math.abs(prevFacade.skeleton.length - data.skeleton.length)
     if (drift > 64) {
-      console.warn(`⚠ 骨架与当前 GUI 状态差异较大（±${drift}B，通常因导出时的界面状态不同；如需同步可重新导出）`)
+      console.warn(`骨架与当前 GUI 状态差异较大（±${drift}B，通常因导出时的界面状态不同；如需同步可重新导出）`)
     }
     console.log('official facade up to date')
     process.exit(0)

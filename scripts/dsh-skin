@@ -52,7 +52,7 @@ function checkInstalled(name) {
     ok = fs.lstatSync(target).isSymbolicLink()
   } catch { /* absent */ }
   if (!ok) {
-    console.warn(`⚠  ${SKINS[name].pkg} 未安装到 profile；先运行 dsh-skin install ${name}（或 dsh plugin --profile ${DEFAULT_PROFILE} add ${SKINS[name].dir}），否则加载会失败。`)
+    console.warn(`${SKINS[name].pkg} 未安装到 profile；先运行 dsh-skin install ${name}（或 dsh plugin --profile ${DEFAULT_PROFILE} add ${SKINS[name].dir}），否则加载会失败。`)
   }
 }
 
