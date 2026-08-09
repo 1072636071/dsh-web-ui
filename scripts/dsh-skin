@@ -45,6 +45,32 @@ const SKINS = {
 /** Skin wired at the bundle layer already (no insert row needed here). */
 const BUNDLE_WIRED = new Set(['xp'])
 
+/** The profile manifest path (`~/.dsh/profiles/<profile>/package.json`). */
+function profileManifestPath() {
+  return `${HOME}/.dsh/profiles/${DEFAULT_PROFILE}/package.json`
+}
+
+/**
+ * Skins whose patch row the profile bundle layer already provides (installed
+ * via `dsh-skin install` = `dsh plugin add`, which reconciles the package
+ * into the profile's `dsh.profile.bundles`). `use` must not insert those rows
+ * again — a duplicate id fails the boot. Detected dynamically so installing
+ * new skins never requires editing this script.
+ */
+function bundleWiredFromProfile() {
+  try {
+    const manifest = JSON.parse(fs.readFileSync(profileManifestPath(), 'utf8'))
+    const bundles = manifest.dsh?.profile?.bundles ?? []
+    return new Set(
+      Object.entries(SKINS)
+        .filter(([, skin]) => bundles.includes(skin.pkg))
+        .map(([name]) => name),
+    )
+  } catch {
+    return new Set()
+  }
+}
+
 /** Warn (not fail) when a skin package is not resolvable from the web profile. */
 function checkInstalled(name) {
   const target = `${PROFILE_MODULES}/${SKINS[name].pkg}`
@@ -100,20 +126,34 @@ function stripManaged(patch) {
 }
 
 function renderManaged(active) {
+  const wired = new Set([...BUNDLE_WIRED, ...bundleWiredFromProfile()])
   const lines = [MANAGED_START]
   for (const name of Object.keys(SKINS)) {
     if (name === active) continue
     lines.push(`- id: ${SKINS[name].id}`, '  disabled: true')
   }
-  if (!BUNDLE_WIRED.has(active)) {
+  if (!wired.has(active)) {
     lines.push('- insert:', `    - id: ${SKINS[active].id}`, `      name: '${SKINS[active].pkg}'`)
   }
   lines.push(MANAGED_END)
   return lines.join('\n')
 }
 
-/** Which skin is currently enabled (from the patch's non-disabled skin row). */
+/**
+ * Which skin is currently enabled. With bundle-wired skins the active skin
+ * carries no insert row (the bundle layer provides it), so the answer is the
+ * bundle-wired skin that the patch does NOT disable; the legacy reading
+ * (last non-disabled skin row in the patch) remains for pre-bundle layouts.
+ */
 function currentActive(patch) {
+  const disabled = new Set()
+  for (const m of patch.matchAll(/^- id: (ui-skin-[a-z0-9-]+)\n  disabled: true/gm)) {
+    disabled.add(m[1])
+  }
+  const wired = new Set([...BUNDLE_WIRED, ...bundleWiredFromProfile()])
+  for (const [name, skin] of Object.entries(SKINS)) {
+    if (wired.has(name) && !disabled.has(skin.id)) return name
+  }
   const rows = [...patch.matchAll(/(?:^|\n) *- id: (ui-skin-[a-z0-9-]+)(\n *disabled: (true))?/g)]
   const enabled = []
   for (const m of rows) if (!m[3]) enabled.push(m[1])
