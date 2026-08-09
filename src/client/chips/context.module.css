@@ -1,11 +1,5 @@
-/* Context chip row above the composer input. Tokens only — no literal colors. */
-
-.chipsRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px 0;
-}
+/* Branch selector chip in the conversation header context hole.
+   Tokens only — no literal colors. */
 
 .anchor {
   position: relative;

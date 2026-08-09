@@ -1,14 +1,7 @@
-/** `git-graph` namespace dictionaries (project/branch selector + Git graph copy). */
+/** `git-graph` namespace dictionaries (branch selector + Git graph copy). */
 
 /** Simplified Chinese dictionary (the key-set source of truth). */
 export const zh = {
-  'project.placeholder': '选择项目',
-  'project.search': '搜索工作区',
-  'project.empty': '没有匹配的工作区',
-  'project.openFolder': '打开文件夹',
-  'project.remoteConnect': '远程连接',
-  'project.remoteConnectSoon': '即将支持',
-  'project.workOutside': '不在项目中工作',
   'branch.search': '搜索分支',
   'branch.empty': '未找到匹配分支',
   'branch.detached': '分离 HEAD',
@@ -40,7 +33,6 @@ export const zh = {
   'error.requestFailed': '分支操作失败：{error}',
   'toast.switchSuccess': '已切换到分支 {branchName}',
   'toast.createSuccess': '已创建并切换到分支 {branchName}',
-  'chip.aria.project': '项目',
   'chip.aria.branch': '分支',
 } satisfies Record<string, string>
 
@@ -49,13 +41,6 @@ export type GitGraphKey = keyof typeof zh
 
 /** English dictionary, checked complete against the zh key set. */
 export const en = {
-  'project.placeholder': 'Choose project',
-  'project.search': 'Search workspaces',
-  'project.empty': 'No matching workspaces',
-  'project.openFolder': 'Open Folder',
-  'project.remoteConnect': 'Remote Connect',
-  'project.remoteConnectSoon': 'Coming soon',
-  'project.workOutside': 'Work outside a project',
   'branch.search': 'Search branches',
   'branch.empty': 'No matching branches',
   'branch.detached': 'Detached HEAD',
@@ -87,6 +72,5 @@ export const en = {
   'error.requestFailed': 'Branch operation failed: {error}',
   'toast.switchSuccess': 'Switched to branch {branchName}',
   'toast.createSuccess': 'Created and switched to branch {branchName}',
-  'chip.aria.project': 'Project',
   'chip.aria.branch': 'Branch',
 } satisfies Record<GitGraphKey, string>

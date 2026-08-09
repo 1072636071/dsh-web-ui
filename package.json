@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-client-ui-git-graph",
-  "description": "External dsh web GUI plugin: a persistent project (workspace) selector + git branch selector + Git graph above the message input, with real host-side git operations (switch/create) and guards, as a dsh profile bundle",
+  "description": "External dsh web GUI plugin: a git branch selector + Git graph in the conversation header's context hole (beside the official workspace selector), with real host-side git operations (switch/create) and guards, as a dsh profile bundle",
   "version": "0.1.0",
   "private": true,
   "type": "module",
