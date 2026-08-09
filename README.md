@@ -23,7 +23,7 @@ DreamSkin「DeepSeek-鲸鱼娘」Codex 桌面主题的 dsh 适配：**鲸鱼插�
 dsh-skin use blue-fantasy
 ```
 
-> ⚠️ `blue-fantasy` 需先把包装进 DSH checkout 才能切换（见下文「一键切换皮肤」）。
+> ⚠️ `blue-fantasy` 需先安装（见下文「安装皮肤（官方 bundle 方式）」）才能切换。
 
 ### 🪟 Windows XP (Luna)
 
@@ -58,15 +58,20 @@ scripts/
   export-official-facade  从运行中的官方 dsh web GUI 导出样式 + 脱敏 DOM 快照
 ```
 
-> ⚠️ 同一时刻只接线一个皮肤：两个皮肤都会注入标题栏/状态栏。换皮肤 = 把 `web.cordis.yml` 里的皮肤行换成另一个（见各皮肤 README）。
+> ⚠️ 同一时刻只接线一个皮肤：两个皮肤都会注入标题栏/状态栏。互斥由 `dsh-skin use <name>` 保证（home 层 `disabled` 行）。
 
-每个皮肤包含：
+每个皮肤是一个**符合官方插件标准（turtle-ui 式 setup）的自包含包**：
 
 - `skin.json` — **主题库元数据**（id / 名称 / 作者 / tagline / 标签 / 强调色 / bodyAttr / 预览图路径），Gallery 与 `dsh-skin` 都以它为契约
 - `src/` — 插件源码（`apply()` 负责挂载，fiber dispose 负责全部收回）
-- `lib/client.js` — **预构建 bundle**（含内联 CSS，直接可用）
+- `cordis.patch.yml` — **bundle patch 层**：向 web 插件表插入自己的 `ui-skin-*` dshClient 行（`package.json` 的 `dsh.bundle.patch` 指向它）
+- `package.json` — `dsh.bundle` manifest + `dshClient` 声明 + `prepare` 脚本（自包含构建，`pnpm` 在 git 安装后自动运行）
+- `tsdown.config.ts` — 引用仓库根的 `skins/tsdown.client.ts` 自包含预设（官方 `packages/client/tsdown.client.ts` 的 standalone 移植：CSS Modules 内联注入 + 平台模块外部化 + 无类型检查），**不依赖 DSH monorepo**
+- `lib/` — **预构建产物**（`client.js` bundle + node half，提交入库，直接可用）
 - `preview/` — 亮/暗预览截图（`scripts/capture-previews` 生成，提交入库）
-- `package.json` / `tsdown.config.ts` — 在 DSH checkout 内重新构建所需的元数据
+
+> devDependencies 只用真实发布版本（tsdown / lightningcss / cordis / vitest / jsdom）。
+> `@deepseek-ai/dsh-*` 未发布到 npm，运行时由宿主 shell 的 module table 提供，构建时作为 external 处理。
 
 ## 皮肤主题库（预览 / 试穿）
 
@@ -97,18 +102,22 @@ node scripts/capture-previews           # 重拍全部预览图（需 playwright
 > 升级 dsh checkout 后，官方界面类名/样式可能变化，请重跑 `export-official-facade` 并提交新的
 > `gallery/official-facade.js`，模拟器即与官方界面同步。
 
-## 快速接入（预构建 bundle）
+## 安装皮肤（官方 bundle 方式）
 
-1. 把 `skins/<name>/` 整个目录拷进 DSH checkout 的 `packages/client/`（作为 workspace 包）。
-2. 在 `apps/cli/config/web.cordis.yml` 加一行：
+每个皮肤包声明了 `dsh.bundle` + `cordis.patch.yml`，所以用官方 `dsh plugin` 安装即可：
 
-   ```yaml
-   - id: <skin-id>
-     name: '@deepseek-ai/dsh-client-<skin-name>'
-   ```
+```sh
+# 本地路径安装（lib/ 已预构建提交，无需构建授权）
+dsh plugin --profile web add ~/code/dsh-web-ui/skins/qq98
 
-3. 在 `apps/cli/package.json` 的 dependencies 和 `tsconfig.client.json` 的 references 里各加一项（包名对应）。
-4. `pnpm install` 后重启 `dsh web`，刷新页面即生效；移除行和包即还原默认外观。
+# 或从 git 安装（pnpm ≥10 首次会因 prepare 授权失败——把 pnpm 打印的包键
+# 加进该 profile 的 pnpm-workspace.yaml 的 allowBuilds 后重试；prepare 会
+# 用自包含的 tsdown 配置直接转译 src/，无类型检查、不依赖 monorepo）
+dsh plugin --profile web add github:<org>/dsh-web-ui#<commit-sha>
+```
+
+安装后 bundle 的 patch 层自动插入 `ui-skin-*` 行（默认生效）。不想用 CLI 的话，
+也可以像以前一样把 `skins/<name>/` 拷进 checkout 的 `packages/client/` 作 workspace 包。
 
 ## 一键切换皮肤（dsh-skin）
 
@@ -116,6 +125,7 @@ node scripts/capture-previews           # 重拍全部预览图（需 playwright
 
 ```sh
 cp scripts/dsh-skin ~/.local/bin/   # 安装（一次即可）
+dsh-skin install qq98               # 用官方 dsh plugin add 装进 web profile（首次）
 dsh-skin list                       # 看所有皮肤 + 当前激活 + symlink 状态
 dsh-skin use qq98                   # 切到 QQ2008
 dsh-skin use xp                     # 切到 Windows XP（Luna）
@@ -124,11 +134,11 @@ dsh-skin current                    # 打印当前皮肤
 
 工具会：
 
-- 自动维护 profile 的 node_modules symlink（`~/.dsh/profiles/node_modules/@deepseek-ai/`），让皮肤包始终可解析；
+- `install` 走官方通道：`dsh plugin --profile web add <repo>/skins/<name>`（profile 可用 `DSH_SKIN_PROFILE` 覆盖）；
+- `use` 自动维护 profile 的 node_modules symlink（`~/.dsh/profiles/node_modules/@deepseek-ai/`），让皮肤包始终可解析；
 - 在 `~/.dsh/cordis.patch.yml` 里维护一个互斥的皮肤段：目标皮肤插入、其余皮肤 `disabled`（含 bundle 层已接线的 `ui-skin-xp`），保证同一时刻只有一个皮肤生效。
 
-⚠️ 皮肤名与 `skins/` 目录一一对应；换机器或换 checkout 后，改脚本顶部的 `SKINS` 注册表即可。
-`blue-fantasy` 需先把包装进 checkout 才可切换，`dsh-skin list/use` 会给出提示。
+⚠️ 皮肤名与 `skins/` 目录一一对应；换机器后，改脚本顶部的 `SKINS` 注册表（仓库路径）即可。
 
 ## GUI 内嵌皮肤中心（设置页 Skins 分区）
 
@@ -146,12 +156,7 @@ dsh-skin current                    # 打印当前皮肤
 接线（个人环境，不在 checkout 提交）：
 
 ```sh
-ln -sfn ~/code/dsh-web-ui/skins/skin-center \
-  ~/.dsh/profiles/node_modules/@deepseek-ai/dsh-client-ui-skin-center
-# ~/.dsh/cordis.patch.yml 增加（放在 dsh-skin managed 段之外）：
-#   - insert:
-#       - id: ui-skin-center
-#         name: '@deepseek-ai/dsh-client-ui-skin-center'
+dsh plugin --profile web add ~/code/dsh-web-ui/skins/skin-center   # 官方安装（bundle patch 自带 ui-skin-center 行）
 ```
 
 皮肤/元数据变更后重跑 `node scripts/skin-center-bundles`（重新内嵌 bundle 文本），并按
@@ -159,22 +164,24 @@ ln -sfn ~/code/dsh-web-ui/skins/skin-center \
 
 ## 从源码开发
 
-把皮肤包放进 checkout 后：
+本仓库是 pnpm workspace（`skins/*`），根目录一条命令装齐全部构建依赖：
 
 ```sh
-pnpm --filter @deepseek-ai/dsh-client-<skin-name> run bundle   # 重建 lib/client.js
-pnpm --filter @deepseek-ai/dsh-frontend run build              # 若改了壳层
+pnpm install            # 首次；会顺带跑每个皮肤的 prepare（自包含构建 lib/）
+pnpm build              # 重建全部皮肤 lib/（等价 pnpm -r build）
+pnpm test               # 跑全部皮肤的 vitest（apply 收回语义断言）
 ```
 
-皮肤 bundle 由 checkout 的 `packages/client/tsdown.client.ts` 预设构建（CSS Modules 自动注入 + 平台模块外部化）。
+皮肤 bundle 由 `skins/tsdown.client.ts` 预设构建（CSS Modules 自动注入 + 平台模块外部化 +
+`__ModuleLoader__.load` 闭包工厂），它是官方 checkout 预设的 standalone 移植，不依赖 monorepo。
 
 ## 新增一个皮肤
 
-1. 复制 `skins/qq98/` 作为模板，改包名、id 和文案。
+1. 复制 `skins/qq98/` 作为模板，改包名、id 和文案（记得同步 `cordis.patch.yml` 与 `dsh.bundle`）。
 2. 写 `skin.json`（id / 名称 / 作者 / tagline / 标签 / 强调色 / bodyAttr / 预览图路径）——Gallery 和 `dsh-skin` 都以它为契约。
 3. 样式全部挂在**你自己的 body 属性**下（如 `body[data-dsh-skin='<name>']`），避免与其它皮肤互相干扰；深色模式用 `[data-ds-dark-theme]` 变体。
 4. `apply()` 只写自己会收回的东西（属性、DOM、标题、favicon），dispose 时全部还原。
-5. 跑 `node scripts/gallery-build && node scripts/capture-previews` 重新生成 gallery 产物和亮/暗预览图，提交时一并附上。
+5. 跑 `pnpm build`、`node scripts/gallery-build && node scripts/capture-previews` 重新生成 gallery 产物和亮/暗预览图，提交时一并附上。
 
 ## 要求
 
@@ -207,7 +214,7 @@ remaps every dsh token into a serene blue-violet mood.
 dsh-skin use blue-fantasy
 ```
 
-> ⚠️ `blue-fantasy` first needs its package installed into the DSH checkout (see "One-command switching" below).
+> ⚠️ `blue-fantasy` first needs its package installed (see "Installing skins (official bundle way)" below).
 
 ### 🪟 Windows XP (Luna)
 
@@ -227,9 +234,10 @@ dsh-skin use xp
 - `skins/xp/` — the Windows XP (Luna) retro theme: blue gradient window chrome with caption buttons, green Start button, cream status bar with CAPS/NUM/SCRL indicators, square corners. Ships a prebuilt `lib/client.js` (CSS inlined) plus source.
 - **Theme gallery with try-on** (inspired by Codex-Dream-Skin's DreamSkin.cc): open `gallery/index.html` — zero dependencies, works from `file://` or any static host. Cards show every skin's real light/dark screenshots (hover to flip), metadata from `skins/<name>/skin.json`, and two actions: **试穿 (try-on)** opens a simulator whose *stock look is the official dsh web GUI itself* — `scripts/export-official-facade` snapshots the running official GUI's stylesheet + sanitized DOM into `gallery/official-facade.js`, then the simulator *actually executes the skin's client bundle* (`__ModuleLoader__` + minimal `ctx` shims) — injected title bars, status bars and styles all render for real, with light/dark toggle; **复制应用命令 (copy apply command)** gives `dsh-skin use <name>`. The simulator alone: `gallery/preview.html?skin=qq98&theme=dark`.
 - **Regeneration**: `node scripts/gallery-build` re-scans `skins/*/skin.json` and rewrites `gallery/manifest.js` + `gallery/bundles.js`; `node scripts/export-official-facade` re-snapshots the official GUI (re-run after a checkout upgrade); `node scripts/capture-previews` re-shoots every light/dark preview PNG (needs `npm i` + `npx playwright install chromium`). Commit regenerated assets with changes.
-- **Quick use**: copy the skin dir into a DSH checkout's `packages/client/`, add a `dshClient` row to `apps/cli/config/web.cordis.yml`, add the package to `apps/cli/package.json` and `tsconfig.client.json`, `pnpm install`, restart `dsh web`, refresh. Wire **only one skin row at a time** — two skins both inject title/status bars.
-- **One-command switching**: `scripts/dsh-skin` rewrites the hot-reloaded `~/.dsh/cordis.patch.yml` and keeps the profile node_modules symlinks (`~/.dsh/profiles/node_modules/@deepseek-ai/`) in sync — `cp scripts/dsh-skin ~/.local/bin/`, then `dsh-skin use qq98|xp|ths|blue-fantasy`, `dsh-skin list`, `dsh-skin current`. The target skin gets its insert row, every other skin (including the bundle-layer-wired `ui-skin-xp`) gets a `disabled` row, so exactly one skin is ever live; the config watcher applies the switch within seconds — refresh the page. `blue-fantasy` needs its package installed into the checkout first (the script warns otherwise).
-- **Add a skin**: clone `skins/qq98/`, write `skin.json` (the gallery/dsh-skin contract), scope your styles under your own body attribute, retract everything on dispose, then re-run `gallery-build` + `capture-previews` and commit the regenerated assets.
+- **Installing skins (official bundle way)**: every skin package declares `dsh.bundle` + `cordis.patch.yml` in the official turtle-ui shape, so the canonical install is `dsh plugin --profile web add ~/code/dsh-web-ui/skins/<skin>` (prebuilt `lib/` is committed) or `dsh plugin --profile web add github:<org>/dsh-web-ui#<sha>` — pnpm ≥10 asks once for `allowBuilds` authorization because git installs run the package's self-contained `prepare` build (dedicated tsdown config, no project references, no type checking). The bundle patch inserts the skin's `ui-skin-*` row automatically. The old "copy the dir into the checkout" flow still works.
+- **One-command switching**: `scripts/dsh-skin` rewrites the hot-reloaded `~/.dsh/cordis.patch.yml` and keeps the profile node_modules symlinks (`~/.dsh/profiles/node_modules/@deepseek-ai/`) in sync — `cp scripts/dsh-skin ~/.local/bin/`, then `dsh-skin install qq98` (official `dsh plugin add`; profile overridable via `DSH_SKIN_PROFILE`), `dsh-skin use qq98|xp|ths|blue-fantasy`, `dsh-skin list`, `dsh-skin current`. The target skin gets its insert row, every other skin (including the bundle-layer-wired `ui-skin-xp`) gets a `disabled` row, so exactly one skin is ever live; the config watcher applies the switch within seconds — refresh the page.
+- **Development**: the repo is a pnpm workspace (`skins/*`) — `pnpm install` at the root installs all build deps and runs each skin's `prepare`; `pnpm build` / `pnpm test` rebuild all bundles / run all vitest specs. The bundle preset lives at `skins/tsdown.client.ts`, a standalone port of the checkout's `packages/client/tsdown.client.ts` (CSS-modules auto-inject, platform-module externals, `__ModuleLoader__.load` closure factory, no type checking, no monorepo imports).
+- **Add a skin**: clone `skins/qq98/`, write `skin.json` (the gallery/dsh-skin contract), keep `cordis.patch.yml` and `dsh.bundle` in sync, scope your styles under your own body attribute, retract everything on dispose, then re-run `gallery-build` + `capture-previews` and commit the regenerated assets.
 - `skins/blue-fantasy/` — 蓝色幻想 (Blue Fantasy): the DreamSkin "DeepSeek-鲸鱼娘" Codex desktop theme adapted: whale-art backdrop (scrim swaps live with the light/dark theme), periwinkle-indigo palette, translucent panes. Preview: [light](skins/blue-fantasy/preview/light.png) / [dark](skins/blue-fantasy/preview/dark.png).
 - **In-GUI skin center** (`skins/skin-center/`): a client plugin (`@deepseek-ai/dsh-client-ui-skin-center`) adding a **Skins** section to the real GUI's settings page — lists every skin (Active badge from `window.__DSH_BOOT__`), **Try on** executes the actual skin client bundle through the page's own `__ModuleLoader__`/`__DSH_MODULES__` (real chrome, light/dark via the official theme service), **Exit try-on** fully restores the active skin (attribute, backdrop, chrome, favicon, title), and **Apply** copies the `dsh-skin use <name>` command (the GUI has no persisted-config write channel — researched). Mutual exclusion is recipe-based retraction of the active skin's visual writes. Regenerate its embedded registry with `node scripts/skin-center-bundles`; build instructions in `skins/skin-center/README.md`; e2e screenshots in `docs/e2e/skin-center/`.
 

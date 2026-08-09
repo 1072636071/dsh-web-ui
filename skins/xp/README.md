@@ -6,15 +6,11 @@ Windows XP (Luna) skin for the dsh web GUI. Hot-pluggable as a client plugin: `a
 
 The skin is presentation-only: no services are injected, no cordis events are emitted, and nothing reaches a model request. The dark palette (`body[data-dsh-xp][data-ds-dark-theme]`) is the Zune-style black variant, so the base theme system keeps flipping tokens underneath. Scrollbar aliases stay on the base theme, keeping the stock scrollbar contract under the skin.
 
-## Wiring it into a checkout
+## Installing (official bundle)
 
-1. Add the package to the checkout as a workspace package (or as an `apps/cli` dependency resolving the package).
-2. Add a `dshClient` row to `apps/cli/config/web.cordis.yml`:
-   `- id: ui-skin-xp` / `name: '@deepseek-ai/dsh-client-ui-skin-xp'`.
-3. Add `@deepseek-ai/dsh-client-ui-skin-xp` to `apps/cli/package.json` dependencies and a `references` entry in `tsconfig.client.json`.
-4. `pnpm --filter @deepseek-ai/dsh-client-ui-skin-xp run bundle` (and rebuild the frontend dist), then restart `dsh web`/refresh the page.
-
-Only one skin row should be wired at a time — two skins would both inject chrome. Removing the row (and the package) returns the GUI to its stock look.
+1. From git: `dsh plugin --profile <name> add github:<org>/dsh-web-ui#<sha>`. On pnpm ≥10 the first install will fail the `prepare` authorization prompt — add the package key pnpm prints to the profile's `pnpm-workspace.yaml` `allowBuilds` list, then retry (`prepare` self-containedly builds `lib/`).
+2. From a local path: `dsh plugin --profile <name> add /path/to/dsh-web-ui/skins/xp` (`lib/` ships prebuilt).
+3. Switch skins with `dsh-skin use xp`; only one skin is active at a time.
 
 ## Requirements
 

@@ -6,15 +6,24 @@ dsh web GUI 的 QQ2008 怀旧皮肤——dsh web ui 家族里收录的第一个�
 
 皮肤纯属呈现层：不注入任何服务、不发出任何 cordis 事件、不触及模型请求。深色调色板（`body[data-dsh-retro][data-ds-dark-theme]`）是同款水晶蓝外观的「深夜」变体，基础主题系统依然在其下正常切换 token。
 
-## 接入一个 checkout
+## 安装（官方 bundle 方式）
 
-1. 把该包作为 workspace 包放入 checkout（或作为能解析到该包的 `apps/cli` 依赖）。
-2. 在 `apps/cli/config/web.cordis.yml` 加一行 `dshClient`：
-   `- id: ui-skin-qq98` / `name: '@deepseek-ai/dsh-client-ui-skin-qq98'`。
-3. 在 `apps/cli/package.json` 的 dependencies 和 `tsconfig.client.json` 的 references 里各加一项。
-4. `pnpm --filter @deepseek-ai/dsh-client-ui-skin-qq98 run bundle`（并重建前端 dist），重启 `dsh web` / 刷新页面。
+该包是一个独立的 dsh 插件——`cordis.patch.yml` 会在安装时注入其 `dshClient`
+条目，因此无需手动编辑 `web.cordis.yml`。
 
-移除该行（连同包）即可回到默认外观。
+1. **从 git 安装**：
+   `dsh plugin --profile <name> add github:<org>/dsh-web-ui#<commit-sha>`。
+   在 pnpm ≥10 下首次安装可能因 `prepare` 脚本不在允许列表而被拒绝授权——把
+   pnpm 打印出的包键加进该 profile 的 `pnpm-workspace.yaml` 的 `allowBuilds`
+   后重试即可（`prepare` 通过本仓库 `skins/` 下的 `tsdown.config.ts` 预设自包含
+   地构建 `lib/`，无需 monorepo 引用）。
+2. **或从本地路径安装**：
+   `dsh plugin --profile <name> add /path/to/dsh-web-ui/skins/qq98`
+   （`lib/` 已预构建并提交，故不会触发构建步骤）。
+3. 用 `dsh-skin use qq98`（本仓库 `scripts/dsh-skin` 辅助脚本）切换皮肤；
+   同一时刻只激活一个皮肤。
+
+移除该插件（连同其注入的条目）即可回到默认外观。
 
 ## 依赖
 

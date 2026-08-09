@@ -4,10 +4,18 @@
 /**
  * dsh-skin — one-command skin switching for the DSH web GUI.
  *
- * Maintains the mutually-exclusive skin section of ~/.dsh/cordis.patch.yml
- * (hot-reloaded by the config watcher, so switching takes effect in
- * seconds without a restart) plus the profile node_modules symlinks that
- * make each skin package resolvable from the web profile.
+ * Every skin in this repo is a standalone plugin package in the official
+ * turtle-ui shape: `dsh.bundle` manifest + cordis.patch.yml + self-contained
+ * `prepare` build, so the canonical install is
+ *
+ *     dsh plugin --profile <name> add /path/to/dsh-web-ui/skins/<skin>
+ *     dsh-skin install <skin>        # same thing, profile auto-detected
+ *
+ * `use` then maintains the mutually-exclusive skin section of
+ * ~/.dsh/cordis.patch.yml (hot-reloaded by the config watcher, so switching
+ * takes effect in seconds without a restart) and the profile node_modules
+ * symlink that makes the chosen package resolvable from the web profile
+ * (pnpm's `link:` installs are symlinks too, so both paths coexist).
  *
  * Switch = rewrite the managed patch section → HMR re-scans → refresh the
  * page. Only ONE skin row is ever enabled: every non-active skin gets an
@@ -17,34 +25,50 @@
  */
 
 const fs = require('node:fs')
+const { execFileSync } = require('node:child_process')
 
 const HOME = process.env.HOME
 const PATCH = `${HOME}/.dsh/cordis.patch.yml`
 const PROFILE_MODULES = `${HOME}/.dsh/profiles/node_modules`
-const CHECKOUT = fs.existsSync(`${HOME}/.dsh/source/current`)
-  ? fs.realpathSync(`${HOME}/.dsh/source/current`)
-  : null
+/** The GUI profile this machine runs (dsh web); overridable via DSH_SKIN_PROFILE. */
+const DEFAULT_PROFILE = process.env.DSH_SKIN_PROFILE || 'web'
+const REPO = `${HOME}/code/dsh-web-ui`
 
-/** Skin registry: name -> package, cordis row id, symlink resolve target. */
+/** Skin registry: name -> package, cordis row id, symlink resolve target (all repo dirs). */
 const SKINS = {
-  qq98: { pkg: '@deepseek-ai/dsh-client-ui-skin-qq98', id: 'ui-skin-qq98', dir: `${HOME}/code/dsh-web-ui/skins/qq98` },
-  ths: { pkg: '@deepseek-ai/dsh-client-ui-skin-ths', id: 'ui-skin-ths', dir: `${CHECKOUT}/packages/client/ui-skin-ths` },
-  xp: { pkg: '@deepseek-ai/dsh-client-ui-skin-xp', id: 'ui-skin-xp', dir: `${CHECKOUT}/packages/client/ui-skin-xp` },
-  // blue-fantasy 需要先按 README 把包装进 checkout（packages/client/ui-skin-blue-fantasy），
-  // 否则 use 会写入指向未安装包的 insert 行。
-  'blue-fantasy': { pkg: '@deepseek-ai/dsh-client-ui-skin-blue-fantasy', id: 'ui-skin-blue-fantasy', dir: `${HOME}/code/dsh-web-ui/skins/blue-fantasy` },
+  qq98: { pkg: '@deepseek-ai/dsh-client-ui-skin-qq98', id: 'ui-skin-qq98', dir: `${REPO}/skins/qq98` },
+  ths: { pkg: '@deepseek-ai/dsh-client-ui-skin-ths', id: 'ui-skin-ths', dir: `${REPO}/skins/ths` },
+  xp: { pkg: '@deepseek-ai/dsh-client-ui-skin-xp', id: 'ui-skin-xp', dir: `${REPO}/skins/xp` },
+  'blue-fantasy': { pkg: '@deepseek-ai/dsh-client-ui-skin-blue-fantasy', id: 'ui-skin-blue-fantasy', dir: `${REPO}/skins/blue-fantasy` },
 }
 /** Skin wired at the bundle layer already (no insert row needed here). */
 const BUNDLE_WIRED = new Set(['xp'])
 
-/** Warn (not fail) when a skin's package dir is absent from the checkout —
-    the insert row would then reference an uninstalled package. */
+/** Warn (not fail) when a skin package is not resolvable from the web profile. */
 function checkInstalled(name) {
-  if (!CHECKOUT) return
-  const pkgDir = `${CHECKOUT}/packages/client/${SKINS[name].id}`
-  if (!fs.existsSync(pkgDir)) {
-    console.warn(`⚠  ${SKINS[name].id} 不在 checkout（${pkgDir} 缺失）；请先把皮肤包装进 checkout，否则加载会失败。`)
+  const target = `${PROFILE_MODULES}/${SKINS[name].pkg}`
+  let ok = false
+  try {
+    ok = fs.lstatSync(target).isSymbolicLink()
+  } catch { /* absent */ }
+  if (!ok) {
+    console.warn(`⚠  ${SKINS[name].pkg} 未安装到 profile；先运行 dsh-skin install ${name}（或 dsh plugin --profile ${DEFAULT_PROFILE} add ${SKINS[name].dir}），否则加载会失败。`)
   }
+}
+
+/** Install a skin into the web profile the official way (dsh plugin add). */
+function cmdInstall(name) {
+  if (!SKINS[name]) {
+    console.error(`unknown skin "${name}". Known: ${Object.keys(SKINS).join(', ')}`)
+    process.exit(1)
+  }
+  if (!fs.existsSync(SKINS[name].dir)) {
+    console.error(`skin source dir missing: ${SKINS[name].dir}`)
+    process.exit(1)
+  }
+  console.log(`dsh plugin --profile ${DEFAULT_PROFILE} add ${SKINS[name].dir}`)
+  execFileSync('dsh', ['plugin', '--profile', DEFAULT_PROFILE, 'add', SKINS[name].dir], { stdio: 'inherit' })
+  console.log(`installed ${SKINS[name].pkg} into profile "${DEFAULT_PROFILE}" — the dshClient row comes from the bundle's cordis.patch.yml.`)
 }
 
 const MANAGED_START = '# --- dsh-skin managed (auto-generated; do not edit) ---'
@@ -159,15 +183,17 @@ function cmdCurrent() {
 const [,, cmd, arg] = process.argv
 switch (cmd) {
   case 'use': cmdUse(arg); break
+  case 'install': cmdInstall(arg); break
   case 'list': cmdList(); break
   case 'current': cmdCurrent(); break
   default:
     console.log('dsh-skin — one-command skin switching for the DSH web GUI')
     console.log('')
     console.log('usage:')
-    console.log('  dsh-skin use <name>   switch skins (writes the hot-reloaded patch + symlink)')
-    console.log('  dsh-skin list         show skins, the active one, and symlink state')
-    console.log('  dsh-skin current      print the active skin name')
+    console.log('  dsh-skin install <name>  install a skin into the web profile the official way (dsh plugin add)')
+    console.log('  dsh-skin use <name>      switch skins (writes the hot-reloaded patch + symlink)')
+    console.log('  dsh-skin list            show skins, the active one, and symlink state')
+    console.log('  dsh-skin current         print the active skin name')
     console.log('')
     console.log(`skins: ${Object.keys(SKINS).join(', ')}`)
     process.exit(cmd ? 1 : 0)

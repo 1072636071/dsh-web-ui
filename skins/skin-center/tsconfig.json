@@ -1,33 +1,19 @@
 {
-  "extends": "../../../tsconfig.base.client.json",
+  // Standalone compiler shape for the skin-center bundle (self-contained port
+  // of the checkout's tsconfig.base.client.json — no monorepo extends).
+  // Builds transpile-only (tsdown, dts: false): no type checking, so the
+  // @deepseek-ai/dsh-* type-only imports resolve to nothing and are erased.
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "lib/types"
+    "target": "es2024",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "lib": ["ES2024", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "noEmit": true
   },
-  "include": [
-    "src"
-  ],
-  "references": [
-    {
-      "path": "../locale"
-    },
-    {
-      "path": "../runtime"
-    },
-    {
-      "path": "../ui-settings"
-    },
-    {
-      "path": "../ui-slots"
-    },
-    {
-      "path": "../ui-theme"
-    },
-    {
-      "path": "../../../vendor/cordis"
-    },
-    {
-      "path": "../../support/invariants"
-    }
-  ]
+  "include": ["src"]
 }

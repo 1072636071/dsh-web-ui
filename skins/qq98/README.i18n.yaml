@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write packages/client/ui-skin-qq98/README.md
-README.md: 12310a0a48e7688c79eca7c017981bf129c56e77
-README.zh.md: d94939ef7e53f921357744a31d7ea172503e02d0
+README.md: 3c2b69891fade43c782a1e54fb943cee4e385f04
+README.zh.md: 832f41debaa4a17fe41f8532f3e1e8b787e1be70

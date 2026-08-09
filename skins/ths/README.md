@@ -6,13 +6,14 @@ Tonghuashun-style (同花顺) stock-trading skin for the dsh web GUI. Hot-plugga
 
 The skin is presentation-only: no services are injected, no cordis events are emitted, and nothing reaches a model request. The dark palette (`body[data-dsh-ths][data-ds-dark-theme]`) is the night-trading variant, so the base theme system keeps flipping tokens underneath. Scrollbar aliases stay on the base theme, keeping the stock scrollbar contract under the skin.
 
-## Wiring it into a checkout
+## Installing (official bundle)
 
-1. Add the package to the checkout as a workspace package (or as an `apps/cli` dependency resolving the package).
-2. Add a `dshClient` row to `apps/cli/config/web.cordis.yml`:
-   `- id: ui-skin-ths` / `name: '@deepseek-ai/dsh-client-ui-skin-ths'`.
-3. Add `@deepseek-ai/dsh-client-ui-skin-ths` to `apps/cli/package.json` dependencies and a `references` entry in `tsconfig.client.json`.
-4. `pnpm --filter @deepseek-ai/dsh-client-ui-skin-ths run bundle` (and rebuild the frontend dist), then restart `dsh web`/refresh the page.
+This package is an official `dsh` plugin bundle (declared via `dsh.bundle.patch` in `package.json` — see `docs/user/develop/basic/publish.md`). Install it with `dsh plugin`:
+
+1. **From git** — `dsh plugin --profile <name> add github:<org>/dsh-web-ui#<sha>`.
+   With pnpm ≥ 10 the first install will fail on `prepare` authorization; add the package key pnpm prints into that profile's `pnpm-workspace.yaml` `allowBuilds` and retry (`prepare` runs a self-contained build producing `lib/`).
+2. **From a local path** — `dsh plugin --profile <name> add /path/to/dsh-web-ui/skins/ths` (`lib/` is pre-built and committed).
+3. Switch with `dsh-skin use ths`; only one skin is active at a time.
 
 Only one skin row should be wired at a time — two skins would both inject chrome. Removing the row (and the package) returns the GUI to its stock look.
 

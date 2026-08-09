@@ -6,15 +6,11 @@
 
 皮肤只做呈现：不注入任何服务、不发出任何 cordis 事件、不触及模型请求。暗色配色（`body[data-dsh-xp][data-ds-dark-theme]`）为 Zune 风格黑色变体，底层主题系统仍可继续翻转令牌。滚动条别名保留在基础主题上，保持皮肤下的原生滚动条契约不变。
 
-## 接入某个 checkout
+## 安装（官方 bundle 方式）
 
-1. 把本包作为工作区包加入 checkout（或作为可解析到本包的 `apps/cli` 依赖）。
-2. 在 `apps/cli/config/web.cordis.yml` 中添加一行 `dshClient`：
-   `- id: ui-skin-xp` / `name: '@deepseek-ai/dsh-client-ui-skin-xp'`。
-3. 在 `apps/cli/package.json` 的 dependencies 中加入 `@deepseek-ai/dsh-client-ui-skin-xp`，并在 `tsconfig.client.json` 中加入 `references` 条目。
-4. 运行 `pnpm --filter @deepseek-ai/dsh-client-ui-skin-xp run bundle`（并重建前端 dist），然后重启 `dsh web`/刷新页面。
-
-同一时间只应接线一个皮肤行——两个皮肤会同时注入窗口装饰。移除该行（连同包）即可恢复 GUI 原生外观。
+1. git 安装：`dsh plugin --profile <name> add github:<org>/dsh-web-ui#<sha>`。pnpm ≥10 首次会因 `prepare` 授权失败——把 pnpm 打印的包键加入该 profile 的 `pnpm-workspace.yaml` 的 `allowBuilds` 列表后再重试（`prepare` 自包含构建 `lib/`）。
+2. 本地路径安装：`dsh plugin --profile <name> add /path/to/dsh-web-ui/skins/xp`（`lib/` 已预构建提交）。
+3. 切换皮肤用 `dsh-skin use xp`；同一时刻只激活一个皮肤。
 
 ## 依赖
 

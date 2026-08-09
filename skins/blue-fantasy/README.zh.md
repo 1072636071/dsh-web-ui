@@ -6,14 +6,11 @@ English | [中文](README.zh.md)
 
 皮肤纯呈现层：不注入服务、不发事件、不触及模型请求。深色形态（`body[data-dsh-blue-fantasy][data-ds-dark-theme]`）是同一张图的夜航版本——深靛蓝纱幕盖在压暗的背景上——基础主题系统在底下照常工作。
 
-## 接线进 checkout
+## 安装（官方 bundle 方式）
 
-1. 把包作为 workspace 包加进 checkout（或作为 `apps/cli` 依赖解析）。
-2. 在 web profile 的 patch 里加 `dshClient` 行：
-   `- id: ui-skin-blue-fantasy` / `name: '@deepseek-ai/dsh-client-ui-skin-blue-fantasy'`。
-3. `pnpm --filter @deepseek-ai/dsh-client-ui-skin-blue-fantasy run bundle`（或直接用预构建 `lib/client.js`），重启 `dsh web`/刷新页面。
-
-移除该行（与包）即回到默认外观。
+1. git 安装：`dsh plugin --profile <name> add github:<org>/dsh-web-ui#<sha>`。pnpm ≥10 首次会因 `prepare` 授权失败——把 pnpm 打印的包键加入该 profile 的 `pnpm-workspace.yaml` 的 `allowBuilds` 后重试（`prepare` 自包含构建 `lib/`）。
+2. 本地路径安装：`dsh plugin --profile <name> add /path/to/dsh-web-ui/skins/blue-fantasy`（`lib/` 已预构建提交）。
+3. 切换用 `dsh-skin use blue-fantasy`；同一时刻只激活一个皮肤。
 
 ## 背景图
 

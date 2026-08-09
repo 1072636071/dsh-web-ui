@@ -6,15 +6,16 @@ dsh web GUI 的同花顺风格炒股皮肤。作为客户端插件热插拔：`a
 
 皮肤纯属呈现层：不注入任何服务、不发出任何 cordis 事件、不触及模型请求。深色调色板（`body[data-dsh-ths][data-ds-dark-theme]`）是夜间交易变体，基础主题系统依然在其下正常切换 token。滚动条别名保持基础主题不变，皮肤之下滚动条契约不变。
 
-## 接入一个 checkout
+## 安装（官方 bundle 方式）
 
-1. 把该包作为 workspace 包放入 checkout（或作为能解析到该包的 `apps/cli` 依赖）。
-2. 在 `apps/cli/config/web.cordis.yml` 加一行 `dshClient`：
-   `- id: ui-skin-ths` / `name: '@deepseek-ai/dsh-client-ui-skin-ths'`。
-3. 在 `apps/cli/package.json` 的 dependencies 和 `tsconfig.client.json` 的 references 里各加一项。
-4. `pnpm --filter @deepseek-ai/dsh-client-ui-skin-ths run bundle`（并重建前端 dist），重启 `dsh web` / 刷新页面。
+本包是官方 `dsh` 插件 bundle（`package.json` 通过 `dsh.bundle.patch` 声明，见 `docs/user/develop/basic/publish.md`）。用 `dsh plugin` 安装：
 
-同一时刻只应接线一个皮肤行——两个皮肤会同时注入窗口 chrome。移除该行（连同包）即可回到默认外观。
+1. **git 安装**——`dsh plugin --profile <name> add github:<org>/dsh-web-ui#<sha>`。
+   pnpm ≥ 10 首次会因 `prepare` 授权失败；把 pnpm 打印的包键加入该 profile 的 `pnpm-workspace.yaml` 的 `allowBuilds` 后重试（`prepare` 做自包含构建产出 `lib/`）。
+2. **本地路径安装**——`dsh plugin --profile <name> add /path/to/dsh-web-ui/skins/ths`（`lib/` 已预构建提交）。
+3. 切换用 `dsh-skin use ths`；同一时刻只激活一个皮肤。
+
+同一时刻只应激活一个皮肤行——两个皮肤会同时注入窗口 chrome。移除该行（连同包）即可回到默认外观。
 
 ## 依赖
 

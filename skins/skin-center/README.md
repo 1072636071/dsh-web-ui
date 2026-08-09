@@ -14,6 +14,25 @@
 - **应用**：浏览器无法写 `~/.dsh/cordis.patch.yml`（调研结论：cordis loader 配置没有浏览器
   可用的写通道），所以「Apply」复制一条命令 `dsh-skin use <name>`，终端执行即持久化并热重载。
 
+## 安装（官方 plugin bundle 方式）
+
+skin-center 是符合 DSH 官方插件标准的自包含 bundle（`dsh.bundle.patch` 指向
+`cordis.patch.yml`，`prepare` 用专用 tsdown 配置自包含构建，无项目引用、无类型检查），
+可按标准插件方式安装：
+
+```sh
+# 本地路径安装（lib/ 已预构建提交，可离线解析）
+dsh plugin --profile <name> add /path/to/dsh-web-ui/skins/skin-center
+
+# 或 git 安装（release 某个 commit 后指向它的 sha）
+dsh plugin --profile <name> add github:<org>/dsh-web-ui#<sha>
+```
+
+> pnpm ≥10 安装 git 依赖前需先授权 `allowBuilds`（`prepare` 会原地构建），本地路径安装则无此要求。
+
+- 需要皮肤插件们（qq98 / ths / xp / blue-fantasy）在宿主里也可解析时，skin-center 才能
+  完整列出 / 试穿全部皮肤；skin-center 本身无互斥要求。
+
 ## 目录结构
 
 ```

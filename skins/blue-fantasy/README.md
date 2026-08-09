@@ -6,14 +6,11 @@ English | [中文](README.zh.md)
 
 The skin is presentation-only: no services are injected, no cordis events are emitted, and nothing reaches a model request. The dark palette (`body[data-dsh-blue-fantasy][data-ds-dark-theme]`) is a night-whale take on the same art — a deep indigo veil over the dimmed backdrop — so the base theme system keeps working underneath.
 
-## Wiring it into a checkout
+## Installing (official bundle)
 
-1. Add the package to the checkout as a workspace package (or as an `apps/cli` dependency resolving the package).
-2. Add a `dshClient` row to the web profile's patch:
-   `- id: ui-skin-blue-fantasy` / `name: '@deepseek-ai/dsh-client-ui-skin-blue-fantasy'`.
-3. `pnpm --filter @deepseek-ai/dsh-client-ui-skin-blue-fantasy run bundle` (or use the prebuilt `lib/client.js`), then restart `dsh web`/refresh the page.
-
-Removing the row (and the package) returns the GUI to its stock look.
+1. From git: `dsh plugin --profile <name> add github:<org>/dsh-web-ui#<sha>`. On pnpm ≥10 the first install will fail the `prepare` authorization prompt — add the package key pnpm prints to the profile's `pnpm-workspace.yaml` `allowBuilds` list, then retry (`prepare` self-containedly builds `lib/`).
+2. From a local path: `dsh plugin --profile <name> add /path/to/dsh-web-ui/skins/blue-fantasy` (`lib/` ships prebuilt).
+3. Switch skins with `dsh-skin use blue-fantasy`; only one skin is active at a time.
 
 ## The backdrop art
 
