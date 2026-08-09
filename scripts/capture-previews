@@ -96,7 +96,8 @@ async function main() {
         return document.body.dataset.dshRetro !== undefined ||
                document.body.dataset.dshThs !== undefined ||
                document.body.dataset.dshXp !== undefined ||
-               document.body.dataset.dshBlueFantasy !== undefined
+               document.body.dataset.dshBlueFantasy !== undefined ||
+               document.body.dataset.dshDragonHeir !== undefined
       }, { timeout: 10000 })
       const errText = await page.evaluate(() => {
         const el = document.getElementById('skinErr')
