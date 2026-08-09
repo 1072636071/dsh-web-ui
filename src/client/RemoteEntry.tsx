@@ -11,7 +11,7 @@ import { createPortal } from 'react-dom'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import type { PairingPhase } from '../pairing.ts'
 import { RemotePanel, type PanelState } from './RemotePanel.tsx'
-import { copyText, issuePair, stopPair, type PairStateFrame } from './pair-api.ts'
+import { copyText, issuePair, stopPair, type IssueResponse, type PairStateFrame } from './pair-api.ts'
 import { PhoneIcon } from './PhoneIcon.tsx'
 import css from './remote.module.css'
 
@@ -50,9 +50,19 @@ export function RemoteEntry({ wide, useWorkspaces, t }: RemoteEntryProps) {
   }, [])
 
   const mint = useCallback(async (): Promise<void> => {
-    const result = await issuePair(workspaceId)
+    let result: IssueResponse
+    try {
+      result = await issuePair(workspaceId)
+    } catch {
+      // Fetch/network failure: show an explicit state instead of silently
+      // leaving the panel on its initial banner.
+      setState({ kind: 'unreachable' })
+      return
+    }
     if (!result.ok) {
-      setState({ kind: 'lan-required' })
+      // 403 is the loopback-only fence refusing a LAN origin (the panel is a
+      // desktop control endpoint); 409 means the server never bound 0.0.0.0.
+      setState(result.code === 'forbidden' ? { kind: 'loopback-required' } : { kind: 'lan-required' })
       return
     }
     setState({
