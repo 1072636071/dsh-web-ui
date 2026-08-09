@@ -1,0 +1,138 @@
+/**
+ * Task-board copy: zh-first dictionaries with an English fallback, selected
+ * by the document language. Kept dependency-free (no dsh locale service) so
+ * the DOM-injected entry row and the standalone board tree share one tiny
+ * lookup.
+ */
+
+/** zh dictionary (key-set source of truth). */
+export const zh = {
+  'entry.label': '任务看板',
+  'board.title': '任务看板',
+  'board.close': '返回对话',
+  'board.new': '新建任务',
+  'board.search': '筛选任务…',
+  'board.empty': '这个状态还没有任务',
+  'board.filterAll': '全部',
+  'board.status': '状态',
+  'board.status.backlog': '待规划',
+  'board.status.todo': '待办',
+  'board.status.running': '进行中',
+  'board.status.done': '已完成',
+  'board.status.failed': '已失败',
+  'board.runs': '次执行',
+  'board.updated': '更新于',
+  'board.created': '创建于',
+  'new.title': '标题',
+  'new.titlePlaceholder': '一句话描述要做什么',
+  'new.description': '描述',
+  'new.descriptionPlaceholder': '补充背景、范围与验收（可选）',
+  'new.prompt': '执行 Prompt',
+  'new.promptPlaceholder': '发给 agent 的完整指令（留空则使用标题）',
+  'new.submit': '创建',
+  'new.cancel': '取消',
+  'new.required': '标题不能为空',
+  'detail.title': '任务详情',
+  'detail.close': '关闭',
+  'detail.prompt': '执行 Prompt',
+  'detail.description': '描述',
+  'detail.execution': '执行记录',
+  'detail.noExecution': '尚未执行',
+  'detail.run': '执行',
+  'detail.rerun': '重新执行',
+  'detail.delete': '删除',
+  'detail.viewSession': '查看会话',
+  'detail.noSession': '暂无会话',
+  'detail.executionStarted': '已启动',
+  'detail.executionEnded': '已结束',
+  'detail.result.succeeded': '成功',
+  'detail.result.failed': '失败',
+  'detail.result.cancelled': '已取消',
+  'detail.result.running': '进行中',
+  'delete.title': '删除任务',
+  'delete.confirm': '确定删除「{name}」吗？删除后不可恢复。',
+  'delete.ok': '删除',
+  'delete.cancel': '取消',
+  'status.move.backlog': '移到待规划',
+  'status.move.todo': '移到待办',
+  'exec.error.noWorkspace': '没有可用工作区，无法执行任务',
+  'exec.error.promptRejected': 'Prompt 被拒绝',
+  'run.failed': '执行失败：{error}',
+  'time.justNow': '刚刚',
+} satisfies Record<string, string>
+
+/** en dictionary, complete against the zh key set. */
+export const en: Record<keyof typeof zh, string> = {
+  'entry.label': 'Task Board',
+  'board.title': 'Task Board',
+  'board.close': 'Back to chat',
+  'board.new': 'New Task',
+  'board.search': 'Filter tasks…',
+  'board.empty': 'No tasks in this column',
+  'board.filterAll': 'All',
+  'board.status': 'Status',
+  'board.status.backlog': 'Backlog',
+  'board.status.todo': 'To Do',
+  'board.status.running': 'In Progress',
+  'board.status.done': 'Done',
+  'board.status.failed': 'Failed',
+  'board.runs': 'runs',
+  'board.updated': 'Updated',
+  'board.created': 'Created',
+  'new.title': 'Title',
+  'new.titlePlaceholder': 'What should be done, in one line',
+  'new.description': 'Description',
+  'new.descriptionPlaceholder': 'Background, scope, acceptance criteria (optional)',
+  'new.prompt': 'Run Prompt',
+  'new.promptPlaceholder': 'The full instruction sent to the agent (title is used when blank)',
+  'new.submit': 'Create',
+  'new.cancel': 'Cancel',
+  'new.required': 'Title is required',
+  'detail.title': 'Task Detail',
+  'detail.close': 'Close',
+  'detail.prompt': 'Run Prompt',
+  'detail.description': 'Description',
+  'detail.execution': 'Execution History',
+  'detail.noExecution': 'Not executed yet',
+  'detail.run': 'Run',
+  'detail.rerun': 'Run Again',
+  'detail.delete': 'Delete',
+  'detail.viewSession': 'View Session',
+  'detail.noSession': 'No session',
+  'detail.executionStarted': 'Started',
+  'detail.executionEnded': 'Ended',
+  'detail.result.succeeded': 'Succeeded',
+  'detail.result.failed': 'Failed',
+  'detail.result.cancelled': 'Cancelled',
+  'detail.result.running': 'Running',
+  'delete.title': 'Delete Task',
+  'delete.confirm': 'Delete "{name}"? This cannot be undone.',
+  'delete.ok': 'Delete',
+  'delete.cancel': 'Cancel',
+  'status.move.backlog': 'Move to Backlog',
+  'status.move.todo': 'Move to To Do',
+  'exec.error.noWorkspace': 'No workspace is available to run the task',
+  'exec.error.promptRejected': 'Prompt rejected',
+  'run.failed': 'Run failed: {error}',
+  'time.justNow': 'just now',
+}
+
+/** The dictionary key union. */
+export type TaskBoardKey = keyof typeof zh
+
+/** Active dictionary, picked by the document language at call time. */
+export function dictionary(): Record<TaskBoardKey, string> {
+  const lang = typeof document !== 'undefined' ? document.documentElement.lang : 'zh'
+  return lang.toLowerCase().startsWith('en') ? en : zh
+}
+
+/** Translate a key with optional {name} template params. */
+export function t(key: TaskBoardKey, params?: Record<string, string>): string {
+  let text: string = dictionary()[key]
+  if (params !== undefined) {
+    for (const [name, value] of Object.entries(params)) {
+      text = text.replaceAll(`{${name}}`, value)
+    }
+  }
+  return text
+}

@@ -1,0 +1,151 @@
+/**
+ * Task persistence: a small storage seam with a localStorage backend.
+ *
+ * The task-board client plugin runs in the browser, and dsh exposes no
+ * browser-writable file channel (same conclusion the skin-center research
+ * reached for cordis.patch.yml), so tasks persist in the browser's
+ * localStorage under a versioned key — the same persistence mechanism dsh's
+ * own client snapshot stores use (`createSnapshotStore` persist). Data
+ * survives page refreshes and dsh restarts (same origin), and survives
+ * plugin uninstall (the key is simply left in place).
+ *
+ * The seam keeps the backend swappable (e.g. an IndexedDB or a host-file
+ * channel later); tests run against the in-memory backend and a jsdom
+ * localStorage backend.
+ */
+import type { TaskRecord, TaskStatus } from './tasks.ts'
+import { isTaskStatus } from './tasks.ts'
+
+/** Persistence seam for the task ledger. */
+export interface TaskStore {
+  /** Read the persisted ledger (empty when nothing is stored yet). */
+  load(): TaskRecord[]
+  /** Persist the whole ledger (replaces the stored document). */
+  save(tasks: readonly TaskRecord[]): void
+  /** Drop the persisted ledger (leaves the in-memory state alone). */
+  clear(): void
+}
+
+/** Storage key for the task ledger document. */
+export const DEFAULT_STORAGE_KEY = 'dsh.taskBoard.v1'
+
+/** Structural row check with the status left unvalidated (see {@link parseLedger}). */
+function isTaskRecordShape(value: unknown): value is Omit<TaskRecord, 'status'> & { status: unknown } {
+  if (typeof value !== 'object' || value === null) return false
+  const record = value as Record<string, unknown>
+  if (typeof record.id !== 'string' || record.id === '') return false
+  if (typeof record.title !== 'string') return false
+  if (typeof record.description !== 'string') return false
+  if (typeof record.prompt !== 'string') return false
+  if (typeof record.createdAt !== 'number') return false
+  if (typeof record.updatedAt !== 'number') return false
+  if (!Array.isArray(record.executions)) return false
+  for (const execution of record.executions) {
+    if (typeof execution !== 'object' || execution === null) return false
+    const entry = execution as Record<string, unknown>
+    if (typeof entry.id !== 'string') return false
+    if (entry.sessionId !== undefined && typeof entry.sessionId !== 'string') return false
+    if (typeof entry.startedAt !== 'number') return false
+    if (entry.endedAt !== undefined && typeof entry.endedAt !== 'number') return false
+    if (entry.result !== undefined && entry.result !== 'succeeded' && entry.result !== 'failed' && entry.result !== 'cancelled') return false
+    if (entry.error !== undefined && typeof entry.error !== 'string') return false
+  }
+  return true
+}
+
+/** A task record is structurally valid if it round-trips through the UI. */
+export function isTaskRecord(value: unknown): value is TaskRecord {
+  return isTaskRecordShape(value) && isTaskStatus(value.status)
+}
+
+/** Normalize an unknown persisted status back into the closed status union. */
+function normalizeStatus(status: unknown): TaskStatus {
+  return isTaskStatus(status) ? status : 'todo'
+}
+
+/** Parse + validate a persisted ledger document; invalid rows are dropped. */
+export function parseLedger(raw: string | null): TaskRecord[] {
+  if (raw === null) return []
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(raw)
+  } catch (error) {
+    console.error('[dsh-task-board] persisted task ledger is not valid JSON; starting empty', error)
+    return []
+  }
+  if (!Array.isArray(parsed)) {
+    console.error('[dsh-task-board] persisted task ledger is not an array; starting empty')
+    return []
+  }
+  const tasks: TaskRecord[] = []
+  for (const row of parsed) {
+    // Status is normalized (an unknown status from a future version lands in
+    // todo instead of dropping the row); every other field must be valid.
+    if (!isTaskRecordShape(row)) {
+      console.warn('[dsh-task-board] dropping invalid task row from persisted ledger', row)
+      continue
+    }
+    tasks.push({ ...row, status: normalizeStatus(row.status) })
+  }
+  return tasks
+}
+
+/** localStorage-backed store (the browser backend). */
+export class LocalStorageTaskStore implements TaskStore {
+  /**
+   * @param key - storage key for the ledger document.
+   * @param storage - storage backend (defaults to the global localStorage; tests inject fakes).
+   */
+  constructor(
+    private readonly key: string = DEFAULT_STORAGE_KEY,
+    private readonly storage: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> | undefined = globalThis.localStorage,
+  ) {}
+
+  load(): TaskRecord[] {
+    if (this.storage === undefined) return []
+    try {
+      return parseLedger(this.storage.getItem(this.key))
+    } catch (error) {
+      // Storage read failures (private mode, quota) degrade to an empty ledger,
+      // never break the board.
+      console.error('[dsh-task-board] task ledger read failed; starting empty', error)
+      return []
+    }
+  }
+
+  save(tasks: readonly TaskRecord[]): void {
+    if (this.storage === undefined) return
+    try {
+      this.storage.setItem(this.key, JSON.stringify(tasks))
+    } catch (error) {
+      // Write failures only skip persistence; in-memory state stays live.
+      console.error('[dsh-task-board] task ledger write failed (persistence skipped)', error)
+    }
+  }
+
+  clear(): void {
+    if (this.storage === undefined) return
+    try {
+      this.storage.removeItem(this.key)
+    } catch (error) {
+      console.error('[dsh-task-board] task ledger clear failed', error)
+    }
+  }
+}
+
+/** In-memory backend (tests, and a fallback when storage is unavailable). */
+export class InMemoryTaskStore implements TaskStore {
+  private ledger: TaskRecord[] = []
+
+  load(): TaskRecord[] {
+    return this.ledger.map(task => ({ ...task, executions: [...task.executions] }))
+  }
+
+  save(tasks: readonly TaskRecord[]): void {
+    this.ledger = tasks.map(task => ({ ...task, executions: [...task.executions] }))
+  }
+
+  clear(): void {
+    this.ledger = []
+  }
+}
