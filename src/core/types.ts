@@ -129,10 +129,16 @@ export function parsePorcelain(stdout: string): { dirtyFiles: number; untrackedF
   return { dirtyFiles, untrackedFiles, conflicts }
 }
 
-/** Parse the graph format rows (`%H %P %an %at %D %s` split by \x1e). */
+/**
+ * Parse the graph format rows (`%H %P %an %at %D %s` split by \x1e). `git
+ * log` (tformat) appends a newline after the record separator, so every
+ * record except the first carries a leading `\n` — strip it or the oid gets
+ * corrupted and a trailing `\n` would parse as a phantom commit.
+ */
 export function parseGraph(stdout: string): GraphCommit[] {
   const commits: GraphCommit[] = []
-  for (const entry of stdout.split('\u001e')) {
+  for (const raw of stdout.split('\u001e')) {
+    const entry = raw.replace(/^\n/, '')
     if (entry === '') continue
     const [oid, parentsRaw, author, authorTimeRaw, decoration, subject] = entry.split('\u0000')
     if (oid === undefined || oid === '') continue

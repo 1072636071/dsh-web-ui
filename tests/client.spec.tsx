@@ -41,6 +41,8 @@ interface BenchOptions {
   switchResult?: SwitchResult
   createResult?: SwitchResult
   graphView?: GraphView | null
+  /** Override the graph verb (e.g. a deferred promise for the loading state). */
+  graph?: (limit?: number) => Promise<GraphView | null>
 }
 
 /** Render the branch chip with stub framework hooks and a scripted inject face. */
@@ -84,7 +86,7 @@ function bench(options: BenchOptions = {}) {
     }),
     graph: vi.fn(async (limit?: number) => {
       record('graph', limit)
-      return options.graphView ?? null
+      return options.graph !== undefined ? options.graph(limit) : options.graphView ?? null
     }),
     subscribeChanges: vi.fn((_onChange: () => void) => { record('subscribeChanges'); return () => {} }),
   }
@@ -200,7 +202,28 @@ describe('BranchChip', () => {
     expect(dialog.textContent).toContain('merge work')
     expect(dialog.textContent).toContain('2 个提交')
     expect(calls.graph).toEqual([[200]])
+    // Refs render as pills; the current branch is highlighted.
+    expect(dialog.querySelectorAll('[class*="graphRef"]')).toHaveLength(2)
+    expect(dialog.querySelectorAll('[class*="graphRefCurrent"]')).toHaveLength(1)
     fireEvent.click(screen.getByRole('button', { name: '加载更多' }))
     expect(calls.graph).toEqual([[200], [102]])
+  })
+
+  it('shows a loading hint before the first graph response', async () => {
+    let resolveGraph!: (view: GraphView) => void
+    bench({
+      graph: () => new Promise<GraphView>((resolve) => { resolveGraph = resolve }),
+    })
+    fireEvent.click(await screen.findByRole('button', { name: '分支' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Git 图谱' }))
+    expect(await screen.findByText('加载中…')).toBeTruthy()
+    resolveGraph({
+      root: '/ws/proj', branch: 'main',
+      commits: [
+        { oid: 'aabbcc', parents: [], subject: 'root commit', author: 'Bob', authorTime: 1690000000, refs: [] },
+      ],
+      hasMore: false,
+    })
+    expect(await screen.findByText('root commit')).toBeTruthy()
   })
 })

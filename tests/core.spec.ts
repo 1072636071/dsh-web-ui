@@ -73,6 +73,24 @@ describe('parseGraph', () => {
       refs: ['main'],
     })
   })
+
+  it('strips the trailing newline git appends after each record separator', () => {
+    // `git log --format=...%x1e` (tformat) emits `<fields>\x1e\n` per commit:
+    // every record after the first carries a leading newline, and the stream
+    // ends with a bare `\n` entry. Both must not corrupt the oid or produce
+    // a phantom commit.
+    const stdout = [
+      'aaaa\u0000bbbb\u0000Alice\u00001700000000\u0000main\u0000newest\u001e',
+      'bbbb\u0000cccc\u0000Bob\u00001690000000\u0000\u0000middle\u001e',
+      'cccc\u0000\u0000Carol\u00001680000000\u0000tag: v1\u0000oldest\u001e',
+      '',
+    ].join('\n')
+    const commits = parseGraph(stdout)
+    expect(commits).toHaveLength(3)
+    expect(commits.map(commit => commit.oid)).toEqual(['aaaa', 'bbbb', 'cccc'])
+    expect(commits[1].refs).toEqual([])
+    expect(commits[2].refs).toEqual(['v1'])
+  })
 })
 
 describe('validateBranchName', () => {

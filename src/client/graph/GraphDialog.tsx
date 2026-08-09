@@ -5,6 +5,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { IconCloseOutline16 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { Translate } from '@deepseek-ai/dsh-client-ui-slots'
 import { computeLanes, type LaneGlyph } from '../../core/types.ts'
 import type { GraphView } from '../../core/types.ts'
@@ -20,11 +21,34 @@ const PAGE_STEP = 100
 /** Lane glyph → the rendered monospace character. */
 function glyphChar(glyph: LaneGlyph): string {
   switch (glyph) {
-    case 'node': return 'o'
-    case 'merge': return '*'
+    case 'node': return '●'
+    case 'merge': return '◆'
     case 'pass': return '│'
     case 'gap': return ' '
   }
+}
+
+/** Seconds per time bucket (relative timestamps). */
+const MINUTE = 60
+const HOUR = 60 * MINUTE
+const DAY = 24 * HOUR
+
+/**
+ * A compact relative timestamp (GitHub-style): "just now", "5 分钟前",
+ * falling back to a plain date past 30 days.
+ * @param epochSeconds - commit author time in seconds.
+ * @param t - the dictionary.
+ * @returns the display string.
+ */
+function formatTime(epochSeconds: number, t: Translate<GitGraphKey>): string {
+  const elapsed = Math.max(0, Math.floor(Date.now() / 1000) - epochSeconds)
+  if (elapsed < MINUTE) return t('graph.time.justNow')
+  if (elapsed < HOUR) return t('graph.time.minutesAgo', { count: Math.floor(elapsed / MINUTE) })
+  if (elapsed < DAY) return t('graph.time.hoursAgo', { count: Math.floor(elapsed / HOUR) })
+  if (elapsed < 30 * DAY) return t('graph.time.daysAgo', { count: Math.floor(elapsed / DAY) })
+  const date = new Date(epochSeconds * 1000)
+  const pad = (n: number): string => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
 /** Props of the Git graph dialog. */
@@ -67,23 +91,32 @@ export function GraphDialog({ graph, onClose, t }: GraphDialogProps) {
     return count
   }, [lanes])
 
-  const formatDate = (epochSeconds: number): string =>
-    new Date(epochSeconds * 1000).toLocaleString()
-
   return (
     <>
       <Backdrop onClose={onClose} />
       <div className={css.dialog} role="dialog" aria-label={t('graph.title')}>
-        <h3 className={css.dialogTitle}>{t('graph.title')}</h3>
-        <div className={css.graphSubtitle}>
-          {t('graph.subtitle', {
-            count: view === null ? 0 : view.commits.length,
-            lanes: laneCount,
-          })}
+        <div className={css.dialogHeader}>
+          <div className={css.dialogHeading}>
+            <h3 className={css.dialogTitle}>{t('graph.title')}</h3>
+            <div className={css.graphSubtitle}>
+              {t('graph.subtitle', {
+                count: view === null ? 0 : view.commits.length,
+                lanes: laneCount,
+              })}
+            </div>
+          </div>
+          <button
+            type="button"
+            className={css.dialogClose}
+            onClick={onClose}
+            aria-label={t('graph.close')}
+          >
+            <IconCloseOutline16 size={16} />
+          </button>
         </div>
         <div className={css.graphBody}>
           {loading && view === null
-            ? <div className={css.graphEmpty}>{t('error.internal')}</div>
+            ? <div className={css.graphEmpty}>{t('graph.loading')}</div>
             : error !== null
               ? <div className={css.graphEmpty}>{error}</div>
               : view === null || view.commits.length === 0
@@ -97,7 +130,12 @@ export function GraphDialog({ graph, onClose, t }: GraphDialogProps) {
                         {row.columns.map((glyph, column) => (
                           <span
                             key={column}
-                            className={cx(glyph !== 'pass' && glyph !== 'gap' && css.graphLaneNode)}
+                            className={cx(
+                              css.graphLaneCell,
+                              glyph === 'node' && css.graphLaneNode,
+                              glyph === 'merge' && css.graphLaneMerge,
+                              glyph === 'pass' && css.graphLanePass,
+                            )}
                           >
                             {glyphChar(glyph)}
                           </span>
@@ -116,7 +154,8 @@ export function GraphDialog({ graph, onClose, t }: GraphDialogProps) {
                             </span>
                           ))}
                           <span>{commit.author}</span>
-                          <span>{formatDate(commit.authorTime)}</span>
+                          <span className={css.graphMetaSep}>·</span>
+                          <span>{formatTime(commit.authorTime, t)}</span>
                         </span>
                       </span>
                     </div>
@@ -132,11 +171,6 @@ export function GraphDialog({ graph, onClose, t }: GraphDialogProps) {
             {t('graph.loadMore')}
           </button>
         )}
-        <div className={css.dialogActions}>
-          <button type="button" className={css.dialogButton} onClick={onClose}>
-            {t('graph.close')}
-          </button>
-        </div>
       </div>
     </>
   )
