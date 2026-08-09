@@ -6,6 +6,7 @@
  */
 import { useEffect, useState } from 'react'
 import type { BoardController } from '../../core/controller.ts'
+import { isValidCron } from '../../core/schedule.ts'
 import { MANUAL_STATUSES, type ExecutionRecord, type TaskRecord, type TaskStatus } from '../../core/tasks.ts'
 import { t, type TaskBoardKey } from '../locales.ts'
 import css from '../board.module.css'
@@ -57,6 +58,114 @@ function ExecutionRow({ execution, onOpen }: { execution: ExecutionRecord; onOpe
   )
 }
 
+/** Common scheduled-run presets (cron → locale label). */
+const SCHEDULE_PRESETS: ReadonlyArray<{ cron: string; label: TaskBoardKey }> = [
+  { cron: '0 9 * * *', label: 'detail.schedule.preset.daily9' },
+  { cron: '0 * * * *', label: 'detail.schedule.preset.hourly' },
+  { cron: '*/10 * * * *', label: 'detail.schedule.preset.tenMin' },
+  { cron: '0 9 * * 1', label: 'detail.schedule.preset.weeklyMon9' },
+]
+
+/** The scheduled-runs editor: enable toggle, cron input + presets, next-run info. */
+function ScheduleSection({ controller, task }: { controller: BoardController; task: TaskRecord }) {
+  const schedule = task.schedule
+  const [cron, setCron] = useState(schedule?.cron ?? '0 9 * * *')
+  const [enabled, setEnabled] = useState(schedule?.enabled ?? false)
+  const [nextRunAt, setNextRunAt] = useState<number | undefined>(schedule?.nextRunAt)
+  const [lastTriggeredAt, setLastTriggeredAt] = useState<number | undefined>(schedule?.lastTriggeredAt)
+  const [error, setError] = useState<string | undefined>(undefined)
+
+  // Keep the editor in sync when the task record changes underneath (the
+  // schedule rolls forward as runs trigger).
+  useEffect(() => {
+    setCron(schedule?.cron ?? '0 9 * * *')
+    setEnabled(schedule?.enabled ?? false)
+    setNextRunAt(schedule?.nextRunAt)
+    setLastTriggeredAt(schedule?.lastTriggeredAt)
+    setError(undefined)
+  }, [task.id, schedule?.enabled, schedule?.cron, schedule?.nextRunAt, schedule?.lastTriggeredAt])
+
+  /** Validate + persist the current cron text (Enter or blur). */
+  const saveCron = (value: string): void => {
+    const trimmed = value.trim()
+    setCron(trimmed)
+    if (trimmed === '' || !isValidCron(trimmed)) {
+      setError(t('detail.schedule.invalid'))
+      return
+    }
+    setError(undefined)
+    controller.setSchedule(task.id, { cron: trimmed })
+  }
+
+  /** Arm/disarm the schedule (arming first persists the edited cron). */
+  const toggleEnabled = (next: boolean): void => {
+    const trimmed = cron.trim()
+    if (next && (trimmed === '' || !isValidCron(trimmed))) {
+      setError(t('detail.schedule.invalid'))
+      return
+    }
+    setError(undefined)
+    if (next && trimmed !== schedule?.cron) controller.setSchedule(task.id, { cron: trimmed })
+    if (controller.setSchedule(task.id, { enabled: next })) setEnabled(next)
+  }
+
+  const applyPreset = (preset: string): void => {
+    if (preset === '') return
+    setCron(preset)
+    setError(undefined)
+    controller.setSchedule(task.id, { cron: preset })
+  }
+
+  const nextLabel = !enabled || nextRunAt === undefined
+    ? t('detail.schedule.notScheduled')
+    : nextRunAt <= Date.now()
+      ? t('detail.schedule.dueSoon')
+      : new Date(nextRunAt).toLocaleString()
+  const lastLabel = lastTriggeredAt === undefined ? '—' : new Date(lastTriggeredAt).toLocaleString()
+
+  return (
+    <section className={css.detailSection}>
+      <h4>{t('detail.schedule')}</h4>
+      <label className={css.scheduleToggle}>
+        <input
+          type="checkbox"
+          checked={enabled}
+          onChange={event => { toggleEnabled(event.target.checked) }}
+        />
+        <span>{t('detail.schedule.enable')}</span>
+      </label>
+      <div className={css.scheduleRow}>
+        <input
+          className={`${css.input} ${css.scheduleInput}${error !== undefined ? ` ${css.scheduleInputInvalid}` : ''}`}
+          value={cron}
+          placeholder="0 9 * * *"
+          spellCheck={false}
+          aria-label={t('detail.schedule.cron')}
+          onChange={event => { setCron(event.target.value); setError(undefined) }}
+          onBlur={() => { saveCron(cron) }}
+          onKeyDown={event => { if (event.key === 'Enter') saveCron(cron) }}
+        />
+        <select
+          className={css.schedulePreset}
+          value=""
+          aria-label={t('detail.schedule.presets')}
+          onChange={event => { applyPreset(event.target.value) }}
+        >
+          <option value="">{t('detail.schedule.presets')}…</option>
+          {SCHEDULE_PRESETS.map(preset => (
+            <option key={preset.cron} value={preset.cron}>{t(preset.label)}</option>
+          ))}
+        </select>
+      </div>
+      {error !== undefined && <p className={css.formError}>{error}</p>}
+      <p className={css.scheduleMeta}>
+        {t('detail.schedule.nextRun')} {nextLabel}
+        {' · '}{t('detail.schedule.lastTriggered')} {lastLabel}
+      </p>
+    </section>
+  )
+}
+
 /** Task detail overlay. */
 export function TaskDetail({ controller, task }: { controller: BoardController; task: TaskRecord }) {
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -93,6 +202,8 @@ export function TaskDetail({ controller, task }: { controller: BoardController; 
             <h4>{t('detail.prompt')}</h4>
             <pre className={css.promptBlock}>{current.prompt !== '' ? current.prompt : current.title}</pre>
           </section>
+
+          <ScheduleSection controller={controller} task={current} />
 
           <section className={css.detailSection}>
             <h4>{t('detail.execution')}</h4>

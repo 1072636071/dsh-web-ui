@@ -268,3 +268,63 @@ describe('run loop', () => {
     expect(store.load()[0].executions[0].result).toBe('succeeded')
   })
 })
+
+describe('scheduling', () => {
+  it('setSchedule enables a rule and computes the next run instant', () => {
+    const { controller, store } = makeController()
+    const task = controller.createTask({ title: 'x', description: '', prompt: '' })!
+    expect(controller.setSchedule(task.id, { enabled: true, cron: '* * * * *' })).toBe(true)
+    const persisted = store.load()[0]
+    expect(persisted.schedule?.enabled).toBe(true)
+    expect(persisted.schedule?.cron).toBe('* * * * *')
+    expect(persisted.schedule?.nextRunAt).toBeDefined()
+  })
+
+  it('rejects blank or invalid cron expressions without touching state', () => {
+    const { controller, store } = makeController()
+    const task = controller.createTask({ title: 'x', description: '', prompt: '' })!
+    expect(controller.setSchedule(task.id, { enabled: true, cron: 'not a cron' })).toBe(false)
+    expect(controller.setSchedule(task.id, { enabled: true, cron: '   ' })).toBe(false)
+    expect(controller.setSchedule(task.id, { enabled: true })).toBe(false) // no existing cron → blank → rejected
+    expect(store.load()[0].schedule).toBeUndefined()
+  })
+
+  it('disabling a rule clears the next run instant but keeps the cron', () => {
+    const { controller, store } = makeController()
+    const task = controller.createTask({ title: 'x', description: '', prompt: '' })!
+    controller.setSchedule(task.id, { enabled: true, cron: '* * * * *' })
+    expect(controller.setSchedule(task.id, { enabled: false })).toBe(true)
+    const persisted = store.load()[0]
+    expect(persisted.schedule?.enabled).toBe(false)
+    expect(persisted.schedule?.cron).toBe('* * * * *')
+    expect(persisted.schedule?.nextRunAt).toBeUndefined()
+  })
+
+  it('recomputes the next run when the cron changes while enabled', () => {
+    const { controller, store } = makeController()
+    const task = controller.createTask({ title: 'x', description: '', prompt: '' })!
+    controller.setSchedule(task.id, { enabled: true, cron: '* * * * *' })
+    const first = store.load()[0].schedule?.nextRunAt
+    controller.setSchedule(task.id, { cron: '*/5 * * * *' })
+    const second = store.load()[0].schedule?.nextRunAt
+    expect(second).toBeDefined()
+    expect(second).not.toBe(first)
+  })
+
+  it('applyScheduleNextRun rolls the schedule forward for the scheduler', () => {
+    const { controller, store } = makeController()
+    const task = controller.createTask({ title: 'x', description: '', prompt: '' })!
+    controller.setSchedule(task.id, { enabled: true, cron: '* * * * *' })
+    controller.applyScheduleNextRun(task.id, 1_234_567_890, 1_234_500_000)
+    const persisted = store.load()[0]
+    expect(persisted.schedule?.nextRunAt).toBe(1_234_567_890)
+    expect(persisted.schedule?.lastTriggeredAt).toBe(1_234_500_000)
+  })
+
+  it('applyScheduleNextRun is a no-op for tasks without a schedule rule', () => {
+    const { controller } = makeController()
+    const task = controller.createTask({ title: 'x', description: '', prompt: '' })!
+    expect(() => controller.applyScheduleNextRun(task.id, 1, 2)).not.toThrow()
+    expect(controller.getSnapshot().tasks[0].schedule).toBeUndefined()
+  })
+})

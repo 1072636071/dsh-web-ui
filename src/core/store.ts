@@ -13,7 +13,7 @@
  * channel later); tests run against the in-memory backend and a jsdom
  * localStorage backend.
  */
-import type { TaskRecord, TaskStatus } from './tasks.ts'
+import type { ScheduleRule, TaskRecord, TaskStatus } from './tasks.ts'
 import { isTaskStatus } from './tasks.ts'
 
 /** Persistence seam for the task ledger. */
@@ -29,7 +29,12 @@ export interface TaskStore {
 /** Storage key for the task ledger document. */
 export const DEFAULT_STORAGE_KEY = 'dsh.taskBoard.v1'
 
-/** Structural row check with the status left unvalidated (see {@link parseLedger}). */
+/**
+ * Structural row check with the status left unvalidated (see {@link parseLedger}).
+ * The `schedule` field is deliberately NOT checked here: a malformed schedule
+ * never drops the task row — {@link normalizeSchedule} repairs or drops the
+ * schedule alone.
+ */
 function isTaskRecordShape(value: unknown): value is Omit<TaskRecord, 'status'> & { status: unknown } {
   if (typeof value !== 'object' || value === null) return false
   const record = value as Record<string, unknown>
@@ -63,6 +68,23 @@ function normalizeStatus(status: unknown): TaskStatus {
   return isTaskStatus(status) ? status : 'todo'
 }
 
+/**
+ * Repair a persisted schedule rule: drop rules without a usable cron string,
+ * coerce booleans/numbers, and leave `nextRunAt`/`lastTriggeredAt` undefined
+ * when missing (a fresh recompute or the next tick fixes them).
+ */
+function normalizeSchedule(schedule: unknown): ScheduleRule | undefined {
+  if (typeof schedule !== 'object' || schedule === null) return undefined
+  const rule = schedule as Record<string, unknown>
+  if (typeof rule.cron !== 'string' || rule.cron.trim() === '') return undefined
+  return {
+    enabled: rule.enabled === true,
+    cron: rule.cron,
+    nextRunAt: typeof rule.nextRunAt === 'number' ? rule.nextRunAt : undefined,
+    lastTriggeredAt: typeof rule.lastTriggeredAt === 'number' ? rule.lastTriggeredAt : undefined,
+  }
+}
+
 /** Parse + validate a persisted ledger document; invalid rows are dropped. */
 export function parseLedger(raw: string | null): TaskRecord[] {
   if (raw === null) return []
@@ -80,12 +102,17 @@ export function parseLedger(raw: string | null): TaskRecord[] {
   const tasks: TaskRecord[] = []
   for (const row of parsed) {
     // Status is normalized (an unknown status from a future version lands in
-    // todo instead of dropping the row); every other field must be valid.
+    // todo instead of dropping the row); the schedule is repaired field by
+    // field; every other field must be valid.
     if (!isTaskRecordShape(row)) {
       console.warn('[dsh-task-board] dropping invalid task row from persisted ledger', row)
       continue
     }
-    tasks.push({ ...row, status: normalizeStatus(row.status) })
+    // Always (re)assign the schedule: a repair that returns undefined must
+    // clear a malformed persisted rule rather than leave it in the row.
+    const task: TaskRecord = { ...row, status: normalizeStatus(row.status) }
+    task.schedule = normalizeSchedule(row.schedule)
+    tasks.push(task)
   }
   return tasks
 }

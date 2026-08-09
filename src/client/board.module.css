@@ -266,6 +266,13 @@ html[data-dsh-taskboard-active] [data-pane='conversation'] > :not([data-dsh-task
   white-space: nowrap;
 }
 
+.cardSchedule {
+  flex: none;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--dsw-alias-label-secondary);
+}
+
 .cardRun {
   flex: none;
 }
@@ -567,6 +574,61 @@ html[data-dsh-taskboard-active] [data-pane='conversation'] > :not([data-dsh-task
   line-height: 1.55;
   color: var(--dsw-alias-label-primary);
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* --- scheduled runs ---------------------------------------------------------- */
+
+.scheduleToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--dsw-alias-label-primary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.scheduleToggle input {
+  accent-color: var(--dsw-alias-state-business-primary);
+}
+
+.scheduleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.scheduleInput {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--dsw-font-markdown-code-block-small);
+  font-size: 12.5px;
+}
+
+.scheduleInputInvalid {
+  border-color: var(--dsw-alias-state-error-primary);
+}
+
+.scheduleInputInvalid:focus {
+  border-color: var(--dsw-alias-state-error-primary);
+}
+
+.schedulePreset {
+  flex: none;
+  padding: 7px 8px;
+  font-size: 12.5px;
+  color: var(--dsw-alias-label-primary);
+  background: var(--dsw-specific-input-major);
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 8px;
+  outline: none;
+}
+
+.scheduleMeta {
+  margin: 0;
+  font-size: 12px;
+  color: var(--dsw-alias-label-secondary);
   overflow-wrap: anywhere;
 }
 

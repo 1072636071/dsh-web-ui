@@ -34,6 +34,16 @@ export function TaskCard({ task, onClick }: { task: TaskRecord; onClick: () => v
       {task.description !== '' && <span className={css.cardExcerpt}>{task.description}</span>}
       <span className={css.cardMeta}>
         <span className={css.cardTime}>{t('board.updated')} {formatTime(task.updatedAt)}</span>
+        {task.schedule?.enabled === true && (
+          <span
+            className={css.cardSchedule}
+            title={task.schedule.nextRunAt !== undefined
+              ? `${t('card.scheduled')} · ${new Date(task.schedule.nextRunAt).toLocaleString()}`
+              : t('card.scheduled')}
+          >
+            ⏰
+          </span>
+        )}
         {latest !== undefined && (
           <span className={css.cardRun} data-result={latest.result}>
             {runs} {t('board.runs')}

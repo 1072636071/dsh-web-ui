@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest'
 import {
   InMemoryTaskStore, LocalStorageTaskStore, isTaskRecord, parseLedger,
 } from '../src/core/store.ts'
-import { createTask } from '../src/core/tasks.ts'
+import { createTask, withSchedule } from '../src/core/tasks.ts'
 
 /** A tiny in-memory Storage stand-in (localStorage shape). */
 class FakeStorage implements Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> {
@@ -123,5 +123,42 @@ describe('InMemoryTaskStore', () => {
     expect(store.load()[0].title).toBe('A')
     store.clear()
     expect(store.load()).toEqual([])
+  })
+})
+
+describe('schedule persistence', () => {
+  it('round-trips a task with a schedule rule through storage', () => {
+    const storage = new FakeStorage()
+    const store = new LocalStorageTaskStore('k', storage)
+    const task = withSchedule(
+      createTask({ title: 'A', description: '', prompt: '' }, 1, 't-1'),
+      { enabled: true, cron: '0 9 * * *', nextRunAt: 100, lastTriggeredAt: 50 },
+      2,
+    )
+    store.save([task])
+    expect(store.load()[0].schedule).toEqual({
+      enabled: true, cron: '0 9 * * *', nextRunAt: 100, lastTriggeredAt: 50,
+    })
+  })
+
+  it('keeps legacy tasks without a schedule intact', () => {
+    const raw = JSON.stringify([createTask({ title: 'A', description: '', prompt: '' }, 1, 't-1')])
+    expect(parseLedger(raw)[0].schedule).toBeUndefined()
+  })
+
+  it('repairs a malformed schedule instead of dropping the task row', () => {
+    const valid = createTask({ title: 'ok', description: '', prompt: '' }, 1, 't-1')
+    const raw = [
+      { ...valid, id: 't-1', schedule: { enabled: 'yes', cron: '0 9 * * *', nextRunAt: 'soon', lastTriggeredAt: 5 } },
+      { ...valid, id: 't-2', schedule: { enabled: true, cron: '   ' } },
+      { ...valid, id: 't-3', schedule: 'nope' },
+    ]
+    const parsed = parseLedger(JSON.stringify(raw))
+    expect(parsed).toHaveLength(3) // no row dropped for a bad schedule
+    expect(parsed[0].schedule).toEqual({
+      enabled: false, cron: '0 9 * * *', nextRunAt: undefined, lastTriggeredAt: 5,
+    })
+    expect(parsed[1].schedule).toBeUndefined() // blank cron → schedule dropped
+    expect(parsed[2].schedule).toBeUndefined() // non-object schedule → dropped
   })
 })

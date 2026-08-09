@@ -3,7 +3,7 @@
  */
 import { describe, expect, it } from 'vitest'
 import {
-  canMoveManually, createTask, executionLabel, settleExecution, startExecution, withStatus,
+  canMoveManually, createTask, executionLabel, settleExecution, startExecution, withSchedule, withStatus,
 } from '../src/core/tasks.ts'
 
 const NOW = 1_700_000_000_000
@@ -117,5 +117,44 @@ describe('executionLabel', () => {
     expect(executionLabel({ ...execution, endedAt: NOW, result: 'succeeded' })).toBe('succeeded')
     expect(executionLabel({ ...execution, endedAt: NOW, result: 'failed' })).toBe('failed')
     expect(executionLabel({ ...execution, endedAt: NOW, result: 'cancelled' })).toBe('cancelled')
+  })
+})
+
+describe('withSchedule', () => {
+  it('creates a schedule rule on a task without one and bumps updatedAt', () => {
+    const task = sampleTask()
+    const scheduled = withSchedule(task, { enabled: true, cron: '0 9 * * *', nextRunAt: NOW + 100 }, NOW + 1)
+    expect(scheduled.schedule).toEqual({ enabled: true, cron: '0 9 * * *', nextRunAt: NOW + 100, lastTriggeredAt: undefined })
+    expect(scheduled.updatedAt).toBe(NOW + 1)
+    expect(task.schedule).toBeUndefined() // original untouched
+  })
+
+  it('merges partial patches and keeps untouched schedule fields', () => {
+    const task = withSchedule(
+      sampleTask(),
+      { enabled: true, cron: '0 9 * * *', nextRunAt: NOW + 100, lastTriggeredAt: NOW },
+      NOW,
+    )
+    const rolled = withSchedule(task, { nextRunAt: NOW + 200 }, NOW + 2)
+    expect(rolled.schedule).toEqual({ enabled: true, cron: '0 9 * * *', nextRunAt: NOW + 200, lastTriggeredAt: NOW })
+  })
+
+  it('keeps executions and other task fields intact', () => {
+    const { task } = startExecution(sampleTask(), NOW, 'exec-1')
+    const scheduled = withSchedule(task, { enabled: false, cron: '*/10 * * * *' }, NOW + 1)
+    expect(scheduled.executions).toHaveLength(1)
+    expect(scheduled.status).toBe('running')
+  })
+
+  it('explicit undefined clears a field (disarming nextRunAt)', () => {
+    const task = withSchedule(
+      sampleTask(),
+      { enabled: true, cron: '0 9 * * *', nextRunAt: NOW + 100 },
+      NOW,
+    )
+    const cleared = withSchedule(task, { nextRunAt: undefined }, NOW + 1)
+    expect(cleared.schedule?.enabled).toBe(true)
+    expect(cleared.schedule?.cron).toBe('0 9 * * *')
+    expect(cleared.schedule?.nextRunAt).toBeUndefined()
   })
 })

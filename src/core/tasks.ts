@@ -28,6 +28,22 @@ export interface ExecutionRecord {
   error: string | undefined
 }
 
+/**
+ * A scheduled-run rule attached to a task. The browser-side scheduler ticks
+ * every minute and triggers the task when `nextRunAt` is due; the rule is
+ * persisted with the task (localStorage), so scheduling survives refreshes.
+ */
+export interface ScheduleRule {
+  /** Whether the schedule is armed. */
+  enabled: boolean
+  /** 5-field cron expression: `分 时 日 月 周`. */
+  cron: string
+  /** Next due instant (ms epoch); maintained by the scheduler/controller. */
+  nextRunAt: number | undefined
+  /** Instant of the latest scheduled trigger (ms epoch). */
+  lastTriggeredAt: number | undefined
+}
+
 /** One task on the board. */
 export interface TaskRecord {
   /** Stable task id (uuid). */
@@ -46,6 +62,8 @@ export interface TaskRecord {
   updatedAt: number
   /** Every execution attempt, most recent last. */
   executions: ExecutionRecord[]
+  /** Optional scheduled-run rule (absent on tasks without a schedule). */
+  schedule?: ScheduleRule
 }
 
 /** Input for creating a task. */
@@ -102,6 +120,31 @@ export function createTask(input: NewTaskInput, now: number, id: string): TaskRe
 /** Clone a task with an updated status and a fresh updatedAt. */
 export function withStatus(task: TaskRecord, status: TaskStatus, now: number): TaskRecord {
   return { ...task, status, updatedAt: now }
+}
+
+/**
+ * Merge a schedule patch into a task's schedule rule (creating it when
+ * absent), with a fresh updatedAt. Keys present in the patch overwrite the
+ * current value — including explicit `undefined`, which clears a field (used
+ * to disarm `nextRunAt`); absent keys keep their current value.
+ */
+export function withSchedule(
+  task: TaskRecord,
+  patch: Partial<ScheduleRule>,
+  now: number,
+): TaskRecord {
+  const current = task.schedule
+  const schedule: ScheduleRule = {
+    enabled: current?.enabled ?? false,
+    cron: current?.cron ?? '',
+    nextRunAt: current?.nextRunAt,
+    lastTriggeredAt: current?.lastTriggeredAt,
+  }
+  if ('enabled' in patch) schedule.enabled = patch.enabled ?? false
+  if ('cron' in patch) schedule.cron = patch.cron ?? ''
+  if ('nextRunAt' in patch) schedule.nextRunAt = patch.nextRunAt
+  if ('lastTriggeredAt' in patch) schedule.lastTriggeredAt = patch.lastTriggeredAt
+  return { ...task, updatedAt: now, schedule }
 }
 
 /**

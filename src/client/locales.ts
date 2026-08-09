@@ -59,6 +59,20 @@ export const zh = {
   'exec.error.promptRejected': 'Prompt 被拒绝',
   'run.failed': '执行失败：{error}',
   'time.justNow': '刚刚',
+  'detail.schedule': '定时运行',
+  'detail.schedule.enable': '启用定时执行',
+  'detail.schedule.cron': 'Cron 表达式',
+  'detail.schedule.presets': '预设',
+  'detail.schedule.preset.daily9': '每天 09:00',
+  'detail.schedule.preset.hourly': '每小时',
+  'detail.schedule.preset.tenMin': '每 10 分钟',
+  'detail.schedule.preset.weeklyMon9': '每周一 09:00',
+  'detail.schedule.nextRun': '下次运行',
+  'detail.schedule.lastTriggered': '上次触发',
+  'detail.schedule.invalid': 'Cron 表达式无效',
+  'detail.schedule.notScheduled': '尚未排程',
+  'detail.schedule.dueSoon': '即将运行',
+  'card.scheduled': '定时',
 } satisfies Record<string, string>
 
 /** en dictionary, complete against the zh key set. */
@@ -115,6 +129,20 @@ export const en: Record<keyof typeof zh, string> = {
   'exec.error.promptRejected': 'Prompt rejected',
   'run.failed': 'Run failed: {error}',
   'time.justNow': 'just now',
+  'detail.schedule': 'Scheduled Runs',
+  'detail.schedule.enable': 'Enable scheduled runs',
+  'detail.schedule.cron': 'Cron expression',
+  'detail.schedule.presets': 'Presets',
+  'detail.schedule.preset.daily9': 'Every day 09:00',
+  'detail.schedule.preset.hourly': 'Every hour',
+  'detail.schedule.preset.tenMin': 'Every 10 minutes',
+  'detail.schedule.preset.weeklyMon9': 'Every Monday 09:00',
+  'detail.schedule.nextRun': 'Next run',
+  'detail.schedule.lastTriggered': 'Last triggered',
+  'detail.schedule.invalid': 'Invalid cron expression',
+  'detail.schedule.notScheduled': 'Not scheduled yet',
+  'detail.schedule.dueSoon': 'Due soon',
+  'card.scheduled': 'scheduled',
 }
 
 /** The dictionary key union. */

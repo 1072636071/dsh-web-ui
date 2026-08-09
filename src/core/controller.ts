@@ -9,9 +9,10 @@
  * unit-testable with fakes.
  */
 import { ExecutionService, type ExecutionEvent } from './execution.ts'
+import { isValidCron, nextRunAtMs } from './schedule.ts'
 import type { TaskStore } from './store.ts'
 import {
-  createTask, settleExecution, startExecution, withStatus,
+  createTask, settleExecution, startExecution, withSchedule, withStatus,
   type NewTaskInput, type TaskRecord, type TaskStatus,
 } from './tasks.ts'
 
@@ -180,6 +181,44 @@ export class BoardController {
   deleteTask(id: string): void {
     this.tasks = this.tasks.filter(task => task.id !== id)
     if (this.selectedTaskId === id) this.selectedTaskId = undefined
+    this.persistAndNotify()
+  }
+
+  // --- scheduling ---------------------------------------------------------------
+
+  /**
+   * Update a task's schedule rule. A blank or invalid cron expression is
+   * rejected (returns false, state untouched). When the rule ends up enabled
+   * the next run instant is computed immediately; a disabled rule carries no
+   * next-run instant.
+   * @param id - the task to schedule.
+   * @param patch - fields to change (absent fields keep their current value).
+   * @returns true when applied, false when rejected (invalid cron / unknown task).
+   */
+  setSchedule(id: string, patch: { enabled?: boolean; cron?: string }): boolean {
+    const task = this.tasks.find(candidate => candidate.id === id)
+    if (task === undefined) return false
+    const current = task.schedule
+    const cron = (patch.cron ?? current?.cron ?? '').trim()
+    if (cron === '' || !isValidCron(cron)) return false
+    const enabled = patch.enabled ?? current?.enabled ?? false
+    const nextRunAt = enabled ? nextRunAtMs(cron, this.now()) : undefined
+    this.tasks = this.tasks.map(candidate =>
+      candidate.id === id ? withSchedule(candidate, { enabled, cron, nextRunAt }, this.now()) : candidate)
+    this.persistAndNotify()
+    return true
+  }
+
+  /**
+   * Roll a task's schedule forward (scheduler callback): persist the next due
+   * instant and the trigger instant of this run. No-op when the task has no
+   * schedule rule (it was deleted mid-tick, for example).
+   */
+  applyScheduleNextRun(id: string, nextRunAt: number | undefined, lastTriggeredAt: number | undefined): void {
+    this.tasks = this.tasks.map(task =>
+      task.id === id && task.schedule !== undefined
+        ? withSchedule(task, { nextRunAt, lastTriggeredAt }, this.now())
+        : task)
     this.persistAndNotify()
   }
 

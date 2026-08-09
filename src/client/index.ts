@@ -11,6 +11,7 @@
 import type { ClientContext, SessionId, WorkspaceId } from '@deepseek-ai/dsh-client-runtime/client'
 import { BoardController } from '../core/controller.ts'
 import { ExecutionService } from '../core/execution.ts'
+import { SchedulerService } from '../core/scheduler.ts'
 import { LocalStorageTaskStore } from '../core/store.ts'
 import { mountBoard } from './board-mount.tsx'
 import { mountSidebarEntry } from './sidebar-entry.ts'
@@ -52,6 +53,24 @@ export function apply(ctx: ClientContext): void {
     })
     controller.start()
 
+    // Scheduled runs: a browser-side heartbeat that triggers due tasks through
+    // the same run path as the manual Run button. The first tick is gated on
+    // the session list baseline so a page-load catch-up never fires into a
+    // not-yet-ready runtime; tab visibility recovery ticks immediately.
+    const scheduler = new SchedulerService({
+      tasks: () => controller.getSnapshot().tasks,
+      now: () => Date.now(),
+      runTask: id => controller.runTask(id),
+      applySchedule: (id, nextRunAt, lastTriggeredAt) =>
+        controller.applyScheduleNextRun(id, nextRunAt, lastTriggeredAt),
+      ready: () => sessions.list.getSnapshot().phase === 'ready',
+      environment: {
+        addEventListener: (type, listener) => document.addEventListener(type, listener),
+        removeEventListener: (type, listener) => document.removeEventListener(type, listener),
+      },
+    })
+    scheduler.start()
+
     const disposers: Array<() => void> = []
     try {
       disposers.push(mountSidebarEntry(controller))
@@ -63,6 +82,7 @@ export function apply(ctx: ClientContext): void {
 
     return () => {
       for (const dispose of disposers.splice(0)) dispose()
+      scheduler.dispose()
       controller.dispose()
     }
   }, 'ui-task-board: controller + mounts')
