@@ -1,6 +1,6 @@
 # AGENTS.md — dsh-git-graph
 
-dsh Web GUI 的外部 git 上下文插件（项目选择器 + 分支选择器 + Git 图谱）。主仓（sibling checkout，本机为 `~/code/test-zhu1090093659`）零改动；本仓是自包含的 cordis 插件包，作为 dsh profile bundle 激活。
+dsh Web GUI 的外部 git 上下文插件（项目选择器 + 分支选择器 + Git 图谱）。主仓（sibling checkout，路径见 README）零改动；本仓是自包含的 cordis 插件包，作为 dsh profile bundle 激活。
 
 ## 仓库规则
 

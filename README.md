@@ -6,14 +6,14 @@
 
 ## 仓库布局与构建
 
-与 DeepSeek Harness 主仓保持同级（sibling checkout）：
+与 DeepSeek Harness 主仓保持同级（sibling checkout，turtle-ui 同款布局；路径任意，以下仅为示例）：
 
 ```text
-~/code/test-zhu1090093659   # deepseek-harness checkout（本机的实际路径）
-~/code/dsh-git-graph        # 本仓库
+~/code/deepseek-harness   # deepseek-harness checkout（sibling）
+~/code/dsh-git-graph      # 本仓库
 ```
 
-peer APIs 全部来自 sibling checkout 的源码（tsconfig 通过 `../test-zhu1090093659/tsconfig.base.json` 的 paths 解析），类型门是 `pnpm run typecheck`（`tsc -b`，会连带构建 references 指向的 sibling 包，向 sibling 的 `lib/` 写声明产物——与 turtle-ui 相同的设计）。
+peer APIs 全部来自 sibling checkout 的源码（tsconfig 通过 `../deepseek-harness/tsconfig.base.json` 的 paths 解析；sibling 目录名不同时把 tsconfig 各文件里的 `../deepseek-harness` 相对路径换成实际目录即可），类型门是 `pnpm run typecheck`（`tsc -b`，会连带构建 references 指向的 sibling 包，向 sibling 的 `lib/` 写声明产物——与 turtle-ui 相同的设计）。
 
 ```sh
 pnpm install
@@ -28,15 +28,32 @@ git 安装（无 sibling checkout 的消费者机器）走 `prepare` 脚本：`t
 
 ## 激活
 
-本包是 dsh profile bundle（`package.json` 声明 `"dsh": { "bundle": { "patch": "./cordis.patch.yml" } }`）。本地开发循环（`link:` 直接吃重建产物，无需重装）：
+本包是 dsh profile bundle（`package.json` 声明 `"dsh": { "bundle": { "patch": "./cordis.patch.yml" } }`）。激活后，下次启动 `dsh web`（或对应 profile）时，bundle patch 的 insert 行把 `ui-git-graph`（host half：git 服务 + `/git/*` 路由）与浏览器 half（dshClient 声明）一起装进 Web 组合；页面刷新即可看到输入框上方的 chip 行。
+
+### 通用安装（任何机器）
 
 ```sh
-dsh plugin --profile web add link:~/code/dsh-git-graph
+dsh plugin --profile <name> add github:dsh-external/dsh-git-graph
 ```
 
-该命令在 profile 目录跑 `pnpm add link:...` 并把包 reconcile 进 `dsh.profile.bundles`；下次 `dsh web` 启动时，bundle patch 的 insert 行把 `ui-git-graph`（host half：git 服务 + `/git/*` 路由）与浏览器 half（dshClient 声明）一起装进 Web 组合。刷新页面即可看到输入框上方的 chip 行。
+首次执行会被 pnpm ≥10 拒绝（git 依赖的 `prepare` 构建脚本默认不允许），按报错提示把 allowBuilds key 加进 profile 的 `pnpm-workspace.yaml` 后重试——注意 key 以 `@` 开头，YAML 里需要加引号：
 
-从 git 安装（无 checkout）：`prepare` 在安装时构建 lib；pnpm ≥10 会先拒绝构建，按提示把 allowBuilds key 加进 profile 的 `pnpm-workspace.yaml` 后重试。
+```yaml
+allowBuilds:
+  "@deepseek-ai/dsh-client-ui-git-graph@git+https://github.com/dsh-external/dsh-git-graph.git#<commit>": true
+```
+
+```sh
+dsh plugin --profile <name> add github:dsh-external/dsh-git-graph   # 重试，安装时 prepare 自动构建 lib
+```
+
+### 本地开发循环（本仓库 checkout）
+
+```sh
+dsh plugin --profile <name> add link:/absolute/path/to/dsh-git-graph
+```
+
+`link:` 安装直接引用本地目录，重建后立即生效、无需重装（改完 `pnpm run build` 后刷新页面即可）。注意 `link:` 后跟的是绝对路径（`~` 由 shell 展开，不是 pnpm 语义）。
 
 ## 卸载
 

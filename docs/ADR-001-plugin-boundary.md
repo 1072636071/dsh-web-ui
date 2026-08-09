@@ -23,7 +23,7 @@
 
 - host half（node half，`exports["."]`）：`GitService`（workspace 门卫 + 守卫 + 真实 git 操作）+ `/git/*` JSON 路由 + `/git/events` SSE 变更推送，全部经 `ctx.httpServer`/`ctx.subprocess`/`ctx.workspace` 服务接入。
 - browser half（`dshClient` bundle，`exports["./client"]`）：注册进 `conversation.input.dock`（`order: 100`，贴近输入框；list 槽位支持显式 order），自带中英文案词典（`ctx.locale.register`）。
-- 激活：`"dsh": { "bundle": { "patch": "./cordis.patch.yml" } }` + `dsh plugin --profile web add link:~/code/dsh-git-graph`（pnpm 安装 + reconcile 进 `dsh.profile.bundles`）。
+- 激活：`"dsh": { "bundle": { "patch": "./cordis.patch.yml" } }` + `dsh plugin --profile <name> add github:dsh-external/dsh-git-graph`（git 安装 + prepare 构建 + reconcile 进 `dsh.profile.bundles`）；本地开发用 `add link:<绝对路径>`。
 - 主仓不做任何改动，因此主仓约束（Agent Note、keyless snapshot 等）不触发；验收 9 号项按「无主仓 diff」处理。
 
 ## 关键设计决策
@@ -32,7 +32,7 @@
 2. **工作区语义**：项目切换 = `connectWorkspace(id)` + `sessions.open(next)`（复用空白会话或 host 新建）——对齐 ZCode「激活目标工作区并开始新会话」，不给既有会话换 cwd。「不在项目中工作」= `sessions.clear()`（运行时既有的「清空工作区选择」语义，`workspaces/service.ts` 的 startSession 无目标分支）。
 3. **git 操作语义**：`git switch --no-guess <branch>` / `git switch --no-guess -c <name>`，在 repoRoot 执行，作用于磁盘工作树，影响该工作区所有会话。守卫（对齐 ZCode branchSwitcher 错误码）：未解决冲突（`conflicts-present`）、进行中操作（`operation-in-progress`，检查 MERGE_HEAD/CHERRY_PICK_HEAD/REVERT_HEAD/BISECT_LOG/rebase-merge/rebase-apply/sequencer 标记）、目标分支被其他 worktree 检出（`branch-in-other-worktree`，`git worktree list --porcelain`）、切换失败按 stderr 归类（tracked/untracked overwrite + 文件列表、target-branch-not-found、internal）。创建分支：客户端镜像 `check-ref-format --branch` 规则即时反馈 + host `git check-ref-format` 权威门 + 重名拒绝。
 4. **安全边界**：`/git/*` 只接受「realpath 后等于某已注册 workspace.path」的路径（`ctx.workspace.list()`），浏览器无法对任意目录执行 git。
-5. **hero 去重**：`conversation.input.dock` 的渲染条件随 harness 快照漂移（test-zhu1090093659 版只在非 hero 渲染，运行中的 20260808 staging 版无条件渲染）——因此去重由插件自身保证：`ContextChipsRow` 读取会话摘要的 `blank` 标记，blank（hero）时整行返回 null，hero 的 `heroWorkspaceRow`（项目选择器）与 chip 行永不并存。实测：hero 态仅剩 hero 行，active 态 chip 行出现。
+5. **hero 去重**：`conversation.input.dock` 的渲染条件随 harness 快照漂移（sibling checkout 的早期快照只在非 hero 渲染，运行中的较新快照无条件渲染）——因此去重由插件自身保证：`ContextChipsRow` 读取会话摘要的 `blank` 标记，blank（hero）时整行返回 null，hero 的 `heroWorkspaceRow`（项目选择器）与 chip 行永不并存。实测：hero 态仅剩 hero 行，active 态 chip 行出现。
 6. **非 git 工作区降级**：分支 chip 隐藏（status 返回 null 即不渲染）；项目 chip 恒在。隐藏优于禁用：不产生死控件，且工作区变仓库后自动出现（SSE/打开弹层时刷新）。
 7. **刷新策略**：chip 挂载时拉取、弹层打开时重新拉取、切换/创建成功后刷新、SSE 推送与 window focus 触发刷新。
 8. **「远程连接」占位**：禁用态 + 「即将支持」hint，无 Config 开关（产品决策：形态由实现方定，禁用最保守）。
