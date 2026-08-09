@@ -49,23 +49,21 @@ export function RemoteEntry({ wide, useWorkspaces, t }: RemoteEntryProps) {
     eventSource.current = undefined
   }, [])
 
-  const mint = useCallback(async (): Promise<void> => {
+  const mint = useCallback(async (): Promise<PanelState> => {
     let result: IssueResponse
     try {
       result = await issuePair(workspaceId)
     } catch {
       // Fetch/network failure: show an explicit state instead of silently
       // leaving the panel on its initial banner.
-      setState({ kind: 'unreachable' })
-      return
+      return { kind: 'unreachable' }
     }
     if (!result.ok) {
       // 403 is the loopback-only fence refusing a LAN origin (the panel is a
       // desktop control endpoint); 409 means the server never bound 0.0.0.0.
-      setState(result.code === 'forbidden' ? { kind: 'loopback-required' } : { kind: 'lan-required' })
-      return
+      return result.code === 'forbidden' ? { kind: 'loopback-required' } : { kind: 'lan-required' }
     }
-    setState({
+    return {
       kind: 'ready',
       url: result.url,
       expiresAt: result.expiresAt,
@@ -73,13 +71,18 @@ export function RemoteEntry({ wide, useWorkspaces, t }: RemoteEntryProps) {
       phase: 'waiting',
       deviceCount: 0,
       onlineCount: 0,
-    })
+    }
   }, [workspaceId])
 
-  const openPanel = useCallback(() => {
+  const openPanel = useCallback(async (): Promise<void> => {
     setOpen(true)
-    void mint()
-    // Live status: the desktop panel mirrors the pairing service state.
+    const next = await mint()
+    setState(next)
+    // Live status: the desktop panel mirrors the pairing service state. The
+    // stream only makes sense in the ready state — on a failure banner the
+    // events endpoint is unreachable too (loopback fence), so opening it
+    // would just start a doomed reconnect loop.
+    if (next.kind !== 'ready') return
     const source = new EventSource('/api/pair/events')
     eventSource.current = source
     source.onmessage = (event) => {
@@ -123,7 +126,7 @@ export function RemoteEntry({ wide, useWorkspaces, t }: RemoteEntryProps) {
   }, [])
 
   const handleRefresh = useCallback(() => {
-    void mint()
+    void mint().then(setState)
   }, [mint])
 
   const handleCopy = useCallback(() => {

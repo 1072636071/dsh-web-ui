@@ -108,6 +108,10 @@ describe('RemoteEntry', () => {
     await waitFor(() => expect(screen.getByText('The pairing panel works on this machine only')).toBeTruthy())
     expect(screen.queryByRole('button', { name: 'Stop' })).toBeNull()
     expect(document.querySelector('[data-testid="remote-qr"]')).toBeNull()
+    // No status stream on a failure banner: the events endpoint sits behind
+    // the same loopback fence, so opening it would only start a doomed
+    // reconnect loop.
+    expect(FakeEventSource.instances).toHaveLength(0)
   })
 
   it('shows the unreachable banner when the issue fetch fails', async () => {
