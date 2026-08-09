@@ -6,6 +6,38 @@
 
 > 🔒 本仓库属于 `dsh-external` 组织，**仅组织成员可见**（private）。请勿提交任何凭据、密钥或内部敏感信息。
 
+## ✨ 优质推荐
+
+两个最能打的外观，图为 gallery 试穿界面（`gallery/preview.html`）实拍。
+
+### 🐋 蓝色幻想 · Blue Fantasy
+
+DreamSkin「DeepSeek-鲸鱼娘」Codex 桌面主题的 dsh 适配：**鲸鱼插画背景**垫在半透明面板之下，
+遮罩随亮/暗主题**实时切换**；**periwinkle 靛蓝调色板**把全部 dsh token 重映射成静谧的蓝紫色调。
+
+| 亮色试穿 | 暗色试穿 |
+| --- | --- |
+| ![蓝色幻想 · 亮色试穿](docs/premium/tryon-blue-fantasy-light.png) | ![蓝色幻想 · 暗色试穿](docs/premium/tryon-blue-fantasy-dark.png) |
+
+```sh
+dsh-skin use blue-fantasy
+```
+
+> ⚠️ `blue-fantasy` 需先把包装进 DSH checkout 才能切换（见下文「一键切换皮肤」）。
+
+### 🪟 Windows XP (Luna)
+
+原汁原味的 **Luna** 复古体验：蓝色渐变窗口条 + 窗口按钮、侧边栏任务栏上的绿色**「开始」按钮**、
+米色状态栏（大写/数字/滚动指示灯）、**Bliss 蓝天桌面**，全局直角。
+
+| 亮色试穿 | 暗色试穿 |
+| --- | --- |
+| ![Windows XP · 亮色试穿](docs/premium/tryon-xp-light.png) | ![Windows XP · 暗色试穿](docs/premium/tryon-xp-dark.png) |
+
+```sh
+dsh-skin use xp
+```
+
 ## 结构
 
 ```
@@ -17,6 +49,7 @@ skins/
   skin-center/    GUI 内嵌皮肤中心插件：设置页 Skins 分区，真实 GUI 内试穿 + 亮暗预览 + 复制应用命令
 gallery/      皮肤主题库预览页（index.html 首页 + preview.html 试穿模拟器，双击即可打开）
 docs/e2e/     皮肤中心 e2e 截图
+docs/premium/ README「优质推荐」的试穿界面截图
 scripts/
   dsh-skin          一键切换皮肤的 CLI
   gallery-build     扫描 skins/*/skin.json 重新生成 gallery 静态产物
@@ -155,6 +188,39 @@ pnpm --filter @deepseek-ai/dsh-frontend run build              # 若改了壳层
 A collection of **DeepSeek Harness Web GUI** skins and UI plugins. Every skin is a hot-pluggable client plugin bundle (load to apply, unload to restore), living under `skins/<name>/`.
 
 > 🔒 This repository is private to the `dsh-external` organization — **organization members only**. Never commit credentials or sensitive material.
+
+## ✨ Premium Picks
+
+The two most impressive looks, shot live from the gallery try-on simulator (`gallery/preview.html`).
+
+### 🐋 Blue Fantasy (蓝色幻想)
+
+DSH adaptation of the DreamSkin "DeepSeek-鲸鱼娘" Codex desktop theme: a **whale-art backdrop** sits beneath
+translucent panes, its scrim **swapping live with the light/dark theme**; a **periwinkle-indigo palette**
+remaps every dsh token into a serene blue-violet mood.
+
+| Light try-on | Dark try-on |
+| --- | --- |
+| ![Blue Fantasy light](docs/premium/tryon-blue-fantasy-light.png) | ![Blue Fantasy dark](docs/premium/tryon-blue-fantasy-dark.png) |
+
+```sh
+dsh-skin use blue-fantasy
+```
+
+> ⚠️ `blue-fantasy` first needs its package installed into the DSH checkout (see "One-command switching" below).
+
+### 🪟 Windows XP (Luna)
+
+Faithful **Luna** retro experience: blue gradient window chrome with caption buttons, a green **Start** button
+on the sidebar taskbar, cream status bar (CAPS/NUM/SCRL indicators), the **Bliss** sky desktop, all square-cornered.
+
+| Light try-on | Dark try-on |
+| --- | --- |
+| ![Windows XP light](docs/premium/tryon-xp-light.png) | ![Windows XP dark](docs/premium/tryon-xp-dark.png) |
+
+```sh
+dsh-skin use xp
+```
 
 - `skins/qq98/` — the first collected skin: the QQ2008 retro edition (crystal-blue desktop gradient, glassy navy title bar, scarf-wearing penguin, rounded highlighted controls). Ships a prebuilt `lib/client.js` (CSS inlined) plus source.
 - `skins/ths/` — the Tonghuashun-style (同花顺) stock-trading theme: brand-red title bar, quote status bar (红涨绿跌), gray-blue data-terminal panels. Ships a prebuilt `lib/client.js` (CSS inlined) plus source.
