@@ -63,7 +63,10 @@ export function WorkspaceRowKline({ workspaceId, useStore, actions, ensure, t }:
       title={label}
       aria-label={label}
       data-trend={net >= 0 ? 'up' : 'down'}
-      onClick={(e) => { e.stopPropagation(); actions.toggleBranch(workspaceId) }}
+      onClick={(e) => {
+        e.stopPropagation()
+        actions.toggleBranch(workspaceId)
+      }}
     >
       <CandlestickChart
         candles={candles}

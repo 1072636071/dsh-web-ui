@@ -32,9 +32,11 @@ const cls = (name: keyof typeof css): string => css[name] ?? ''
  * @returns the branch panel, or nothing while the branch is collapsed.
  */
 export function WorkspaceKlineBranch({ workspaceId, useStore, ensure, t }: WorkspaceKlineBranchProps) {
+  // Both selectors run unconditionally: the collapsed early-return must not
+  // change the hook count across renders (Rules of Hooks).
   const expanded = useStore(s => s.expanded.includes(workspaceId))
-  if (!expanded) return null
   const entry = useStore(s => s.entries[workspaceId])
+  if (!expanded) return null
   if (entry === undefined || entry.state === 'idle') {
     ensure(workspaceId)
     return <div className={cls('branch')}>{t('row.loading')}</div>
