@@ -25,6 +25,8 @@ function renderBranch(state: { entries: Record<string, unknown>; expanded: strin
       useStore={useStore}
       actions={{} as never}
       ensure={ensure}
+      useSessions={(() => undefined) as never}
+      useWorkspaces={(() => undefined) as never}
       t={t}
     />,
   )

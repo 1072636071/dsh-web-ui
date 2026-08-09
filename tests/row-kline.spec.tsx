@@ -25,6 +25,8 @@ function renderRow(state: { entries: Record<string, unknown> }, ensure = vi.fn()
       useStore={useStore}
       actions={{ toggleBranch } as never}
       ensure={ensure}
+      useSessions={(() => undefined) as never}
+      useWorkspaces={(() => undefined) as never}
       t={t}
     />,
   )
