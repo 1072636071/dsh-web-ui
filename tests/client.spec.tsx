@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 /**
- * Branch-chip behavior tests: the header context entry renders the branch
- * chip from the session baseline, non-repository workspaces (and sessions
- * without a cwd) hide it, blank (hero) sessions keep it mounted, the
+ * Branch-chip behavior tests: the input selector context entry renders the
+ * branch chip from the session baseline, non-repository workspaces (and
+ * sessions without a cwd) hide it, blank (hero) sessions keep it mounted, the
  * popover searches/filters and marks the current branch, the footer flows
  * fire the right verbs, switch rejections surface readable copy, and the
  * create/graph dialogs behave (validation, duplicate copy, lane rendering).
@@ -111,7 +111,7 @@ describe('BranchChip', () => {
     expect(branchChip.textContent).toContain('main')
   })
 
-  it('keeps the branch chip in a blank (hero) session — the header seat stays mounted', async () => {
+  it('keeps the branch chip in a blank (hero) session — the selector row stays docked', async () => {
     bench({ blank: true })
     const branchChip = await screen.findByRole('button', { name: '分支' })
     expect(branchChip.textContent).toContain('main')

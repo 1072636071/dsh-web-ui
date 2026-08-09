@@ -1,15 +1,16 @@
 /**
  * Git-graph surface plugin, browser half: the git branch selector chip in
- * the resident conversation header's context hole
- * (`conversation.session.header.context`), right beside the official
- * workspace selector. All git facts arrive through the host /git routes
- * (this package's own host half); the inject face carries the business
- * verbs, the components stay pure props.
+ * the input selector row's context hole (`conversation.input.selector
+ * .context`), docked right beside the official workspace selector above the
+ * input card. All git facts arrive through the host /git routes (this
+ * package's own host half); the inject face carries the business verbs, the
+ * components stay pure props.
  *
  * The context hole is session-maybe: the chip stays mounted from cold start
  * through the active phase and hides itself when its data source is absent
  * (no session cwd, or not a git repository) — no workspace selector lives
- * here, the official header chip owns that surface.
+ * here, the official selector chip docked above the input card owns that
+ * surface.
  * @module dsh-git-graph/client
  */
 
@@ -69,7 +70,7 @@ export function apply(ctx: ClientContext): void {
 
   const git = new GitApi()
 
-  // Conditional mount: 'conversation.session.header.context' is declared by
+  // Conditional mount: 'conversation.input.selector.context' is declared by
   // the conversation entry; the conversation service being up is the
   // registration-safe signal (the GoalDock/QueueDock seam).
   ctx.inject(['slots', 'conversation', 'sessions'], (scope: ClientContext) => {
@@ -80,7 +81,7 @@ export function apply(ctx: ClientContext): void {
       sessionId === undefined ? undefined : sessions.list.getSnapshot().byId[sessionId]?.cwd
 
     scope.effect(() => scope.slots.register({
-      name: 'conversation.session.header.context',
+      name: 'conversation.input.selector.context',
       id: 'git-graph',
       order: 100,
       locale: NS,

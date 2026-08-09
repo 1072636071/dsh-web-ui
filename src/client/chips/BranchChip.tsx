@@ -1,8 +1,8 @@
 /**
- * The header context-chip entry: the git branch selector chip, mounted in
- * the resident conversation header's context hole (`conversation.session
- * .header.context`) right beside the official workspace selector. The
- * session-maybe seat keeps the chip mounted in every phase — hero (blank
+ * The input selector context entry: the git branch selector chip, mounted
+ * in the selector row's context hole (`conversation.input.selector.context`)
+ * right beside the official workspace selector, docked above the input card.
+ * The session-maybe seat keeps the chip mounted in every phase — hero (blank
  * session) included — and the chip hides itself only when its data source
  * is absent (no session cwd, or not a git repository).
  * @module dsh-git-graph/client/chips/BranchChip
@@ -21,7 +21,7 @@ import css from './context.module.css'
 
 /** Full props of the branch chip: the context hole's runtime share + the git-graph inject face + the locale seat. */
 export type BranchChipProps =
-  PropsRuntime<'conversation.session.header.context'>
+  PropsRuntime<'conversation.input.selector.context'>
   & GitGraphInjected
   & PropsLocale<'git-graph'>
 

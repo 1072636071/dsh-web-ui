@@ -12,7 +12,7 @@
 - 条目解析锚点是配置树的 `ctx.baseUrl`（cordis.yml 所在目录的 package 依赖）。任何能由 Loader 解析、`package.json` 声明 `dshClient` + `exports["./client"]` 的包都能成为 Web 插件行——不要求包在主仓。
 - 生产先例（本机 `~/.dsh/profiles/node_modules` 与 `~/.dsh/cordis.patch.yml`）：`dsh-client-ui-task-board`、`dsh-client-ui-skin-center`、`dsh-client-ui-subagent-tree`、四个 `skin-*` 皮肤全部是外部包，走同一条链。
 - 浏览器 half 的 `apply(ctx)` 在 client-side cordis ctx 上运行，`inject` 按服务名等待（`slots`/`sessions`/`workspaces`/`connection`/`locale` 均为运行时服务）。外部 bundle 只能做 type-only 的 `@deepseek-ai/*` 导入（构建期纯度门），跨插件协作走 cordis 服务——无需主仓改动。
-- 槽位注册：`ctx.slots.register` 可注册进别家声明的槽位；对 `conversation.session.header.context` 这类无 waitable 服务的槽位，用「检查 `slots.spec(name)` 否则 `slots.subscribe(name)` 延迟注册」范式（`ui-goal` 的 GoalDock 是现成模板，`ctx.inject(['slots','conversation',...])` 以 conversation 服务在作为注册安全信号）。
+- 槽位注册：`ctx.slots.register` 可注册进别家声明的槽位；对 `conversation.input.selector.context` 这类无 waitable 服务的槽位，用「检查 `slots.spec(name)` 否则 `slots.subscribe(name)` 延迟注册」范式（`ui-goal` 的 GoalDock 是现成模板，`ctx.inject(['slots','conversation',...])` 以 conversation 服务在作为注册安全信号）。
 
 ## 问题 2：host RPC 可扩展性 —— RPC map 静态封闭，但 HTTP 载体面开放
 
@@ -22,9 +22,9 @@
 ## 边界决策：方案 (a) —— 全部功能在 dsh-git-graph，主仓零改动
 
 - host half（node half，`exports["."]`）：`GitService`（workspace 门卫 + 守卫 + 真实 git 操作）+ `/git/*` JSON 路由 + `/git/events` SSE 变更推送，全部经 `ctx.httpServer`/`ctx.subprocess`/`ctx.workspace` 服务接入。
-- browser half（`dshClient` bundle，`exports["./client"]`）：注册进 `conversation.session.header.context`（list、session-maybe、`order: 100`），自带中英文案词典（`ctx.locale.register`）。
+- browser half（`dshClient` bundle，`exports["./client"]`）：注册进 `conversation.input.selector.context`（list、session-maybe、`order: 100`），自带中英文案词典（`ctx.locale.register`）。
 - 激活：`"dsh": { "bundle": { "patch": "./cordis.patch.yml" } }` + `dsh plugin --profile <name> add github:dsh-external/dsh-git-graph`（git 安装 + prepare 构建 + reconcile 进 `dsh.profile.bundles`）；本地开发用 `add link:<绝对路径>`。
-- 主仓需提供 header 上下文洞契约（`conversation.session.header.context` 等 header 槽位族）与官方 header 工作区选择器；本 ADR 的「主仓零改动」前提随产品决策（自研工作区选择器下线、分支选择器并入官方 header）作废，主仓契约变更走主仓验证链。
+- 主仓需提供输入选择器洞契约（`conversation.input.selector.workspace`/`.context`）与官方工作区选择器；本 ADR 的「主仓零改动」前提随产品决策（自研工作区选择器下线、分支选择器并入官方选择器行）作废，主仓契约变更走主仓验证链。
 
 ## 关键设计决策
 
@@ -32,7 +32,7 @@
 2. ~~工作区语义~~：项目（工作区）选择已下线（产品决策：自研 WorkspaceChip 整体移除，工作区选择与 placeholder 由官方 header 入口全权负责）；本插件不再携带任何工作区动词。
 3. **git 操作语义**：`git switch --no-guess <branch>` / `git switch --no-guess -c <name>`，在 repoRoot 执行，作用于磁盘工作树，影响该工作区所有会话。守卫（对齐 ZCode branchSwitcher 错误码）：未解决冲突（`conflicts-present`）、进行中操作（`operation-in-progress`，检查 MERGE_HEAD/CHERRY_PICK_HEAD/REVERT_HEAD/BISECT_LOG/rebase-merge/rebase-apply/sequencer 标记）、目标分支被其他 worktree 检出（`branch-in-other-worktree`，`git worktree list --porcelain`）、切换失败按 stderr 归类（tracked/untracked overwrite + 文件列表、target-branch-not-found、internal）。创建分支：客户端镜像 `check-ref-format --branch` 规则即时反馈 + host `git check-ref-format` 权威门 + 重名拒绝。
 4. **安全边界**：`/git/*` 只接受「realpath 后等于某已注册 workspace.path」的路径（`ctx.workspace.list()`），浏览器无法对任意目录执行 git。
-5. **常驻 header 席位**：`conversation.session.header.context` 是 session-maybe 洞——分支 chip 从冷启动到 active 全程挂载；无会话 cwd（pathOf 解析失败）或非 git 工作区（status 返回 null）时 chip 自行隐藏。hero（空白会话）有 cwd，分支胶囊照常显示——与官方 header 工作区胶囊并排，两个相位一致。
+5. **输入选择器席位**：`conversation.input.selector.context` 是 session-maybe 洞——分支 chip 从冷启动到 active 全程挂载，与输入卡 dock 在一起（与卡片同款宽度配方）；无会话 cwd（pathOf 解析失败）或非 git 工作区（status 返回 null）时 chip 自行隐藏。hero（空白会话）有 cwd，分支胶囊照常显示——与官方工作区胶囊并排，两个相位一致。
 6. **非 git 工作区降级**：分支 chip 隐藏（status 返回 null 即不渲染）。隐藏优于禁用：不产生死控件，且工作区变仓库后自动出现（SSE/打开弹层时刷新）。
 7. **刷新策略**：chip 挂载时拉取、弹层打开时重新拉取、切换/创建成功后刷新、SSE 推送与 window focus 触发刷新。
 8. ~~「远程连接」占位~~：随项目选择器一并下线（`WorkspacePopover` 移除）。
