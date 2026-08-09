@@ -48,7 +48,9 @@
 
 .popover {
   position: absolute;
-  top: calc(100% + 4px);
+  /* The selector row sits above the input card: the popover opens UPWARD,
+     capped at the same 360px as the workspace picker menu beside it. */
+  bottom: calc(100% + 4px);
   left: 0;
   z-index: 40;
   display: flex;
