@@ -6,6 +6,7 @@
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm -r test",
+    "skin:new": "node scripts/dsh-skin-new",
     "gallery:build": "node scripts/gallery-build",
     "gallery:capture": "node scripts/capture-previews"
   },

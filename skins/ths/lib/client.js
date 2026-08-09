@@ -17,14 +17,14 @@ window.__ModuleLoader__.load({
 		var ths_module_css_default = {
 			"thsStatusbar": "gwcJPG_thsStatusbar",
 			"thsStatusbarCell": "gwcJPG_thsStatusbarCell",
-			"thsTitlebarTitle": "gwcJPG_thsTitlebarTitle",
 			"thsStatusbarSpacer": "gwcJPG_thsStatusbarSpacer",
-			"thsTitlebarTickerVal": "gwcJPG_thsTitlebarTickerVal",
+			"thsTitlebar": "gwcJPG_thsTitlebar",
 			"thsTitlebarBtn": "gwcJPG_thsTitlebarBtn",
-			"thsTitlebarTickerChg": "gwcJPG_thsTitlebarTickerChg",
 			"thsTitlebarIcon": "gwcJPG_thsTitlebarIcon",
 			"thsTitlebarTicker": "gwcJPG_thsTitlebarTicker",
-			"thsTitlebar": "gwcJPG_thsTitlebar"
+			"thsTitlebarTickerChg": "gwcJPG_thsTitlebarTickerChg",
+			"thsTitlebarTickerVal": "gwcJPG_thsTitlebarTickerVal",
+			"thsTitlebarTitle": "gwcJPG_thsTitlebarTitle"
 		};
 		//#endregion
 		//#region src/client/index.ts

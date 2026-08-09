@@ -168,7 +168,12 @@ function clientConfig(id: string): UserConfig {
           minify: true,
         })
         const classMap: Record<string, string> = {}
-        for (const [local, exp] of Object.entries(cssExports ?? {})) classMap[local] = exp.name
+        // Sort deterministically: lightningcss's cssExports iteration order is
+        // process-dependent (hash-map seeds), which would otherwise churn the
+        // emitted lib/client.js on every rebuild.
+        for (const [local, exp] of Object.entries(cssExports ?? {}).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)) {
+          classMap[local] = exp.name
+        }
         // One <style data-plugin> per module file; idempotent under re-evaluation.
         return [
           `const css = ${JSON.stringify(code.toString())};`,

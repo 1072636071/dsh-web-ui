@@ -15,18 +15,18 @@ window.__ModuleLoader__.load({
 			document.head.appendChild(tag);
 		}
 		var xp_module_css_default = {
-			"xpStatusbarCell": "NN073q_xpStatusbarCell",
 			"xpStart": "NN073q_xpStart",
-			"xpStatusbarKey": "NN073q_xpStatusbarKey",
-			"xpTitlebarIcon": "NN073q_xpTitlebarIcon",
-			"xpTitlebar": "NN073q_xpTitlebar",
-			"xpTitlebarBtnClose": "NN073q_xpTitlebarBtnClose",
-			"xpStatusbar": "NN073q_xpStatusbar",
 			"xpStartIcon": "NN073q_xpStartIcon",
-			"xpTitlebarTitle": "NN073q_xpTitlebarTitle",
-			"xpTitlebarBtn": "NN073q_xpTitlebarBtn",
+			"xpStatusbar": "NN073q_xpStatusbar",
+			"xpStatusbarCell": "NN073q_xpStatusbarCell",
+			"xpStatusbarKey": "NN073q_xpStatusbarKey",
 			"xpStatusbarSpacer": "NN073q_xpStatusbarSpacer",
-			"xpTaskbar": "NN073q_xpTaskbar"
+			"xpTaskbar": "NN073q_xpTaskbar",
+			"xpTitlebar": "NN073q_xpTitlebar",
+			"xpTitlebarBtn": "NN073q_xpTitlebarBtn",
+			"xpTitlebarBtnClose": "NN073q_xpTitlebarBtnClose",
+			"xpTitlebarIcon": "NN073q_xpTitlebarIcon",
+			"xpTitlebarTitle": "NN073q_xpTitlebarTitle"
 		};
 		//#endregion
 		//#region src/client/index.ts

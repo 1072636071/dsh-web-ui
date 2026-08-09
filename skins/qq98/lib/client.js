@@ -15,13 +15,13 @@ window.__ModuleLoader__.load({
 			document.head.appendChild(tag);
 		}
 		var qq98_module_css_default = {
+			"retroStatusbar": "A7sBIG_retroStatusbar",
 			"retroStatusbarCell": "A7sBIG_retroStatusbarCell",
 			"retroStatusbarSpacer": "A7sBIG_retroStatusbarSpacer",
-			"retroStatusbar": "A7sBIG_retroStatusbar",
-			"retroTitlebarIcon": "A7sBIG_retroTitlebarIcon",
 			"retroTitlebar": "A7sBIG_retroTitlebar",
-			"retroTitlebarTitle": "A7sBIG_retroTitlebarTitle",
-			"retroTitlebarBtn": "A7sBIG_retroTitlebarBtn"
+			"retroTitlebarBtn": "A7sBIG_retroTitlebarBtn",
+			"retroTitlebarIcon": "A7sBIG_retroTitlebarIcon",
+			"retroTitlebarTitle": "A7sBIG_retroTitlebarTitle"
 		};
 		//#endregion
 		//#region src/client/index.ts
