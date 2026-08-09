@@ -1,0 +1,62 @@
+# dsh-git-graph
+
+外部 dsh Web GUI 插件：在消息输入框上方常驻一排上下文 chip——左侧**项目（工作区）选择器**，右侧 **git 分支选择器**，以及**Git 图谱**面板。git 能力在 host 进程真实执行（磁盘工作树 `git switch`），UI 在浏览器 React，主仓零改动。
+
+行为对齐 ZCode 的 `GitBranchSwitcher` / `ChatEmptyWorkspacePreviewMenu`：可搜索弹层、当前项打勾、「打开文件夹 / 远程连接（占位）/ 不在项目中工作」与「创建并检出新分支… / Git 图谱」底部操作、切换守卫（未解决冲突 / 进行中操作 / 目标分支被其他 worktree 检出）与可读报错。
+
+## 仓库布局与构建
+
+与 DeepSeek Harness 主仓保持同级（sibling checkout）：
+
+```text
+~/code/test-zhu1090093659   # deepseek-harness checkout（本机的实际路径）
+~/code/dsh-git-graph        # 本仓库
+```
+
+peer APIs 全部来自 sibling checkout 的源码（tsconfig 通过 `../test-zhu1090093659/tsconfig.base.json` 的 paths 解析），类型门是 `pnpm run typecheck`（`tsc -b`，会连带构建 references 指向的 sibling 包，向 sibling 的 `lib/` 写声明产物——与 turtle-ui 相同的设计）。
+
+```sh
+pnpm install
+pnpm run typecheck   # tsc -b（含 sibling 引用项目）
+pnpm test            # vitest（core 纯函数 / 真实 git 服务 / jsdom 组件）
+pnpm run build       # tsc -b && tsdown（lib/index.js + lib/invariant.js + lib/client.js）
+```
+
+`lib/client.js` 是浏览器 bundle（闭包工厂产物，`window.__ModuleLoader__.load`），由 host 的 client-modules 按 `/plugins/<id>/client.js` 伺服；构建预设 `build/tsdown.client.ts` + `build/web/src/platform.ts` 是从主仓 `packages/client/tsdown.client.ts` / `packages/client/web/src/platform.ts` 复制的副本，主仓版本变更时需同步。
+
+git 安装（无 sibling checkout 的消费者机器）走 `prepare` 脚本：`tsdown --config tsdown.prepare.config.ts` 从 src 直接 transpile，不做类型检查（`tsconfig.prepare.json` 自包含）。
+
+## 激活
+
+本包是 dsh profile bundle（`package.json` 声明 `"dsh": { "bundle": { "patch": "./cordis.patch.yml" } }`）。本地开发循环（`link:` 直接吃重建产物，无需重装）：
+
+```sh
+dsh plugin --profile web add link:~/code/dsh-git-graph
+```
+
+该命令在 profile 目录跑 `pnpm add link:...` 并把包 reconcile 进 `dsh.profile.bundles`；下次 `dsh web` 启动时，bundle patch 的 insert 行把 `ui-git-graph`（host half：git 服务 + `/git/*` 路由）与浏览器 half（dshClient 声明）一起装进 Web 组合。刷新页面即可看到输入框上方的 chip 行。
+
+从 git 安装（无 checkout）：`prepare` 在安装时构建 lib；pnpm ≥10 会先拒绝构建，按提示把 allowBuilds key 加进 profile 的 `pnpm-workspace.yaml` 后重试。
+
+## 卸载
+
+```sh
+dsh plugin --profile web remove @deepseek-ai/dsh-client-ui-git-graph
+```
+
+## 设计要点
+
+- 边界与加载链调研、关键决策见 [docs/ADR-001-plugin-boundary.md](docs/ADR-001-plugin-boundary.md)。
+- host half 的 `/git/*` 只接受已注册 workspace 的路径（realpath 校验），浏览器无法对任意目录执行 git。
+- 切换语义是工作区级：`git switch --no-guess <branch>` 作用于 repoRoot 磁盘树，影响该工作区所有会话；项目切换 = 激活目标工作区并打开其（复用或新建的）空白会话，不给既有会话换 cwd。
+- hero 空态去重：`conversation.input.dock` 的渲染条件随 harness 快照漂移，chip 行自带 blank 检测——hero（空白会话）时整行隐藏，与 hero 的 workspace 行永不并存（实测验证）。
+- 非 git 工作区：分支 chip 隐藏（项目 chip 恒在）。
+- 分支状态刷新：挂载/弹层打开/切换成功后拉取 + host SSE（`/git/events`，订阅期间每 2s 轮询 workspace 状态）推送外部变更 + window focus 刷新。
+
+## 检查链
+
+```sh
+pnpm run typecheck
+pnpm test
+pnpm run build
+```

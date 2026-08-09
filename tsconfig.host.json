@@ -1,0 +1,30 @@
+{
+  "extends": "../test-zhu1090093659/tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib/types"
+  },
+  "include": [
+    "src/index.ts",
+    "src/invariant.ts",
+    "src/core/**/*.ts",
+    "src/host/**/*.ts"
+  ],
+  "references": [
+    {
+      "path": "../test-zhu1090093659/vendor/cordis"
+    },
+    {
+      "path": "../test-zhu1090093659/packages/host/webserver"
+    },
+    {
+      "path": "../test-zhu1090093659/packages/subprocess/subprocess"
+    },
+    {
+      "path": "../test-zhu1090093659/packages/support/invariants"
+    },
+    {
+      "path": "../test-zhu1090093659/packages/workspace/workspace"
+    }
+  ]
+}

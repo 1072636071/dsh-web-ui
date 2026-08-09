@@ -1,0 +1,22 @@
+{
+  "extends": "../test-zhu1090093659/tsconfig.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "incremental": false,
+    "noEmit": true,
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "src",
+    "tests"
+  ],
+  // The host entry pulls dsh-workspace → dsh-session root (host Context
+  // merges), which must not meet the browser merges in one program; it is
+  // typechecked by the host project instead (tests never import it).
+  "exclude": [
+    "src/index.ts",
+    "src/invariant.ts"
+  ]
+}
