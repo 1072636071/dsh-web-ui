@@ -26,7 +26,7 @@
       "path": "../../llm/token-meter"
     },
     {
-      "path": "../../session-projection/session-projection"
+      "path": "../../session/session-projection"
     },
     {
       "path": "../../client/runtime"
