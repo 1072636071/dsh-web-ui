@@ -13,11 +13,10 @@ import type { WorkspaceId } from '@deepseek-ai/dsh-client-connection/client'
 import { createCodeKlineStore } from './store.ts'
 import type { WorkspaceKlineState } from './store.ts'
 import { WorkspaceRowKline } from './WorkspaceRowKline.tsx'
-import { WorkspaceKlineBranch } from './WorkspaceKlineBranch.tsx'
 import { en, NS, zh, type CodeKlineKey } from './locales.ts'
 
 export type { WorkspaceRowKlineProps } from './WorkspaceRowKline.tsx'
-export type { WorkspaceKlineBranchProps } from './WorkspaceKlineBranch.tsx'
+export type { WorkspaceKlineCardProps } from './WorkspaceKlineCard.tsx'
 export type { CodeKlineKey } from './locales.ts'
 export { CandlestickChart, candleNetChange } from './CandlestickChart.tsx'
 export type { CandlestickChartOptions } from './CandlestickChart.tsx'
@@ -33,9 +32,6 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 
 /** The row hole this package fills. */
 export const WORKSPACE_ROW_SLOT = 'sidebar.workspaces.workspaceRow' as const
-
-/** The row-below quote-branch hole this package fills. */
-export const WORKSPACE_BRANCH_SLOT = 'sidebar.workspaces.workspaceRow.branch' as const
 
 /** The keyed dispatch key the browser host uses to render this occupant. */
 export const CODE_KLINE_ENTRY_KEY = 'code-kline'
@@ -98,13 +94,4 @@ export function apply(ctx: ClientContext): void {
       inject: injected,
       locale: NS,
     }, WorkspaceRowKline))
-
-  ctx.slots.inject(WORKSPACE_BRANCH_SLOT, () =>
-    ctx.slots.register({
-      name: WORKSPACE_BRANCH_SLOT,
-      key: CODE_KLINE_ENTRY_KEY,
-      store,
-      inject: injected,
-      locale: NS,
-    }, WorkspaceKlineBranch))
 }

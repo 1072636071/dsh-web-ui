@@ -12,12 +12,16 @@ const t = makeTranslate(zh, zh as never) as never
 const wid = (id: string) => id as WorkspaceId
 
 /** Render the row component against a live store instance. */
-function renderRow(state: { entries: Record<string, unknown> }, ensure = vi.fn(), toggleBranch = vi.fn()) {
+function renderRow(
+  state: { entries: Record<string, unknown>; expanded: string[] },
+  ensure = vi.fn(),
+  toggleBranch = vi.fn(),
+) {
   const seeded = {
     getSnapshot: () => state,
     subscribe: () => () => {},
   }
-  const useStore = ((selector: (s: { entries: Record<string, unknown> }) => unknown) =>
+  const useStore = ((selector: (s: { entries: Record<string, unknown>; expanded: string[] }) => unknown) =>
     selector(seeded.getSnapshot())) as never
   return render(
     <WorkspaceRowKline
@@ -40,7 +44,7 @@ const candles = [
 describe('WorkspaceRowKline', () => {
   it('requests the K-line on first render and shows a loading placeholder', () => {
     const ensure = vi.fn()
-    const view = renderRow({ entries: {} }, ensure)
+    const view = renderRow({ entries: {}, expanded: [] }, ensure)
     expect(ensure).toHaveBeenCalledWith(wid('ws-1'))
     expect(view.container.querySelector('[aria-label="加载中"]')).not.toBeNull()
   })
@@ -49,6 +53,7 @@ describe('WorkspaceRowKline', () => {
     const ensure = vi.fn()
     const view = renderRow({
       entries: { 'ws-1': { workspaceId: 'ws-1', candles: [], state: 'loading', error: null } },
+      expanded: [],
     }, ensure)
     expect(ensure).not.toHaveBeenCalled()
     expect(view.container.querySelector('[aria-label="加载中"]')).not.toBeNull()
@@ -61,6 +66,7 @@ describe('WorkspaceRowKline', () => {
           workspaceId: 'ws-1', candles, state: 'ready', error: null,
         },
       },
+      expanded: [],
     })
     const svg = view.container.querySelector('[data-testid="code-kline-chart"]')
     expect(svg).not.toBeNull()
@@ -76,6 +82,7 @@ describe('WorkspaceRowKline', () => {
           workspaceId: 'ws-1', candles: [], reason: 'not-a-git-repository', state: 'ready', error: null,
         },
       },
+      expanded: [],
     })
     expect(view.container.querySelector('[aria-label="停牌"]')).not.toBeNull()
   })
@@ -88,6 +95,7 @@ describe('WorkspaceRowKline', () => {
           workspaceId: 'ws-1', candles, state: 'ready', error: null,
         },
       },
+      expanded: [],
     }, vi.fn(), toggleBranch)
     const sparkline = view.container.querySelector('button[aria-label]') as HTMLButtonElement
     sparkline.click()

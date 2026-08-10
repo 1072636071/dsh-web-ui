@@ -12,6 +12,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-workspace/client'
 import { createCodeKlineStore } from './store.ts'
 import type { WorkspaceKlineState } from './store.ts'
 import { CandlestickChart, candleNetChange } from './CandlestickChart.tsx'
+import { WorkspaceKlineCard } from './WorkspaceKlineCard.tsx'
 import type { CodeKlineInjected } from './index.ts'
 import { NS, type CodeKlineKey } from './locales.ts'
 import css from './WorkspaceRowKline.module.css'
@@ -46,10 +47,20 @@ export function WorkspaceRowKline({ workspaceId, useStore, actions, ensure, t }:
   const entry = useStore(s => s.entries[workspaceId])
   if (entry === undefined || entry.state === 'idle') {
     ensure(workspaceId)
-    return <span className={cls('placeholder')} aria-label={t('row.loading')} />
+    return (
+      <>
+        <span className={cls('placeholder')} aria-label={t('row.loading')} />
+        <WorkspaceKlineCard workspaceId={workspaceId} useStore={useStore} actions={actions} ensure={ensure} t={t} />
+      </>
+    )
   }
   if (entry.state === 'loading' || entry.candles.length === 0) {
-    return <span className={cls('placeholder')} aria-label={entry.state === 'loading' ? t('row.loading') : t('row.noMarket')} />
+    return (
+      <>
+        <span className={cls('placeholder')} aria-label={entry.state === 'loading' ? t('row.loading') : t('row.noMarket')} />
+        <WorkspaceKlineCard workspaceId={workspaceId} useStore={useStore} actions={actions} ensure={ensure} t={t} />
+      </>
+    )
   }
   const candles = trailing(entry.candles)
   const last = candles[candles.length - 1]
@@ -57,26 +68,29 @@ export function WorkspaceRowKline({ workspaceId, useStore, actions, ensure, t }:
   const net = candleNetChange(last)
   const label = `${t('row.net', { n: net })}, ${t('row.close', { n: last.close })}`
   return (
-    <button
-      type="button"
-      className={cls('mini')}
-      title={label}
-      aria-label={label}
-      data-trend={net >= 0 ? 'up' : 'down'}
-      onClick={(e) => {
-        e.stopPropagation()
-        actions.toggleBranch(workspaceId)
-      }}
-    >
-      <CandlestickChart
-        candles={candles}
-        width={MINI_WIDTH}
-        height={MINI_HEIGHT}
-        showVolume={false}
-        maPeriods={[]}
-        slotPadding={0.22}
-      />
-    </button>
+    <>
+      <button
+        type="button"
+        className={cls('mini')}
+        title={label}
+        aria-label={label}
+        data-trend={net >= 0 ? 'up' : 'down'}
+        onClick={(e) => {
+          e.stopPropagation()
+          actions.toggleBranch(workspaceId)
+        }}
+      >
+        <CandlestickChart
+          candles={candles}
+          width={MINI_WIDTH}
+          height={MINI_HEIGHT}
+          showVolume={false}
+          maPeriods={[]}
+          slotPadding={0.22}
+        />
+      </button>
+      <WorkspaceKlineCard workspaceId={workspaceId} useStore={useStore} actions={actions} ensure={ensure} t={t} />
+    </>
   )
 }
 
