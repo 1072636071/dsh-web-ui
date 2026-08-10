@@ -43,14 +43,17 @@ function trailing(candles: readonly WorkspaceKlineState['candles'][number][]): r
  * branch toggle (baked from the store's actions).
  * @returns the sparkline, a loading mark, or a muted placeholder.
  */
-export function WorkspaceRowKline({ workspaceId, useStore, actions, ensure, t }: WorkspaceRowKlineProps) {
+export function WorkspaceRowKline({ workspaceId, useStore, actions, ensure, useSessions, useWorkspaces, t }: WorkspaceRowKlineProps) {
   const entry = useStore(s => s.entries[workspaceId])
+  // The quote card shares every seat with the row; one object keeps the
+  // three render sites (placeholder/loading/ready) in lockstep.
+  const cardProps = { workspaceId, useStore, actions, ensure, useSessions, useWorkspaces, t }
   if (entry === undefined || entry.state === 'idle') {
     ensure(workspaceId)
     return (
       <>
         <span className={cls('placeholder')} aria-label={t('row.loading')} />
-        <WorkspaceKlineCard workspaceId={workspaceId} useStore={useStore} actions={actions} ensure={ensure} t={t} />
+        <WorkspaceKlineCard {...cardProps} />
       </>
     )
   }
@@ -58,7 +61,7 @@ export function WorkspaceRowKline({ workspaceId, useStore, actions, ensure, t }:
     return (
       <>
         <span className={cls('placeholder')} aria-label={entry.state === 'loading' ? t('row.loading') : t('row.noMarket')} />
-        <WorkspaceKlineCard workspaceId={workspaceId} useStore={useStore} actions={actions} ensure={ensure} t={t} />
+        <WorkspaceKlineCard {...cardProps} />
       </>
     )
   }
@@ -89,7 +92,7 @@ export function WorkspaceRowKline({ workspaceId, useStore, actions, ensure, t }:
           slotPadding={0.22}
         />
       </button>
-      <WorkspaceKlineCard workspaceId={workspaceId} useStore={useStore} actions={actions} ensure={ensure} t={t} />
+      <WorkspaceKlineCard {...cardProps} />
     </>
   )
 }
