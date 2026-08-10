@@ -1,0 +1,24 @@
+{
+  "extends": "/Users/zcl/.dsh/source/staging-20260810T011932Z/tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib/types",
+    "jsx": "react-jsx",
+    "lib": ["ES2024", "DOM", "DOM.Iterable"]
+  },
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts"],
+  "references": [
+    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/vendor/cordis" },
+    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/client/connection" },
+    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/client/locale" },
+    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/client/runtime" },
+    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/client/ui-conversation" },
+    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/client/ui-primitives" },
+    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/client/ui-slots" },
+    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/client/web-react" },
+    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/core/session" },
+    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/host/webserver" },
+    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/support/invariants" }
+  ]
+}

@@ -1,0 +1,962 @@
+{
+  "ok": true,
+  "frames_root": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames",
+  "errors": [],
+  "warnings": [],
+  "rows": [
+    {
+      "state": "idle",
+      "expected_frames": 6,
+      "actual_frames": 6,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/idle/00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 11511,
+          "bbox": [
+            47,
+            5,
+            145,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 76
+        },
+        {
+          "index": 1,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/idle/01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 11488,
+          "bbox": [
+            47,
+            5,
+            144,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 94
+        },
+        {
+          "index": 2,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/idle/02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 11519,
+          "bbox": [
+            47,
+            5,
+            145,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 94
+        },
+        {
+          "index": 3,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/idle/03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 11437,
+          "bbox": [
+            48,
+            5,
+            144,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 88
+        },
+        {
+          "index": 4,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/idle/04.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 11431,
+          "bbox": [
+            47,
+            5,
+            144,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 104
+        },
+        {
+          "index": 5,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/idle/05.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 11506,
+          "bbox": [
+            47,
+            5,
+            145,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 92
+        }
+      ]
+    },
+    {
+      "state": "running-right",
+      "expected_frames": 8,
+      "actual_frames": 8,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running-right/00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10834,
+          "bbox": [
+            52,
+            5,
+            140,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 113
+        },
+        {
+          "index": 1,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running-right/01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10901,
+          "bbox": [
+            51,
+            5,
+            140,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 142
+        },
+        {
+          "index": 2,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running-right/02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10976,
+          "bbox": [
+            51,
+            5,
+            140,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 135
+        },
+        {
+          "index": 3,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running-right/03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10779,
+          "bbox": [
+            51,
+            5,
+            141,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 135
+        },
+        {
+          "index": 4,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running-right/04.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10820,
+          "bbox": [
+            52,
+            5,
+            139,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 118
+        },
+        {
+          "index": 5,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running-right/05.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10943,
+          "bbox": [
+            51,
+            5,
+            141,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 122
+        },
+        {
+          "index": 6,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running-right/06.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10674,
+          "bbox": [
+            52,
+            5,
+            139,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 123
+        },
+        {
+          "index": 7,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running-right/07.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 11059,
+          "bbox": [
+            51,
+            5,
+            141,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 142
+        }
+      ]
+    },
+    {
+      "state": "running-left",
+      "expected_frames": 8,
+      "actual_frames": 8,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running-left/00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10726,
+          "bbox": [
+            52,
+            5,
+            139,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 111
+        },
+        {
+          "index": 1,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running-left/01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10901,
+          "bbox": [
+            51,
+            5,
+            140,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 142
+        },
+        {
+          "index": 2,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running-left/02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10976,
+          "bbox": [
+            51,
+            5,
+            140,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 135
+        },
+        {
+          "index": 3,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running-left/03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10779,
+          "bbox": [
+            51,
+            5,
+            141,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 135
+        },
+        {
+          "index": 4,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running-left/04.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10981,
+          "bbox": [
+            49,
+            5,
+            142,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 123
+        },
+        {
+          "index": 5,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running-left/05.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 11021,
+          "bbox": [
+            49,
+            5,
+            143,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 120
+        },
+        {
+          "index": 6,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running-left/06.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10698,
+          "bbox": [
+            53,
+            5,
+            138,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 140
+        },
+        {
+          "index": 7,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running-left/07.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10918,
+          "bbox": [
+            54,
+            5,
+            138,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 134
+        }
+      ]
+    },
+    {
+      "state": "waving",
+      "expected_frames": 4,
+      "actual_frames": 4,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/waving/00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 11185,
+          "bbox": [
+            45,
+            5,
+            146,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 16
+        },
+        {
+          "index": 1,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/waving/01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10838,
+          "bbox": [
+            46,
+            5,
+            145,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 24
+        },
+        {
+          "index": 2,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/waving/02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 11224,
+          "bbox": [
+            47,
+            5,
+            145,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 34
+        },
+        {
+          "index": 3,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/waving/03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 11450,
+          "bbox": [
+            43,
+            5,
+            149,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 23
+        }
+      ]
+    },
+    {
+      "state": "jumping",
+      "expected_frames": 5,
+      "actual_frames": 5,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/jumping/00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 15319,
+          "bbox": [
+            31,
+            5,
+            161,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 309
+        },
+        {
+          "index": 1,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/jumping/01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12580,
+          "bbox": [
+            39,
+            5,
+            153,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 181
+        },
+        {
+          "index": 2,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/jumping/02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 11748,
+          "bbox": [
+            40,
+            5,
+            151,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 144
+        },
+        {
+          "index": 3,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/jumping/03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 11884,
+          "bbox": [
+            42,
+            5,
+            150,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 175
+        },
+        {
+          "index": 4,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/jumping/04.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13354,
+          "bbox": [
+            36,
+            5,
+            155,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 206
+        }
+      ]
+    },
+    {
+      "state": "failed",
+      "expected_frames": 8,
+      "actual_frames": 8,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/failed/00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10063,
+          "bbox": [
+            56,
+            5,
+            136,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 253
+        },
+        {
+          "index": 1,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/failed/01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9511,
+          "bbox": [
+            57,
+            5,
+            135,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 248
+        },
+        {
+          "index": 2,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/failed/02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9486,
+          "bbox": [
+            57,
+            5,
+            135,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 262
+        },
+        {
+          "index": 3,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/failed/03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9561,
+          "bbox": [
+            57,
+            5,
+            135,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 262
+        },
+        {
+          "index": 4,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/failed/04.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10231,
+          "bbox": [
+            56,
+            5,
+            135,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 269
+        },
+        {
+          "index": 5,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/failed/05.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9648,
+          "bbox": [
+            57,
+            5,
+            134,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 245
+        },
+        {
+          "index": 6,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/failed/06.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9176,
+          "bbox": [
+            58,
+            5,
+            134,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 254
+        },
+        {
+          "index": 7,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/failed/07.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9732,
+          "bbox": [
+            57,
+            5,
+            135,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 273
+        }
+      ]
+    },
+    {
+      "state": "waiting",
+      "expected_frames": 6,
+      "actual_frames": 6,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/waiting/00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10488,
+          "bbox": [
+            54,
+            5,
+            138,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 27
+        },
+        {
+          "index": 1,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/waiting/01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10110,
+          "bbox": [
+            55,
+            5,
+            136,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 56
+        },
+        {
+          "index": 2,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/waiting/02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9702,
+          "bbox": [
+            57,
+            5,
+            134,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 36
+        },
+        {
+          "index": 3,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/waiting/03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9612,
+          "bbox": [
+            58,
+            5,
+            134,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 38
+        },
+        {
+          "index": 4,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/waiting/04.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9936,
+          "bbox": [
+            58,
+            5,
+            133,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 45
+        },
+        {
+          "index": 5,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/waiting/05.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10483,
+          "bbox": [
+            54,
+            5,
+            138,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 38
+        }
+      ]
+    },
+    {
+      "state": "running",
+      "expected_frames": 6,
+      "actual_frames": 6,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running/00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12890,
+          "bbox": [
+            45,
+            5,
+            146,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 155
+        },
+        {
+          "index": 1,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running/01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12699,
+          "bbox": [
+            49,
+            5,
+            143,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 167
+        },
+        {
+          "index": 2,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running/02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12738,
+          "bbox": [
+            47,
+            5,
+            144,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 159
+        },
+        {
+          "index": 3,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running/03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12695,
+          "bbox": [
+            50,
+            5,
+            142,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 163
+        },
+        {
+          "index": 4,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running/04.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12805,
+          "bbox": [
+            47,
+            5,
+            145,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 157
+        },
+        {
+          "index": 5,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/running/05.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12659,
+          "bbox": [
+            48,
+            5,
+            144,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 152
+        }
+      ]
+    },
+    {
+      "state": "review",
+      "expected_frames": 6,
+      "actual_frames": 6,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/review/00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10256,
+          "bbox": [
+            58,
+            5,
+            134,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 60
+        },
+        {
+          "index": 1,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/review/01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10244,
+          "bbox": [
+            58,
+            5,
+            134,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 54
+        },
+        {
+          "index": 2,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/review/02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10133,
+          "bbox": [
+            55,
+            5,
+            136,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 64
+        },
+        {
+          "index": 3,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/review/03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9856,
+          "bbox": [
+            59,
+            5,
+            132,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 42
+        },
+        {
+          "index": 4,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/review/04.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10349,
+          "bbox": [
+            57,
+            5,
+            134,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 45
+        },
+        {
+          "index": 5,
+          "file": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/frames/review/05.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10695,
+          "bbox": [
+            54,
+            5,
+            137,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 47
+        }
+      ]
+    }
+  ]
+}

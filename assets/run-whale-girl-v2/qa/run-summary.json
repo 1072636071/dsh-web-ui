@@ -1,0 +1,48 @@
+{
+  "ok": true,
+  "visual_qa": "pass",
+  "run_dir": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2",
+  "spritesheet": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/final/spritesheet.webp",
+  "validation": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/final/validation.json",
+  "contact_sheet": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/qa/contact-sheet.png",
+  "review": "/Users/zcl/code/dsh-pet/assets/run-whale-girl-v2/qa/review.json",
+  "package": "/Users/zcl/code/dsh-pet/assets/whale",
+  "actual_frames": [
+    {
+      "state": "idle",
+      "frames": 6
+    },
+    {
+      "state": "running-right",
+      "frames": 8
+    },
+    {
+      "state": "running-left",
+      "frames": 8
+    },
+    {
+      "state": "waving",
+      "frames": 4
+    },
+    {
+      "state": "jumping",
+      "frames": 5
+    },
+    {
+      "state": "failed",
+      "frames": 8
+    },
+    {
+      "state": "waiting",
+      "frames": 6
+    },
+    {
+      "state": "running",
+      "frames": 6
+    },
+    {
+      "state": "review",
+      "frames": 6
+    }
+  ]
+}
