@@ -30,6 +30,8 @@ window.__ModuleLoader__.load({
 		//#region src/client/index.ts
 		/** The product title the skin pins (captured by the shell's DocumentTitle after settle). */
 		const SKIN_TITLE = "同花顺 · DeepSeek 在线";
+		/** Refresh cadence of the code-workload index cell. */
+		const CODE_INDEX_REFRESH_MS = 3e4;
 		/** Status bar cells; the spacer cell splits the quote group from the status group. */
 		const STOCK_CELLS = [
 			{
@@ -65,7 +67,7 @@ window.__ModuleLoader__.load({
 		const TITLEBAR_GLYPHS = [
 			"–",
 			"□",
-			"×"
+			"✕"
 		];
 		/** Live-quote chip shown in the title bar before the window buttons. */
 		const TICKER = {
@@ -149,13 +151,48 @@ window.__ModuleLoader__.load({
 				if (cell.trend !== "none") el.dataset.trend = cell.trend;
 				statusbar.append(el);
 			}
+			const codeIndexCell = document.createElement("span");
+			codeIndexCell.className = cls("thsStatusbarCell");
+			codeIndexCell.textContent = "代码指数 --";
+			statusbar.append(codeIndexCell);
 			const favicon = document.createElement("link");
 			favicon.rel = "icon";
 			favicon.href = `data:image/svg+xml;utf8,${encodeURIComponent(FAVICON_SVG)}`;
 			document.head.append(favicon);
 			document.title = SKIN_TITLE;
 			body.append(titlebar, statusbar);
+			const api = ctx.get("connection")?.api;
+			const refreshCodeIndex = () => {
+				if (api === void 0) return;
+				(async () => {
+					try {
+						const list = await api.workspace.list({});
+						if (!list.result.ok) return;
+						let net = 0;
+						for (const workspace of list.result.value.items) {
+							const response = await api.codeKline.list({
+								workspaceId: workspace.workspaceId,
+								days: 1
+							});
+							if (!response.result.ok) continue;
+							const candles = response.result.value.candles;
+							const last = candles[candles.length - 1];
+							if (last === void 0) continue;
+							net += last.close - last.open;
+						}
+						const trend = net > 0 ? "up" : net < 0 ? "down" : "none";
+						codeIndexCell.textContent = `代码指数 ${net > 0 ? "+" : ""}${net} 行`;
+						if (trend !== "none") codeIndexCell.dataset.trend = trend;
+						else delete codeIndexCell.dataset.trend;
+					} catch {
+						codeIndexCell.textContent = "代码指数 --";
+					}
+				})();
+			};
+			refreshCodeIndex();
+			const refreshTimer = setInterval(refreshCodeIndex, CODE_INDEX_REFRESH_MS);
 			ctx.effect(() => () => {
+				clearInterval(refreshTimer);
 				delete body.dataset.dshThs;
 				titlebar.remove();
 				statusbar.remove();

@@ -10,10 +10,14 @@
  * only the DOM.
  */
 import type { Context } from 'cordis'
+import type { ConnectionHandle } from '@deepseek-ai/dsh-client-connection/client'
 import css from './ths.module.css'
 
 /** The product title the skin pins (captured by the shell's DocumentTitle after settle). */
 const SKIN_TITLE = '同花顺 · DeepSeek 在线'
+
+/** Refresh cadence of the code-workload index cell. */
+const CODE_INDEX_REFRESH_MS = 30_000
 
 /** Quote trend direction, coloring the status bar cells 红涨绿跌. */
 type Trend = 'up' | 'down' | 'brand' | 'none'
@@ -30,7 +34,7 @@ const STOCK_CELLS: ReadonlyArray<{ text: string; trend: Trend }> = [
 ]
 
 /** Title bar window buttons (decorative glyphs, aria-hidden). */
-const TITLEBAR_GLYPHS = ['–', '□', '×'] as const
+const TITLEBAR_GLYPHS = ['–', '□', '✕'] as const
 
 /** Live-quote chip shown in the title bar before the window buttons. */
 const TICKER = { name: '上证指数', value: '3,342.17', change: '▲0.42%', trend: 'up' as const }
@@ -116,6 +120,15 @@ export function apply(ctx: Context): void {
     statusbar.append(el)
   }
 
+  // Code-workload index cell: the aggregate today net line change across all
+  // workspaces (the "大盘" of the code-K-line idiom). Rendered between the
+  // quote group and the status group; live data rides the codeKline RPC when
+  // the connection handle is available, otherwise the cell shows a flat dash.
+  const codeIndexCell = document.createElement('span')
+  codeIndexCell.className = cls('thsStatusbarCell')
+  codeIndexCell.textContent = '代码指数 --'
+  statusbar.append(codeIndexCell)
+
   const favicon = document.createElement('link')
   favicon.rel = 'icon'
   favicon.href = `data:image/svg+xml;utf8,${encodeURIComponent(FAVICON_SVG)}`
@@ -124,7 +137,40 @@ export function apply(ctx: Context): void {
   document.title = SKIN_TITLE
   body.append(titlebar, statusbar)
 
+  // Refresh the code-workload index every CODE_INDEX_REFRESH_MS. The skin
+  // only reads: no events, no writes beyond its own cell. Failures degrade
+  // to the dash — the stock chrome must never crash the terminal.
+  const connection = ctx.get('connection') as ConnectionHandle | undefined
+  const api = connection?.api
+  const refreshCodeIndex = (): void => {
+    if (api === undefined) return
+    void (async () => {
+      try {
+        const list = await api.workspace.list({})
+        if (!list.result.ok) return
+        let net = 0
+        for (const workspace of list.result.value.items) {
+          const response = await api.codeKline.list({ workspaceId: workspace.workspaceId, days: 1 })
+          if (!response.result.ok) continue
+          const candles = response.result.value.candles
+          const last = candles[candles.length - 1]
+          if (last === undefined) continue
+          net += last.close - last.open
+        }
+        const trend: Trend = net > 0 ? 'up' : net < 0 ? 'down' : 'none'
+        codeIndexCell.textContent = `代码指数 ${net > 0 ? '+' : ''}${net} 行`
+        if (trend !== 'none') codeIndexCell.dataset.trend = trend
+        else delete codeIndexCell.dataset.trend
+      } catch {
+        codeIndexCell.textContent = '代码指数 --'
+      }
+    })()
+  }
+  refreshCodeIndex()
+  const refreshTimer = setInterval(refreshCodeIndex, CODE_INDEX_REFRESH_MS)
+
   ctx.effect(() => () => {
+    clearInterval(refreshTimer)
     delete body.dataset.dshThs
     titlebar.remove()
     statusbar.remove()
