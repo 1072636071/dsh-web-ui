@@ -29,13 +29,17 @@
   （分 时 日 月 周，支持 `*` / `*/n` / `a-b` / 逗号列表）+ 常用预设（每天 09:00、
   每小时、每 10 分钟、每周一 09:00）；启用即计算并持久化「下次运行时间」，卡片显示
   ⏰ 标识；到点自动走真实执行链路（同手动执行），执行会话照常可跳转。
+- **系统提示词注入**：host 半边（`src/index.ts`）通过 `SystemPrompt.section` 注册
+  `plugin:task-board` 段（order 200），向每个 agent 声明本插件存在、能力与限制——
+  插件在组合中（mount 后重启 DSH）即注入，移出组合（unmount 后重启）即消失，
+  agent 无需任何外部文档就能知道如何与本看板协作。
 
 ## 目录结构
 
 ```
 package.json / tsconfig.json / tsdown.config.ts   # 独立仓库构建
 build/tsdown.client.ts + build/web/src/platform.ts # 从 DSH checkout 复制的 client bundle 预设（与运行版本保持同步）
-src/index.ts / src/invariant.ts                    # host 半边（无行为，纯浏览器插件）
+src/index.ts / src/invariant.ts                    # host 半边：仅注入 SystemPrompt section（其余无行为）
 src/client/index.ts                                # apply(ctx)：接线 runtime 服务 + 挂载 DOM
 src/client/sidebar-entry.ts                        # 侧边栏入口注入（自愈式 MutationObserver）
 src/client/board-mount.tsx                         # 中间列看板挂载 + 显隐切换
