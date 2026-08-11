@@ -28,7 +28,7 @@ git 安装（无 sibling checkout 的消费者机器）走 `prepare` 脚本：`t
 
 ## 激活
 
-本包是 dsh profile bundle（`package.json` 声明 `"dsh": { "bundle": { "patch": "./cordis.patch.yml" } }`）。激活后，下次启动 `dsh web`（或对应 profile）时，bundle patch 的 insert 行把 `ui-git-graph`（host half：git 服务 + `/git/*` 路由）与浏览器 half（dshClient 声明）一起装进 Web 组合；页面刷新即可在输入框上方的选择器行看到分支胶囊。
+本包是 dsh profile bundle（`package.json` 声明 `"dsh": { "bundle": { "patch": "./cordis.patch.yml" } }`）。激活后，下次启动 `dsh web`（或对应 profile）时，bundle patch 的 insert 行把 `ui-git-graph`（host half：git 服务 + `/git/*` 路由）与浏览器 half（dsh.client 声明）一起装进 Web 组合；页面刷新即可在输入框上方的选择器行看到分支胶囊。
 
 ### 通用安装（任何机器）
 

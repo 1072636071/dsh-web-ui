@@ -42,20 +42,20 @@ const NS = 'git-graph'
 /** Required services: slots for the header context entry, sessions for the cwd lookup, locale for the copy. */
 export const inject = ['slots', 'sessions', 'connection', 'locale']
 
-/** Injected business face of the branch chip: git verbs. */
+/** Injected business face of the branch chip: git verbs, keyed by the current session id. */
 export interface GitGraphInjected {
   /** The workspace repository snapshot; null when not a repository. */
-  repoStatus: () => Promise<RepoStatus | null>
+  repoStatus: (sessionId: SessionId | undefined) => Promise<RepoStatus | null>
   /** Local branch list with the current branch marked. */
-  branches: () => Promise<BranchesView | null>
+  branches: (sessionId: SessionId | undefined) => Promise<BranchesView | null>
   /** Workspace-level `git switch --no-guess <branch>`. */
-  switchBranch: (branch: string) => Promise<SwitchResult>
+  switchBranch: (sessionId: SessionId | undefined, branch: string) => Promise<SwitchResult>
   /** `git switch --no-guess -c <name>` from the current HEAD. */
-  createBranch: (name: string) => Promise<SwitchResult>
+  createBranch: (sessionId: SessionId | undefined, name: string) => Promise<SwitchResult>
   /** Topo-ordered commit graph. */
-  graph: (limit?: number) => Promise<GraphView | null>
+  graph: (sessionId: SessionId | undefined, limit?: number) => Promise<GraphView | null>
   /** Host-pushed branch-state changes for the session's workspace. */
-  subscribeChanges: (onChange: () => void) => () => void
+  subscribeChanges: (sessionId: SessionId | undefined, onChange: () => void) => () => void
 }
 
 /** The session-cwd lookup failure shared by the injected verbs. */
@@ -85,46 +85,46 @@ export function apply(ctx: ClientContext): void {
       id: 'git-graph',
       order: 100,
       locale: NS,
-      inject: (sessionId: SessionId | undefined): GitGraphInjected => {
+      inject: (): GitGraphInjected => {
         /** Resolve the workspace root for one git call. */
-        const pathOf = (): { ok: true; path: string } | { ok: false; error: GitError } => {
+        const pathOf = (sessionId: SessionId | undefined): { ok: true; path: string } | { ok: false; error: GitError } => {
           const cwd = cwdOf(sessionId)
           if (cwd === undefined || cwd === '') return { ok: false, error: NO_WORKSPACE }
           return { ok: true, path: cwd }
         }
         return {
-          repoStatus: async () => {
-            const resolved = pathOf()
+          repoStatus: async (sessionId) => {
+            const resolved = pathOf(sessionId)
             if (!resolved.ok) return null
             const result = await git.status(resolved.path)
             return result.ok ? result.value : null
           },
-          branches: async () => {
-            const resolved = pathOf()
+          branches: async (sessionId) => {
+            const resolved = pathOf(sessionId)
             if (!resolved.ok) return null
             const result = await git.branches(resolved.path)
             return result.ok ? result.value : null
           },
-          switchBranch: async (branch) => {
-            const resolved = pathOf()
+          switchBranch: async (sessionId, branch) => {
+            const resolved = pathOf(sessionId)
             if (!resolved.ok) return { ok: false, error: resolved.error }
             const result = await git.switchBranch(resolved.path, branch)
             return result.ok ? { ok: true, branch: result.value.branch } : result
           },
-          createBranch: async (name) => {
-            const resolved = pathOf()
+          createBranch: async (sessionId, name) => {
+            const resolved = pathOf(sessionId)
             if (!resolved.ok) return { ok: false, error: resolved.error }
             const result = await git.createBranch(resolved.path, name)
             return result.ok ? { ok: true, branch: result.value.branch } : result
           },
-          graph: async (limit) => {
-            const resolved = pathOf()
+          graph: async (sessionId, limit) => {
+            const resolved = pathOf(sessionId)
             if (!resolved.ok) return null
             const result = await git.graph(resolved.path, limit)
             return result.ok ? result.value : null
           },
-          subscribeChanges: (onChange) => {
-            const resolved = pathOf()
+          subscribeChanges: (sessionId, onChange) => {
+            const resolved = pathOf(sessionId)
             if (!resolved.ok) return () => {}
             return subscribeChanges(resolved.path, onChange)
           },

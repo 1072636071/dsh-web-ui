@@ -40,25 +40,25 @@ export function BranchChip(props: BranchChipProps) {
 
   const refetch = useCallback(() => {
     let live = true
-    props.repoStatus()
+    props.repoStatus(props.sessionId)
       .then((status) => { if (live) setRepo(status) })
       .catch(() => { if (live) setRepo(null) })
     return () => { live = false }
-  }, [props.repoStatus])
+  }, [props.repoStatus, props.sessionId])
 
-  // Initial load + host-pushed external changes + focus refresh. The inject
-  // face is re-derived per session (adoption), so a session switch re-fetches
-  // through the new repoStatus identity.
+  // Initial load + host-pushed external changes + focus refresh. A session
+  // switch changes props.sessionId and re-fetches through the session-keyed
+  // verbs.
   useEffect(() => refetch(), [refetch])
   useEffect(() => {
-    const unsubscribe = props.subscribeChanges(() => { refetch() })
+    const unsubscribe = props.subscribeChanges(props.sessionId, () => { refetch() })
     const onFocus = (): void => { refetch() }
     window.addEventListener('focus', onFocus)
     return () => {
       unsubscribe()
       window.removeEventListener('focus', onFocus)
     }
-  }, [props.subscribeChanges, refetch])
+  }, [props.subscribeChanges, props.sessionId, refetch])
 
   const closeCreate = (): void => {
     setCreateOpen(false)
@@ -72,9 +72,9 @@ export function BranchChip(props: BranchChipProps) {
     if (!branchOpen) return
     let live = true
     setBranchesView(null)
-    props.branches().then((view) => { if (live) setBranchesView(view) })
+    props.branches(props.sessionId).then((view) => { if (live) setBranchesView(view) })
     return () => { live = false }
-  }, [branchOpen, props.branches])
+  }, [branchOpen, props.branches, props.sessionId])
 
   // Loading or not a repository: no chip (no dead control). A workspace that
   // becomes a repository appears on the next refresh.
@@ -96,7 +96,7 @@ export function BranchChip(props: BranchChipProps) {
       {branchOpen && branchesView !== null && (
         <BranchPopover
           view={branchesView}
-          onSwitch={props.switchBranch}
+          onSwitch={(branch) => props.switchBranch(props.sessionId, branch)}
           onSwitched={refetch}
           onCreate={() => {
             setBranchOpen(false)
@@ -112,14 +112,14 @@ export function BranchChip(props: BranchChipProps) {
       )}
       {createOpen && (
         <CreateBranchDialog
-          onCreate={props.createBranch}
+          onCreate={(name) => props.createBranch(props.sessionId, name)}
           onClose={closeCreate}
           t={props.t}
         />
       )}
       {graphOpen && (
         <GraphDialog
-          graph={props.graph}
+          graph={(limit) => props.graph(props.sessionId, limit)}
           onClose={() => { setGraphOpen(false) }}
           t={props.t}
         />

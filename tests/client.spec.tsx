@@ -74,21 +74,21 @@ function bench(options: BenchOptions = {}) {
   const injected: GitGraphInjected = {
     // Mirrors the real inject face: without a session cwd every git verb
     // resolves no workspace (null), so the chip has nothing to show.
-    repoStatus: vi.fn(async () => { record('repoStatus'); return cwd === undefined ? null : repoStatus }),
-    branches: vi.fn(async () => { record('branches'); return cwd === undefined ? null : branchesView }),
-    switchBranch: vi.fn(async (branch: string) => {
-      record('switchBranch', branch)
+    repoStatus: vi.fn(async (sessionId: SessionId | undefined) => { record('repoStatus', sessionId); return cwd === undefined ? null : repoStatus }),
+    branches: vi.fn(async (sessionId: SessionId | undefined) => { record('branches', sessionId); return cwd === undefined ? null : branchesView }),
+    switchBranch: vi.fn(async (sessionId: SessionId | undefined, branch: string) => {
+      record('switchBranch', sessionId, branch)
       return options.switchResult ?? { ok: true, branch }
     }),
-    createBranch: vi.fn(async (name: string) => {
-      record('createBranch', name)
+    createBranch: vi.fn(async (sessionId: SessionId | undefined, name: string) => {
+      record('createBranch', sessionId, name)
       return options.createResult ?? { ok: true, branch: name }
     }),
-    graph: vi.fn(async (limit?: number) => {
-      record('graph', limit)
+    graph: vi.fn(async (sessionId: SessionId | undefined, limit?: number) => {
+      record('graph', sessionId, limit)
       return options.graph !== undefined ? options.graph(limit) : options.graphView ?? null
     }),
-    subscribeChanges: vi.fn((_onChange: () => void) => { record('subscribeChanges'); return () => {} }),
+    subscribeChanges: vi.fn((sessionId: SessionId | undefined, _onChange: () => void) => { record('subscribeChanges', sessionId); return () => {} }),
   }
 
   const props: BranchChipProps = {
@@ -135,7 +135,7 @@ describe('BranchChip', () => {
     const { injected, calls } = bench()
     fireEvent.click(await screen.findByRole('button', { name: '分支' }))
     fireEvent.click(await screen.findByRole('option', { name: 'feature/x' }))
-    expect(calls.switchBranch).toEqual([['feature/x']])
+    expect(calls.switchBranch).toEqual([['sess-1', 'feature/x']])
     expect(await screen.findByText('已切换到分支 feature/x')).toBeTruthy()
     expect(injected.switchBranch).toHaveBeenCalled()
   })
@@ -172,7 +172,7 @@ describe('BranchChip', () => {
     expect(injected.createBranch).not.toHaveBeenCalled()
     fireEvent.change(input, { target: { value: 'feature/good' } })
     fireEvent.click(screen.getByRole('button', { name: '创建并切换' }))
-    expect(injected.createBranch).toHaveBeenCalledWith('feature/good')
+    expect(injected.createBranch).toHaveBeenCalledWith(sid('sess-1'), 'feature/good')
   })
 
   it('shows duplicate-name copy from the host', async () => {
@@ -201,12 +201,12 @@ describe('BranchChip', () => {
     const dialog = await screen.findByRole('dialog', { name: 'Git 图谱' })
     expect(dialog.textContent).toContain('merge work')
     expect(dialog.textContent).toContain('2 个提交')
-    expect(calls.graph).toEqual([[200]])
+    expect(calls.graph).toEqual([['sess-1', 200]])
     // Refs render as pills; the current branch is highlighted.
     expect(dialog.querySelectorAll('[class*="graphRef"]')).toHaveLength(2)
     expect(dialog.querySelectorAll('[class*="graphRefCurrent"]')).toHaveLength(1)
     fireEvent.click(screen.getByRole('button', { name: '加载更多' }))
-    expect(calls.graph).toEqual([[200], [102]])
+    expect(calls.graph).toEqual([['sess-1', 200], ['sess-1', 102]])
   })
 
   it('shows a loading hint before the first graph response', async () => {
