@@ -97,28 +97,32 @@ npm test             # vitest：存储读写 / 状态流转 / 执行触发
 
 ## 挂载 / 卸载
 
+本插件采用官方 profile-bundle 形态（package.json 声明 `dsh.bundle.patch` +
+`dsh.client`，见 `cordis.patch.yml`）。挂载 = 在 web profile 清单
+（`~/.dsh/profiles/web/package.json`）注册依赖与 bundle 行并安装：
+
 ```sh
-# 挂载（symlink + cordis.patch.yml managed 段；watcher 秒级热载入后刷新页面）
+# 挂载（dependencies + dsh.profile.bundles 注册，pnpm install；重启 GUI 后生效）
 node scripts/dsh-task-board.js mount
 
 # 查看状态
 node scripts/dsh-task-board.js status
 
-# 卸载（移除 managed 段 + symlink；刷新页面即恢复原状；任务数据保留）
+# 卸载（移除注册行；重启 GUI 后恢复原状；任务数据保留）
 node scripts/dsh-task-board.js unmount
 ```
 
-`cordis.patch.yml` 中写入的段：
+profile 清单中注册的行：
 
-```yaml
-# --- dsh-task-board (managed by the dsh-task-board repo; do not edit) ---
-- insert:
-    - id: ui-task-board
-      name: '@deepseek-ai/dsh-client-ui-task-board'
-# --- end dsh-task-board ---
+```json
+{
+  "dependencies": { "@deepseek-ai/dsh-client-ui-task-board": "link:/Users/zcl/code/dsh-task-board" },
+  "dsh": { "profile": { "bundles": [ "...", "@deepseek-ai/dsh-client-ui-task-board" ] } }
+}
 ```
 
-`~/.dsh/profiles/node_modules/@deepseek-ai/dsh-client-ui-task-board` → 本仓库 symlink。
+> 注意：profile 层（bundle 行、`dsh.client` 元数据）在 dsh web 进程启动时读取，
+> 挂载/卸载后需要**重启 dsh web GUI** 才生效（页面刷新不够）。
 
 ## 数据存储位置
 

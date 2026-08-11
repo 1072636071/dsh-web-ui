@@ -4,56 +4,39 @@
 /**
  * dsh-task-board — one-command mount/unmount for the task-board GUI plugin.
  *
- * mount   : create the profile node_modules symlink for
- *           @deepseek-ai/dsh-client-ui-task-board and append the plugin's
- *           managed section to ~/.dsh/cordis.patch.yml (hot-reloaded by the
- *           config watcher; a page refresh shows the sidebar entry).
- * unmount : remove the managed section and the symlink — the GUI fully
- *           reverts; task data stays in the browser (localStorage).
+ * The plugin ships in the official profile-bundle shape: the repo's
+ * package.json declares `dsh.bundle.patch` (this repo's cordis.patch.yml)
+ * and `dsh.client`; mounting registers it in the web profile manifest
+ * (~/.dsh/profiles/web/package.json, dependencies + dsh.profile.bundles)
+ * and runs pnpm install in the profile directory. Restarting the dsh web
+ * GUI makes the bundle layer load; a page refresh then shows the sidebar
+ * entry.
+ *
+ * mount   : add the profile-manifest dependency + bundle row, pnpm install.
+ * unmount : remove both rows, pnpm install — the GUI fully reverts; task
+ *           data stays in the browser (localStorage).
  * status  : report the current mount state.
  *
- * The managed section is delimited by its own markers, so other managed
- * sections (dsh-skin, dsh-web-ui skin center, personal rows) are never
- * touched.
+ * Only the profile manifest rows owned by this plugin are touched; other
+ * profile rows (skins, git-graph, pet, …) are left alone.
  */
 
 import fs from 'node:fs'
 import path from 'node:path'
+import { execSync } from 'node:child_process'
 
 const HOME = process.env.HOME
-const PATCH = path.join(HOME, '.dsh', 'cordis.patch.yml')
-const PROFILE_MODULES = path.join(HOME, '.dsh', 'profiles', 'node_modules')
+const PROFILE_DIR = path.join(HOME, '.dsh', 'profiles', 'web')
+const PROFILE_MANIFEST = path.join(PROFILE_DIR, 'package.json')
 const PKG = '@deepseek-ai/dsh-client-ui-task-board'
-const ID = 'ui-task-board'
 const REPO = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
 
-const START = '# --- dsh-task-board (managed by the dsh-task-board repo; do not edit) ---'
-const END = '# --- end dsh-task-board ---'
-
-function managedSection() {
-  return `${START}\n- insert:\n    - id: ${ID}\n      name: '${PKG}'\n${END}`
+function readManifest() {
+  return JSON.parse(fs.readFileSync(PROFILE_MANIFEST, 'utf8'))
 }
 
-function readPatch() {
-  return fs.existsSync(PATCH) ? fs.readFileSync(PATCH, 'utf8') : ''
-}
-
-function stripSection(patch) {
-  const start = patch.indexOf(START)
-  if (start === -1) return patch
-  const end = patch.indexOf(END, start)
-  if (end === -1) {
-    throw new Error('dsh-task-board managed section is unterminated; fix ~/.dsh/cordis.patch.yml manually')
-  }
-  return patch.slice(0, start) + patch.slice(end + END.length)
-}
-
-function symlinkPath() {
-  return path.join(PROFILE_MODULES, PKG)
-}
-
-function symlinkExists() {
-  return fs.existsSync(symlinkPath())
+function writeManifest(manifest) {
+  fs.writeFileSync(PROFILE_MANIFEST, `${JSON.stringify(manifest, null, 2)}\n`)
 }
 
 function checkBuilt() {
@@ -65,64 +48,85 @@ function checkBuilt() {
   return true
 }
 
+function ensureProfile() {
+  if (!fs.existsSync(PROFILE_MANIFEST)) {
+    throw new Error(`web profile manifest 不存在：${PROFILE_MANIFEST}（先运行 dsh web 或 dsh plugin --profile web 初始化）`)
+  }
+}
+
+function installProfile() {
+  execSync('pnpm install', { cwd: PROFILE_DIR, stdio: 'inherit' })
+}
+
 function mount() {
   if (!fs.existsSync(path.join(REPO, 'package.json'))) {
     throw new Error(`仓库缺少 package.json：${REPO}`)
   }
   checkBuilt()
+  ensureProfile()
 
-  // 1. profile symlink (same wiring as the skin plugins).
-  const scoped = path.join(PROFILE_MODULES, '@deepseek-ai')
-  fs.mkdirSync(scoped, { recursive: true })
-  if (symlinkExists()) {
-    console.log(`✓ symlink 已存在：${symlinkPath()}`)
+  const manifest = readManifest()
+  const deps = manifest.dependencies ?? (manifest.dependencies = {})
+  const bundles = manifest.dsh?.profile?.bundles ?? (manifest.dsh = { profile: { bundles: [] } }).profile.bundles
+  const spec = `link:${REPO}`
+
+  if (deps[PKG] !== undefined) {
+    console.log(`✓ ${PKG} 已在 dependencies（跳过）`)
   } else {
-    fs.symlinkSync(REPO, symlinkPath(), 'dir')
-    console.log(`✓ symlink：${symlinkPath()} → ${REPO}`)
+    deps[PKG] = spec
+    console.log(`✓ dependencies += ${PKG}: ${spec}`)
   }
-
-  // 2. managed patch section.
-  const patch = readPatch()
-  if (patch.includes(START)) {
-    console.log('✓ cordis.patch.yml 已包含 dsh-task-board 段（跳过）')
+  if (bundles.includes(PKG)) {
+    console.log(`✓ ${PKG} 已在 dsh.profile.bundles（跳过）`)
   } else {
-    const separator = patch === '' || patch.endsWith('\n') ? '' : '\n'
-    const addition = `${separator}${patch === '' ? '' : '\n'}${managedSection()}\n`
-    fs.appendFileSync(PATCH, addition)
-    console.log(`✓ 已把 dsh-task-board 段追加到 ${PATCH}`)
+    bundles.push(PKG)
+    console.log(`✓ dsh.profile.bundles += ${PKG}`)
   }
+  writeManifest(manifest)
+  installProfile()
 
-  console.log('\n完成。配置 watcher 会在数秒内热载入；刷新 dsh web GUI 页面即可看到侧边栏「任务看板」入口。')
+  console.log('\n完成。重启 dsh web GUI（profile 层变更需要重启加载），刷新页面即可看到侧边栏「任务看板」入口。')
 }
 
 function unmount() {
-  // 1. managed patch section.
-  const patch = readPatch()
-  if (patch.includes(START)) {
-    const cleaned = stripSection(patch).replace(/\n{3,}/g, '\n\n').replace(/\n+$/, '\n')
-    fs.writeFileSync(PATCH, cleaned)
-    console.log('✓ 已移除 cordis.patch.yml 中的 dsh-task-board 段（其它段不受影响）')
+  ensureProfile()
+  const manifest = readManifest()
+  const deps = manifest.dependencies ?? {}
+  const bundles = manifest.dsh?.profile?.bundles ?? []
+  const changed = deps[PKG] !== undefined || bundles.includes(PKG)
+
+  if (deps[PKG] !== undefined) {
+    delete deps[PKG]
+    console.log(`✓ dependencies -= ${PKG}`)
   } else {
-    console.log('· cordis.patch.yml 无 dsh-task-board 段（跳过）')
+    console.log(`· dependencies 无 ${PKG}（跳过）`)
+  }
+  const idx = bundles.indexOf(PKG)
+  if (idx !== -1) {
+    bundles.splice(idx, 1)
+    console.log(`✓ dsh.profile.bundles -= ${PKG}`)
+  } else {
+    console.log(`· dsh.profile.bundles 无 ${PKG}（跳过）`)
+  }
+  if (changed) {
+    writeManifest(manifest)
+    installProfile()
   }
 
-  // 2. profile symlink.
-  if (symlinkExists()) {
-    fs.unlinkSync(symlinkPath())
-    console.log('✓ 已移除 symlink')
-  } else {
-    console.log('· symlink 不存在（跳过）')
-  }
-
-  console.log('\n完成。刷新页面后 GUI 恢复原状；任务数据保留在浏览器 localStorage（如需清除：浏览器控制台执行 localStorage.removeItem("dsh.taskBoard.v1")）。')
+  console.log('\n完成。重启 dsh web GUI 后恢复原状；任务数据保留在浏览器 localStorage（如需清除：浏览器控制台执行 localStorage.removeItem("dsh.taskBoard.v1")）。')
 }
 
 function status() {
-  const patch = readPatch()
-  console.log(`插件 id    : ${ID}`)
+  ensureProfile()
+  const manifest = readManifest()
+  const deps = manifest.dependencies ?? {}
+  const bundles = manifest.dsh?.profile?.bundles ?? []
+  const installed = fs.existsSync(path.join(PROFILE_DIR, 'node_modules', PKG))
+  console.log(`插件 id    : ${PKG}`)
   console.log(`仓库       : ${REPO}`)
-  console.log(`symlink    : ${symlinkExists() ? '已挂载' : '未挂载'} (${symlinkPath()})`)
-  console.log(`patch 段   : ${patch.includes(START) ? '已写入' : '未写入'} (${PATCH})`)
+  console.log(`dependencies: ${deps[PKG] !== undefined ? `已声明 (${deps[PKG]})` : '未声明'}`)
+  console.log(`bundles     : ${bundles.includes(PKG) ? '已列入 dsh.profile.bundles' : '未列入'}`)
+  console.log(`node_modules: ${installed ? '已安装' : '未安装'} (${path.join(PROFILE_DIR, 'node_modules', PKG)})`)
   console.log(`lib/client.js: ${fs.existsSync(path.join(REPO, 'lib', 'client.js')) ? '已构建' : '未构建'}`)
 }
 
