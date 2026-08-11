@@ -1,5 +1,5 @@
 {
-  "extends": "/Users/zcl/.dsh/source/staging-20260810T011932Z/tsconfig.base.json",
+  "extends": "../test-zhu1090093659/tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "lib/types",
@@ -9,16 +9,16 @@
   "include": ["src"],
   "exclude": ["src/**/*.test.ts"],
   "references": [
-    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/vendor/cordis" },
-    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/client/connection" },
-    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/client/locale" },
-    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/client/runtime" },
-    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/client/ui-conversation" },
-    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/client/ui-primitives" },
-    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/client/ui-slots" },
-    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/client/web-react" },
-    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/core/session" },
-    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/host/webserver" },
-    { "path": "/Users/zcl/.dsh/source/staging-20260810T011932Z/packages/support/invariants" }
+    { "path": "../test-zhu1090093659/vendor/cordis" },
+    { "path": "../test-zhu1090093659/packages/client/connection" },
+    { "path": "../test-zhu1090093659/packages/client/locale" },
+    { "path": "../test-zhu1090093659/packages/client/runtime" },
+    { "path": "../test-zhu1090093659/packages/client/ui-conversation" },
+    { "path": "../test-zhu1090093659/packages/client/ui-primitives" },
+    { "path": "../test-zhu1090093659/packages/client/ui-slots" },
+    { "path": "../test-zhu1090093659/packages/client/web-react" },
+    { "path": "../test-zhu1090093659/packages/core/session" },
+    { "path": "../test-zhu1090093659/packages/host/webserver" },
+    { "path": "../test-zhu1090093659/packages/support/invariants" }
   ]
 }
