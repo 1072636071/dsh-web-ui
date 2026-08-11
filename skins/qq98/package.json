@@ -14,11 +14,11 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [],
+      "platform": "web"
     }
-  },
-  "dshClient": {
-    "inject": [],
-    "platform": "web"
   },
   "scripts": {
     "build": "tsdown",
