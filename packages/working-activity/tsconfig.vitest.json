@@ -6,7 +6,6 @@
     "declarationMap": false,
     "incremental": false,
     "noEmit": true,
-    "jsx": "react-jsx",
     "lib": ["ES2024", "DOM", "DOM.Iterable"]
   },
   "include": ["src", "tests"]
