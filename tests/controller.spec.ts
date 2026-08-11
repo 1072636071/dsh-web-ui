@@ -248,22 +248,26 @@ describe('run loop', () => {
     expect(reloaded.getSnapshot().tasks[0].status).toBe('todo')
   })
 
-  it('settles a background-running task when the session list updates', async () => {
+  it('keeps a page-launched run running on list updates; only the watch settles it', async () => {
     const stub = new StubExec()
     const { controller, sessions, store, stub: exec } = makeController(stub)
     const task = controller.createTask({ title: 'x', description: '', prompt: '' })!
-    // Start a run; attach its session id (the session itself finishes in the
-    // background — the board never opens it).
+    // Start a run; attach its session id.
     await controller.runTask(task.id)
     const executionId = exec.runCalls[0].executionId
     exec.runCalls[0].fire({ kind: 'started', taskId: task.id, executionId, sessionId: 's-1' })
     expect(store.load()[0].status).toBe('running')
 
-    // The next session-list notification (the executing session finishing)
-    // reconciles the task from the list state.
+    // A session-list notification (the executing session appearing in the
+    // list while its turn has not started yet) must NOT settle the run via
+    // reconciliation: a freshly created session is idle, not completed.
     stub.reconcileResult = { kind: 'settled', taskId: task.id, executionId, outcome: 'succeeded' }
     sessions.setCurrent('s-2')
     await flush()
+    expect(store.load()[0].status).toBe('running')
+
+    // The live watch settles on the turn boundary.
+    exec.runCalls[0].fire({ kind: 'settled', taskId: task.id, executionId, outcome: 'succeeded' })
     expect(store.load()[0].status).toBe('done')
     expect(store.load()[0].executions[0].result).toBe('succeeded')
   })

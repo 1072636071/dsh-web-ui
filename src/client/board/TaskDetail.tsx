@@ -245,7 +245,12 @@ export function TaskDetail({ controller, task }: { controller: BoardController; 
             type="button"
             className={css.primaryButton}
             disabled={running}
-            onClick={() => { void controller.rerunTask(current.id) }}
+            onClick={() => {
+              // Running kicks off a real agent session; close the detail so
+              // the whole board stays visible while the task executes.
+              controller.closeTask()
+              void controller.rerunTask(current.id)
+            }}
           >
             {current.executions.length === 0 ? t('detail.run') : t('detail.rerun')}
           </button>

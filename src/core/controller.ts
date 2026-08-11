@@ -244,6 +244,11 @@ export class BoardController {
     const { task: next, execution } = startExecution(task, this.now(), this.uuid())
     this.tasks = this.tasks.map(candidate => candidate.id === id ? next : candidate)
     this.persistAndNotify()
+    // This page owns the settlement of its own launches: the live watch
+    // (ExecutionService.run) settles on the turn boundary, and list
+    // reconciliation must not pre-empt it with a session that has not
+    // started a turn yet (its list row is idle, not completed).
+    this.activeExecutionIds.add(execution.id)
     await this.deps.exec.run(next, execution, (event) => { this.handleExecutionEvent(event) })
   }
 
@@ -266,6 +271,7 @@ export class BoardController {
       this.persistAndNotify()
       return
     }
+    this.activeExecutionIds.delete(event.executionId)
     this.tasks = this.tasks.map(task => task.id === event.taskId
       ? settleExecution(task, event.executionId, event.outcome, this.now(), event.error)
       : task)
@@ -288,12 +294,19 @@ export class BoardController {
 
   private lastCurrent: string | undefined = undefined
 
+  /** Execution ids launched on this page; they settle via their live watch, never list reconciliation. */
+  private readonly activeExecutionIds = new Set<string>()
+
   /** Settle tasks left 'running' whose sessions already finished. */
   private async reconcileRunningTasks(): Promise<void> {
     type Settled = Extract<ExecutionEvent, { kind: 'settled' }>
     const events: Array<{ task: TaskRecord; event: Settled }> = []
     for (const task of this.tasks) {
       if (task.status !== 'running') continue
+      const execution = task.executions[task.executions.length - 1]
+      // Runs launched on this page settle through their live watch (turn
+      // boundary); reconciliation exists for background/leftover runs.
+      if (execution !== undefined && this.activeExecutionIds.has(execution.id)) continue
       const event = await this.deps.exec.reconcile(task)
       if (event !== undefined && event.kind === 'settled') events.push({ task, event })
     }
