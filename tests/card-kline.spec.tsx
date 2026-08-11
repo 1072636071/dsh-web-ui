@@ -8,7 +8,7 @@ import { zh } from '../src/client/locales.ts'
 
 afterEach(cleanup)
 
-const t = makeTranslate(zh, zh as never) as never
+const t = makeTranslate(zh)
 const wid = (id: string) => id as WorkspaceId
 
 /** Render the card against a state stub. */
