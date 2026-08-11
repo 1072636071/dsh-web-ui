@@ -107,7 +107,7 @@ export class CodeKlineService extends Service {
       if (error instanceof NotAGitRepositoryError) {
         return { workspaceId: query.workspaceId, candles: [], reason: 'not-a-git-repository' }
       }
-      this.ctx.logger?.('codeKline').warn(`code-kline scan failed for ${workspace.path}: ${String(error)}`)
+      this.ctx.logger.warn(`code-kline scan failed for ${workspace.path}: ${String(error)}`)
       return { workspaceId: query.workspaceId, candles: [], reason: 'scan-error' }
     }
   }
