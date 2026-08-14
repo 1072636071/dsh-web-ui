@@ -11,11 +11,9 @@
  * `anchorGate` the promotion after the first tool call also requires either
  * one minimal-like reasoning block or the `maxBootstrapSteps` fallback.
  * `promoteAfterFirstResponse` promotes a tool-less first response on its next
- * turn, and also releases any anchor-gated session once a new user turn
- * starts, so short one-step tasks never stay two-tool forever.
- * `deferredSources` and `deferredGraceSteps` delay selected injected message
- * kinds (workspace instructions, skill catalog) for a few steps after
- * promotion.
+ * step instead of keeping the session two-tool forever. `deferredSources` and
+ * `deferredGraceSteps` delay selected injected message kinds (workspace
+ * instructions, skill catalog) for a few steps after promotion.
  *
  * Source: https://github.com/xiaobright/dsh-anchored-standard (MIT), extended
  * with the phase-1 quarantine and the stabilization controls above.
@@ -117,25 +115,22 @@ function stateFor(session) {
       responded: false,
       anchored: false,
       steps: 0,
-      lastTurn: 0,
       deferredSteps: 0,
-      fullToolsThisStep: false,
     }
     promotionBySession.set(session, state)
   }
   return state
 }
 
-function decidePromotion(state, config, currentTurn) {
+function decidePromotion(state, config) {
   if (state.toolCalled && config.anchorGate !== true) return true
   if (state.toolCalled && config.anchorGate === true && (state.anchored || state.steps >= config.maxBootstrapSteps)) return true
   if (!state.toolCalled && state.responded && config.promoteAfterFirstResponse === true) return true
-  if (state.responded && config.promoteAfterFirstResponse === true && currentTurn !== undefined && currentTurn > state.lastTurn) return true
   return false
 }
 
 /** Scan newly appended session events and update promotion state. */
-function refresh(agent, config, currentTurn) {
+function refresh(agent, config) {
   const session = agent?.session
   if (session === undefined) return undefined
   const state = stateFor(session)
@@ -148,13 +143,12 @@ function refresh(agent, config, currentTurn) {
         state.toolCalled = true
       } else if (event.type === 'step/start') {
         state.steps += 1
-        if (Number.isInteger(event.data?.turn)) state.lastTurn = event.data.turn
       } else if (event.type === 'assistant/message') {
         state.responded = true
         if (!state.anchored) state.anchored = hasAnchoredReasoning(event.data?.message?.content)
       }
     }
-    if (decidePromotion(state, config, currentTurn)) state.promoted = true
+    if (decidePromotion(state, config)) state.promoted = true
   }
   return state
 }
@@ -181,7 +175,6 @@ export function apply(ctx, config) {
     const agent = context.agent
     if (agent === undefined) return assembled
     const state = refresh(agent, policy)
-    state.fullToolsThisStep = state.promoted
     if (state.promoted) return assembled
 
     const available = new Set(assembled.tools.map(tool => tool.name))
@@ -206,10 +199,10 @@ export function apply(ctx, config) {
     const decision = await next()
     const agent = payload.agent
     if (agent === undefined || decision.kind !== 'enter') return decision
-    const state = refresh(agent, policy, payload.turn)
+    const state = refresh(agent, policy)
     if (state === undefined) return decision
 
-    if (!state.promoted || !state.fullToolsThisStep) {
+    if (!state.promoted) {
       return {
         ...decision,
         messages: decision.messages.filter(message => isAllowedMessage(message, messageSources)),
