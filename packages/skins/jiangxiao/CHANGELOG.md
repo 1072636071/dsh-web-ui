@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.2.0 — chrome 瘦身与颜色重设计
+
+### 新增
+- `--jx-text-gold` 文字专用金 token（深浅双套），`--dsw-alias-brand-text` 改映射到它；`--jx-gold` 收窄为装饰专用（边框、图标背景、渐变、滚动条）
+- h1-h4 烫金箔：`background-clip: text` + `--jx-gold-foil` 渐变，`@supports` 兜底回退 `--jx-text-gold` 纯色；标题 `letter-spacing` 从 0.02em 收紧到 0.01em
+- 对比度 CI 门禁 `scripts/check-jiangxiao-contrast.mjs`：解析 `jiangxiao.module.css` 中深浅双套 `--jx-text-*` / `--jx-surface-*` 字面量，按 WCAG 2.1 校验 AA（正文 4.5:1、弱化文字 3:1），接入 `pnpm test:scripts`
+
+### 变更
+- `--jx-*` 字面量深浅双套全部重做达 WCAG AA：深色 `--jx-text-faint` 加深、`--jx-wisteria` 提亮；浅色 `--jx-text-weak` / `--jx-text-faint` 加深、`--jx-gold-foil` 最暗点加深、`--jx-seal` / `--jx-cinnabar` 加深为深梅红、`--jx-wisteria` 加深
+- apply/dispose 契约测试更新：断言不再注入 chrome 条 / favicon / document.title，断言 `--jx-text-gold` token 存在且 `--dsw-alias-brand-text` 映射到它，断言烫金箔 `@supports` 规则存在
+- README 双语同步：删除 chrome 条描述与 title/cells 配置面，新增对比度门禁说明与烫金箔描述，装饰层描述对齐 D16
+
+### 删除
+- apply() 渲染的两条固定 chrome 条（`.jiangxiaoTitlebar` / `.jiangxiaoStatusbar`）及附属配置面（`TITLEBAR_GLYPHS` / `STATUS_CELLS` / `LS_TITLE` / `LS_CELLS` / `resolveTitle` / `resolveCells` / `SEAL_SVG` / `SKIN_TITLE` / `FAVICON_SVG` / `readOverride`）
+- favicon 注入与 document.title 覆盖（交还 DSH 原生）
+- 印章发送钮朱砂化（`[data-action='prompt-submit']` 规则），DSH 原生发送钮外观恢复
+- button / button:hover / button:active 硬编码 box-shadow + background-image: none
+- input / textarea / select 硬编码 box-shadow + background + color
+- body padding（`padding: 34px 8px 32px`）与 `#root` border + box-shadow（保留 background: transparent）
+- `localStorage` 配置面 `dsh.jiangxiao.title` / `dsh.jiangxiao.cells` 及 README Configuration 章节
+
 ## 0.1.0 — 姜晓·墨染皮肤首版
 
 ### 新增
@@ -14,6 +35,27 @@
 ---
 
 # Changelog (English)
+
+## 0.2.0 — Chrome trim and color redesign
+
+### Added
+- `--jx-text-gold` text-only gold token (dark + light sets); `--dsw-alias-brand-text` now maps to it. `--jx-gold` is narrowed to decorative use (borders, icon backgrounds, gradients, scrollbar).
+- Gold-foil h1-h4: `background-clip: text` + `--jx-gold-foil` gradient, with an `@supports` fallback to `--jx-text-gold` solid color. Heading `letter-spacing` tightened from 0.02em to 0.01em.
+- Contrast CI gate `scripts/check-jiangxiao-contrast.mjs`: parses the dark + light `--jx-text-*` / `--jx-surface-*` literals in `jiangxiao.module.css`, verifies WCAG 2.1 AA (4.5:1 body text, 3:1 faint text), wired into `pnpm test:scripts`.
+
+### Changed
+- `--jx-*` literals fully redesigned across dark + light sets to WCAG AA: dark `--jx-text-faint` deepened, `--jx-wisteria` lightened; light `--jx-text-weak` / `--jx-text-faint` deepened, `--jx-gold-foil` darkest stop deepened, `--jx-seal` / `--jx-cinnabar` deepened to dark plum-red, `--jx-wisteria` deepened.
+- apply/dispose contract test updated: asserts no chrome bars / favicon / document.title injection, asserts `--jx-text-gold` token exists and `--dsw-alias-brand-text` maps to it, asserts the gold-foil `@supports` rule is present.
+- README bilingual sync: dropped chrome-bar descriptions and the title/cells config surface, added the contrast-gate section and gold-foil description, decorative-layer description aligned with D16.
+
+### Removed
+- The two fixed chrome bars rendered by apply() (`.jiangxiaoTitlebar` / `.jiangxiaoStatusbar`) and their config surfaces (`TITLEBAR_GLYPHS` / `STATUS_CELLS` / `LS_TITLE` / `LS_CELLS` / `resolveTitle` / `resolveCells` / `SEAL_SVG` / `SKIN_TITLE` / `FAVICON_SVG` / `readOverride`).
+- Favicon injection and document.title override (returned to DSH native).
+- Cinnabar seal send-button styling (`[data-action='prompt-submit']` rule); the DSH native send button is restored.
+- button / button:hover / button:active hardcoded box-shadow + background-image: none.
+- input / textarea / select hardcoded box-shadow + background + color.
+- body padding (`padding: 34px 8px 32px`) and `#root` border + box-shadow (background: transparent kept).
+- `localStorage` config keys `dsh.jiangxiao.title` / `dsh.jiangxiao.cells` and the README Configuration section.
 
 ## 0.1.0 — Initial Jiangxiao · Ink-Dyed skin
 

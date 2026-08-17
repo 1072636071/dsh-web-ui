@@ -6,8 +6,8 @@ A Tang-style anime theme skin for the DeepSeek Harness (DSH) Web GUI, ported fro
 
 - **Palette**: ink-black ground, dark-gold text, mist-purple atmosphere, cinnabar accent (dark default "Moonlit Ink-Dyed"); rice-white ground, pink plum, gold (light variant "Plum Blossom")
 - **Dual theme**: dark is the default; light follows the DSH dark/light signal automatically (`body[data-ds-dark-theme]`)
-- **Token-level port**: `--jx-*` tokens remapped onto the dsh three-layer token system (`--dsw-static-*` / `--dsw-alias-*` / `--aion-*`), so every component lands in the Tang-ink era
-- **Decorative layer**: cinnabar seal send button, title-bar Tang cloud pattern with gold end-rule, gold scrollbar, cinnabar favicon, document title
+- **Token-level port**: `--jx-*` tokens remapped onto the dsh three-layer token system (`--dsw-static-*` / `--dsw-alias-*` / `--aion-*`), so every component lands in the Tang-ink era. `--jx-text-gold` is split out as the text-only gold (AA on every surface); `--jx-gold` is narrowed to decorative use (borders, icon backgrounds, gradients, scrollbar).
+- **Decorative layer**: gold-foil h1-h4 (`background-clip: text` with `@supports` fallback to `--jx-text-gold`), titlebar-v2 Tang-cloud ornament, gold scrollbar, ::selection, strong/b bright gold, :focus-visible outline. No chrome bars, no favicon, no document.title override, no button/input hardcode.
 - **Fonts**: two woff2 fonts inlined (Ma Shan Zheng kaiti + Noto Serif SC song), offline-capable, `@font-face` carries `local()` fallback chains
 - **Syntax highlighting**: code blocks keep the upstream `--syntax-*` palette untouched
 
@@ -16,7 +16,7 @@ A Tang-style anime theme skin for the DeepSeek Harness (DSH) Web GUI, ported fro
 ## Features
 
 - Pure presentation layer: no services injected, no events emitted, no model requests touched
-- `apply()` only writes what it withdraws; the disposer fully recovers (body attribute, @font-face style, injected chrome, favicon, title)
+- `apply()` only writes what it withdraws; the disposer fully recovers (body attribute, @font-face style)
 - All styles hang under `body[data-dsh-jiangxiao]` (light variant `:not([data-ds-dark-theme])`)
 - No static asset files: fonts are embedded as base64 data URLs in the JS bundle
 - `prefers-reduced-motion` disables all motion
@@ -66,22 +66,14 @@ dsh-skin list            # list skins and the currently active one
 
 After switching, the config watcher hot-reloads within seconds; refresh the page to apply.
 
-## Configuration
+## Contrast gate
 
-Optional overrides, read from `localStorage` (all are optional; absent or invalid values fall back to the defaults). They are pure presentation — no services, no events:
+`scripts/check-jiangxiao-contrast.mjs` parses the `--jx-text-*` / `--jx-surface-*` literals in `jiangxiao.module.css` (both dark and light sets) and verifies WCAG 2.1 contrast ratios at build time:
 
-| Key | Value | Effect |
-| --- | --- | --- |
-| `dsh.jiangxiao.title` | any string | Replaces the pinned title ("姜晓 · 墨染 · DeepSeek 在线") in the title bar and document title |
-| `dsh.jiangxiao.cells` | JSON array of strings | Replaces the status-bar cells, e.g. `["墨染", "唐风"]` |
+- `--jx-text-strong` / `--jx-text-base` / `--jx-text-gold` >= 4.5:1 on `--jx-surface-0` / `-1` / `-2` / `-3`
+- `--jx-text-weak` / `--jx-text-faint` >= 3:1
 
-Example:
-
-```js
-localStorage.setItem('dsh.jiangxiao.title', '姜晓工坊')
-localStorage.setItem('dsh.jiangxiao.cells', JSON.stringify(['墨染', '唐风']))
-location.reload()
-```
+The gate runs under `pnpm test:scripts` (CI), so any color regression that drops contrast below AA turns red.
 
 ## Known limitations
 

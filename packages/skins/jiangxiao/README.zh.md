@@ -6,8 +6,8 @@
 
 - **配色**：墨黑底、暗金文、雾紫氛、朱砂点睛（深色默认「月夜墨染」）；米白底、粉梅、金（浅色变体「梅花」）
 - **双主题**：深色为默认，浅色跟随 DSH 深浅信号自动切换（`body[data-ds-dark-theme]`）
-- **token 级移植**：`--jx-*` 令牌语义映射到 dsh 三层 token（`--dsw-static-*` / `--dsw-alias-*` / `--aion-*`），所有组件统一进入唐风墨染调
-- **装饰级**：朱砂印章发送钮、标题栏唐风云纹与金线端饰、金线滚动条、朱砂 favicon、文档标题
+- **token 级移植**：`--jx-*` 令牌语义映射到 dsh 三层 token（`--dsw-static-*` / `--dsw-alias-*` / `--aion-*`），所有组件统一进入唐风墨染调。`--jx-text-gold` 拆为文字专用金（在每个 surface 上达 AA）；`--jx-gold` 收窄为装饰专用（边框、图标背景、渐变、滚动条）。
+- **装饰级**：h1-h4 烫金箔（`background-clip: text`，`@supports` 兜底回退 `--jx-text-gold`）、titlebar-v2 唐风云纹端饰、金线滚动条、::selection、strong/b 亮金、:focus-visible outline。无 chrome 条、无 favicon、不覆盖 document.title、不硬编码 button/input。
 - **字体**：内置 2 个 woff2 字体（Ma Shan Zheng 楷体 + Noto Serif SC 宋体），离线可用，`@font-face` 含 `local()` 回退链
 - **语法高亮**：代码块保持上游 `--syntax-*` 配色不改
 
@@ -16,7 +16,7 @@
 ## 特性
 
 - 纯呈现层：不注入服务、不发事件、不触模型请求
-- `apply()` 只写自己会收回的东西，disposer 完整回收（body 属性、@font-face 样式、注入元素、favicon、标题）
+- `apply()` 只写自己会收回的东西，disposer 完整回收（body 属性、@font-face 样式）
 - 样式全部挂在 `body[data-dsh-jiangxiao]` 下（浅色变体 `:not([data-ds-dark-theme])`）
 - 无静态资源文件：字体以 base64 data URL 内嵌进 JS bundle
 - `prefers-reduced-motion` 下动效全关
@@ -66,22 +66,14 @@ dsh-skin list            # 查看皮肤与当前激活项
 
 切换后 config watcher 会在几秒内热重载，刷新页面即可生效。
 
-## 配置
+## 对比度门禁
 
-可选覆盖项，从 `localStorage` 读取（均可选；缺失或非法值回退默认）。纯呈现层——不注入服务、不发事件：
+`scripts/check-jiangxiao-contrast.mjs` 解析 `jiangxiao.module.css` 中的 `--jx-text-*` / `--jx-surface-*` 字面量（深浅双套），按 WCAG 2.1 对比度公式在构建时校验：
 
-| Key | 值 | 效果 |
-| --- | --- | --- |
-| `dsh.jiangxiao.title` | 任意字符串 | 替换标题栏与文档标题中固定的标题（「姜晓 · 墨染 · DeepSeek 在线」） |
-| `dsh.jiangxiao.cells` | JSON 字符串数组 | 替换状态栏单元格，例如 `["墨染", "唐风"]` |
+- `--jx-text-strong` / `--jx-text-base` / `--jx-text-gold` 在 `--jx-surface-0` / `-1` / `-2` / `-3` 上 >= 4.5:1
+- `--jx-text-weak` / `--jx-text-faint` >= 3:1
 
-示例：
-
-```js
-localStorage.setItem('dsh.jiangxiao.title', '姜晓工坊')
-localStorage.setItem('dsh.jiangxiao.cells', JSON.stringify(['墨染', '唐风']))
-location.reload()
-```
+门禁接入 `pnpm test:scripts`（CI），任何使对比度跌破 AA 的颜色回退都会变红。
 
 ## 已知限制
 

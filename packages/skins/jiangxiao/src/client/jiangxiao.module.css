@@ -29,10 +29,11 @@ body[data-dsh-jiangxiao] {
   --jx-text-strong: #f2ead8;
   --jx-text-base: #f2ead8;
   --jx-text-weak: #a99c8a;
-  --jx-text-faint: #a99c8a;
-  /* Gold family */
+  --jx-text-faint: #8a7e6e;
+  /* Gold family (--jx-gold is decoration-only; --jx-text-gold is text-only AA) */
   --jx-gold-bright: #f6d365;
   --jx-gold: #d6b34a;
+  --jx-text-gold: #d6b34a;
   --jx-gold-deep: #b8860b;
   --jx-gold-dim: #996515;
   --jx-ginkgo: #dfb793;
@@ -49,7 +50,7 @@ body[data-dsh-jiangxiao] {
   --jx-cloud: #e7d3d2;
   --jx-moon: #ecd8d8;
   --jx-hair: #d1beca;
-  --jx-wisteria: #997694;
+  --jx-wisteria: #b89aac;
   /* Cinnabar accent */
   --jx-cinnabar: #c3272b;
   /* Highlight variants */
@@ -92,16 +93,17 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
   --jx-surface-3: #e8dcc8;
   --jx-text-strong: #2a241a;
   --jx-text-base: #5d4a42;
-  --jx-text-weak: #8d7a70;
-  --jx-text-faint: #b3a296;
+  --jx-text-weak: #7d6a5e;
+  --jx-text-faint: #8a7765;
   --jx-gold-bright: #9c7a1e;
   --jx-gold: #b8860b;
+  --jx-text-gold: #6f5206;
   --jx-gold-deep: #8a6508;
   --jx-gold-dim: #6f5306;
   --jx-ginkgo: #b8860b;
-  --jx-gold-foil: linear-gradient(135deg, #b8860b 0%, #d97a8e 50%, #8a6508 100%);
-  --jx-seal: #b24a5c;
-  --jx-seal-deep: #8e3a49;
+  --jx-gold-foil: linear-gradient(135deg, #b8860b 0%, #d97a8e 50%, #6f5206 100%);
+  --jx-seal: #8e3a49;
+  --jx-seal-deep: #7a2a39;
   --jx-seal-bright: #d97a8e;
   --jx-seal-ink: #fff8f6;
   --jx-mist: #c9b8b4;
@@ -110,8 +112,8 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
   --jx-cloud: #f0e4e2;
   --jx-moon: #f3e2e2;
   --jx-hair: #dcc4ca;
-  --jx-wisteria: #b85c74;
-  --jx-cinnabar: #b24a5c;
+  --jx-wisteria: #9c3a54;
+  --jx-cinnabar: #8e3a49;
   --jx-hl-file: #2c6a7a;
   --jx-hl-agent: #9c7a1e;
   --jx-success: #3d7a3d;
@@ -142,7 +144,7 @@ body[data-dsh-jiangxiao] {
     radial-gradient(circle at 82% 28%, rgba(153, 118, 148, 0.05), transparent 38%),
     radial-gradient(circle at 50% 92%, rgba(184, 134, 11, 0.04), transparent 45%),
     linear-gradient(168deg, var(--jx-surface-0) 0%, var(--jx-surface-1) 60%, var(--jx-surface-2) 100%);
-  padding: 34px 8px 32px;
+
   box-sizing: border-box;
 }
 
@@ -154,18 +156,10 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
     linear-gradient(168deg, var(--jx-surface-0) 0%, var(--jx-surface-1) 60%, var(--jx-surface-2) 100%);
 }
 
-/* #root is the window body: transparent so the body ground shows through,
-   framed by a gold-deco hairline and a soft ink shadow. */
+/* #root is the window body: transparent so the body ground shows through. */
 body[data-dsh-jiangxiao] [id='root'] {
   box-sizing: border-box;
   background: transparent;
-  border: 1px solid var(--jx-border-deco);
-  box-shadow: var(--jx-shadow-2);
-}
-
-body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) [id='root'] {
-  border-color: var(--jx-border-deco);
-  box-shadow: var(--jx-shadow-2);
 }
 
 /* --- Static palette: dark default ------------------------------------------- */
@@ -353,7 +347,7 @@ body[data-dsh-jiangxiao] {
   --dsw-alias-brand-primary-invert: var(--jx-surface-0);
   --dsw-alias-brand-primary-new-colorprimary-new-color: var(--jx-gold);
   --dsw-alias-brand-primary: var(--jx-gold);
-  --dsw-alias-brand-text: var(--jx-gold-bright);
+  --dsw-alias-brand-text: var(--jx-text-gold);
   --dsw-alias-button-contrast-fill: var(--jx-gold-deep);
   --dsw-alias-button-elevated-fill: var(--jx-surface-2);
   --dsw-alias-button-floating-fill: var(--jx-surface-2);
@@ -446,7 +440,7 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
   --dsw-alias-brand-primary-invert: var(--jx-surface-0);
   --dsw-alias-brand-primary-new-colorprimary-new-color: var(--jx-gold);
   --dsw-alias-brand-primary: var(--jx-gold);
-  --dsw-alias-brand-text: var(--jx-gold-deep);
+  --dsw-alias-brand-text: var(--jx-text-gold);
   --dsw-alias-button-contrast-fill: var(--jx-gold-deep);
   --dsw-alias-button-elevated-fill: var(--jx-surface-2);
   --dsw-alias-button-floating-fill: var(--jx-surface-2);
@@ -588,50 +582,7 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
   --aion-font-mono: var(--jx-font-code);
 }
 
-/* --- Geometry & controls ---------------------------------------------------- */
-
-body[data-dsh-jiangxiao] button {
-  background-image: none;
-  box-shadow: 0 1px 2px rgba(5, 3, 8, 0.4);
-}
-
-body[data-dsh-jiangxiao] button:hover:not(:disabled) {
-  background-image: none;
-  box-shadow: inset 0 0 0 1px rgba(184, 134, 11, 0.3), 0 1px 3px rgba(5, 3, 8, 0.5);
-}
-
-body[data-dsh-jiangxiao] button:active:not(:disabled) {
-  background-image: none;
-  box-shadow: inset 0 2px 4px rgba(5, 3, 8, 0.5);
-}
-
-body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) button {
-  box-shadow: 0 1px 2px rgba(5, 3, 8, 0.16);
-}
-
-body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) button:hover:not(:disabled) {
-  box-shadow: inset 0 0 0 1px rgba(184, 134, 11, 0.32), 0 1px 3px rgba(5, 3, 8, 0.22);
-}
-
-body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) button:active:not(:disabled) {
-  box-shadow: inset 0 2px 4px rgba(5, 3, 8, 0.28);
-}
-
-body[data-dsh-jiangxiao] input:not([type='checkbox']):not([type='radio']),
-body[data-dsh-jiangxiao] textarea,
-body[data-dsh-jiangxiao] select {
-  box-shadow: inset 0 1px 2px rgba(5, 3, 8, 0.4);
-  background: var(--jx-surface-2);
-  color: var(--jx-text-base);
-}
-
-body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) input:not([type='checkbox']):not([type='radio']),
-body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) textarea,
-body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) select {
-  box-shadow: inset 0 1px 2px rgba(5, 3, 8, 0.16);
-  background: var(--jx-surface-0);
-  color: var(--jx-text-strong);
-}
+/* --- Focus ring ------------------------------------------------------------- */
 
 body[data-dsh-jiangxiao] :focus-visible {
   outline: 2px solid var(--jx-gold);
@@ -695,43 +646,11 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) a:visited {
   color: var(--jx-wisteria);
 }
 
-/* --- Cinnabar seal send button --------------------------------------------- */
-/* The prompt submit button becomes a cinnabar seal roundel: cinnabar fill,
-   cream-ink icon, deep-cinnabar border, soft red glow on hover, press sinks.
-   Ported from openCodeMM session.css [data-action="prompt-submit"]. */
-
-body[data-dsh-jiangxiao] [data-action='prompt-submit'],
-body[data-dsh-jiangxiao] button[data-action='prompt-submit'] {
-  border-radius: 9999px !important;
-  background-image: none !important;
-  background-color: var(--jx-seal) !important;
-  border: 1px solid var(--jx-seal-deep) !important;
-  box-shadow:
-    0 2px 6px color-mix(in srgb, var(--jx-seal) 40%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--jx-seal-ink) 22%, transparent) !important;
-  color: var(--jx-seal-ink) !important;
-  transition:
-    background-color var(--jx-dur-fast) ease,
-    transform 0.1s ease;
-}
-
-body[data-dsh-jiangxiao] [data-action='prompt-submit']:hover:not(:disabled),
-body[data-dsh-jiangxiao] button[data-action='prompt-submit']:hover:not(:disabled) {
-  background-color: var(--jx-seal-bright) !important;
-  transform: translateY(-1px);
-}
-
-body[data-dsh-jiangxiao] [data-action='prompt-submit']:active:not(:disabled),
-body[data-dsh-jiangxiao] button[data-action='prompt-submit']:active:not(:disabled) {
-  background-color: var(--jx-seal-deep) !important;
-  transform: scale(0.96);
-}
 
 /* --- Title bar Tang cloud pattern + gold end-rule -------------------------- */
 /* The dsh title bar (header[data-slot="titlebar-v2"] in upstream) wears a
    faint gold cloud-line SVG over the ink gradient, with a vertical gold
-   end-rule at the start. The plugin also renders its own jiangxiaoTitlebar
-   chrome strip; both paths get the Tang treatment. */
+   end-rule at the start. */
 
 body[data-dsh-jiangxiao] [data-slot='titlebar-v2'] {
   background:
@@ -773,19 +692,47 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) [data-slot='titlebar-v2'] [da
   -webkit-text-fill-color: var(--jx-text-strong);
 }
 
-/* --- Headings: Kaiti display font ------------------------------------------ */
+/* --- Headings: Kaiti display font with gold-foil ---------------------------- */
+/* h1-h4 wear the Tang gold-foil: background-clip: text over the --jx-gold-foil
+   gradient gives the headings a flowing gold-leaf feel. The --jx-gold-foil
+   token is overridden in the light variant, so both scopes get their own
+   foil. Browsers without background-clip: text fall back to solid
+   --jx-text-gold (still AA on surface-0). strong/b keep a flat bright-gold
+   so small inline emphasis stays crisp. */
 
 body[data-dsh-jiangxiao] h1,
 body[data-dsh-jiangxiao] h2,
-body[data-dsh-jiangxiao] h3 {
+body[data-dsh-jiangxiao] h3,
+body[data-dsh-jiangxiao] h4 {
   font-family: var(--jx-font-display);
-  color: var(--jx-gold-bright);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
+  background: var(--jx-gold-foil);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
-body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) h1,
-body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) h2,
-body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) h3 {
+/* @supports fallback: no background-clip: text -> solid AA gold. */
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  body[data-dsh-jiangxiao] h1,
+  body[data-dsh-jiangxiao] h2,
+  body[data-dsh-jiangxiao] h3,
+  body[data-dsh-jiangxiao] h4 {
+    background: none;
+    color: var(--jx-text-gold);
+    -webkit-text-fill-color: var(--jx-text-gold);
+  }
+}
+
+/* strong/b: flat bright-gold, no foil (small inline emphasis stays crisp). */
+body[data-dsh-jiangxiao] strong,
+body[data-dsh-jiangxiao] b {
+  color: var(--jx-gold-bright);
+}
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) strong,
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) b {
   color: var(--jx-gold-deep);
 }
 
@@ -802,125 +749,3 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) h3 {
   }
 }
 
-/* --- Title bar chrome (plugin-rendered strip) ------------------------------ */
-/* The plugin's apply() renders a fixed jiangxiaoTitlebar strip with a
-   cinnabar seal icon, the Tang title, and window glyphs. Module classes
-   are consumed through the css class map. */
-
-.jiangxiaoTitlebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000000;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 30px;
-  padding: 0 12px;
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='48' viewBox='0 0 180 48'%3E%3Cpath d='M20 24c6-10 18-12 26-6 6 4 14 4 20-2 4-4 10-6 16-4' fill='none' stroke='%23B8860B' stroke-opacity='0.18' stroke-width='1'/%3E%3Cpath d='M10 38c8-8 20-8 30-4 6 2 14 1 20-4 6-5 14-6 22-3' fill='none' stroke='%23B8860B' stroke-opacity='0.12' stroke-width='1'/%3E%3C/svg%3E"),
-    linear-gradient(to bottom, var(--jx-surface-1), var(--jx-surface-0));
-  border-bottom: 1px solid color-mix(in srgb, var(--jx-gold-deep) 30%, transparent);
-  color: var(--jx-gold-bright);
-  font-family: var(--jx-font-display);
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  box-shadow: 0 1px 4px rgba(5, 3, 8, 0.4);
-  user-select: none;
-}
-
-.jiangxiaoTitlebarSeal {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--jx-cinnabar);
-  color: var(--jx-seal-ink);
-  font-size: 11px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.jiangxiaoTitlebarTitle {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.jiangxiaoTitlebarBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 4px;
-  color: var(--jx-text-base);
-  font-size: 13px;
-  cursor: default;
-  transition: background-color var(--jx-dur-fast) ease, color var(--jx-dur-fast) ease;
-}
-
-.jiangxiaoTitlebarBtn:hover {
-  background: color-mix(in srgb, var(--jx-gold-deep) 18%, transparent);
-  color: var(--jx-gold-bright);
-}
-
-.jiangxiaoTitlebarBtn:last-child:hover {
-  background: var(--jx-cinnabar);
-  color: var(--jx-seal-ink);
-}
-
-/* --- Status bar chrome (plugin-rendered strip) ----------------------------- */
-
-.jiangxiaoStatusbar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000000;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  height: 28px;
-  padding: 0 14px;
-  background: linear-gradient(to right, var(--jx-surface-1), var(--jx-surface-2), var(--jx-surface-1));
-  border-top: 1px solid color-mix(in srgb, var(--jx-gold-deep) 22%, transparent);
-  color: var(--jx-text-weak);
-  font-family: var(--jx-font-ui);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  box-shadow: 0 -1px 4px rgba(5, 3, 8, 0.3);
-  user-select: none;
-}
-
-.jiangxiaoStatusbarSeal {
-  display: inline-flex;
-  align-items: center;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--jx-cinnabar);
-  flex-shrink: 0;
-}
-
-.jiangxiaoStatusbarSpacer {
-  flex: 1;
-}
-
-.jiangxiaoStatusbarCell {
-  display: inline-flex;
-  align-items: center;
-  padding: 0 8px;
-  border-left: 1px solid color-mix(in srgb, var(--jx-gold-deep) 22%, transparent);
-  color: var(--jx-text-base);
-  white-space: nowrap;
-}
-
-.jiangxiaoStatusbarCell:first-of-type {
-  border-left: none;
-}
