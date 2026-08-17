@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync, readFileSync
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { zipSync, strToU8 } from 'fflate'
-import { importPetZip } from './import.ts'
+import { importPetZip, type ImportErrorResult } from './import.ts'
 
 function tempDir(): string {
   return mkdtempSync(join(tmpdir(), 'dsh-pet-import-test-'))
@@ -39,6 +39,10 @@ function validPetZip(): Buffer {
   return Buffer.from(raw)
 }
 
+function assertError(result: unknown): asserts result is ImportErrorResult {
+  expect((result as ImportErrorResult).ok).toBe(false)
+}
+
 describe('importPetZip', () => {
   it('imports a valid pet zip successfully', () => {
     const dir = tempDir()
@@ -68,8 +72,9 @@ describe('importPetZip', () => {
         'pet.json': strToU8(petJson),
       })
       const result = importPetZip(Buffer.from(raw), targetDir)
-      expect(result.ok).toBe(false)
-      expect((result as { ok: false; error: string }).error).toMatch(/不安全/)
+      assertError(result)
+      expect(result.errorCode).toBe('pet.importError.zipSlip')
+      expect(result.errorData).toBeDefined()
       // Target dir should not exist (cleanup).
       expect(existsSync(targetDir)).toBe(false)
     } finally {
@@ -87,8 +92,8 @@ describe('importPetZip', () => {
         'pet.json': strToU8(petJson),
       })
       const result = importPetZip(Buffer.from(raw), targetDir)
-      expect(result.ok).toBe(false)
-      expect((result as { ok: false; error: string }).error).toMatch(/不安全/)
+      assertError(result)
+      expect(result.errorCode).toBe('pet.importError.zipSlip')
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
@@ -104,24 +109,63 @@ describe('importPetZip', () => {
         'pet.json': strToU8(petJson),
       })
       const result = importPetZip(Buffer.from(raw), targetDir)
-      expect(result.ok).toBe(false)
-      expect((result as { ok: false; error: string }).error).toMatch(/不安全/)
+      assertError(result)
+      expect(result.errorCode).toBe('pet.importError.zipSlip')
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
   })
 
-  it('rejects a zip with invalid pet.json (wrong id)', () => {
+  it('rejects a zip with invalid pet.json (missing states/transitions)', () => {
     const dir = tempDir()
-    const targetDir = join(dir, 'jiangxiao')
+    const targetDir = join(dir, 'some-other-pet')
     try {
       const petJson = JSON.stringify({ id: 'some-other-pet', kind: 'animated-webp' })
       const raw = zipSync({
         'pet.json': strToU8(petJson),
       })
       const result = importPetZip(Buffer.from(raw), targetDir)
-      expect(result.ok).toBe(false)
-      expect((result as { ok: false; error: string }).error).toMatch(/id.*必须是.*jiangxiao/)
+      assertError(result)
+      expect(result.errorCode).toBe('pet.importError.invalidStates')
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('imports a valid non-jiangxiao pet zip successfully', () => {
+    const dir = tempDir()
+    const targetDir = join(dir, 'my-custom-pet')
+    try {
+      const petJson = JSON.stringify({
+        id: 'my-custom-pet',
+        kind: 'animated-webp',
+        displayName: 'My Custom Pet',
+        states: {
+          idle: 'idle.webp',
+          thinking: 'thinking.webp',
+          reading: 'reading.webp',
+          replying: 'replying.webp',
+          working: 'working.webp',
+          error: 'error.webp',
+          welcome: 'welcome.webp',
+          done: 'done.webp',
+          permission: 'permission.webp',
+          listening: 'listening.webp',
+        },
+        transitions: {
+          'idle->thinking': { webp: 'idle-to-thinking.webp', durationMs: 500 },
+        },
+      })
+      const raw = zipSync({
+        'pet.json': strToU8(petJson),
+        'idle.webp': strToU8('fake-webp-data-idle'),
+      })
+      const result = importPetZip(Buffer.from(raw), targetDir)
+      expect(result).toEqual({ ok: true })
+      expect(existsSync(join(targetDir, 'pet.json'))).toBe(true)
+      const manifest = JSON.parse(readFileSync(join(targetDir, 'pet.json'), 'utf8'))
+      expect(manifest.id).toBe('my-custom-pet')
+      expect(manifest.kind).toBe('animated-webp')
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
@@ -136,8 +180,44 @@ describe('importPetZip', () => {
         'pet.json': strToU8(petJson),
       })
       const result = importPetZip(Buffer.from(raw), targetDir)
-      expect(result.ok).toBe(false)
-      expect((result as { ok: false; error: string }).error).toMatch(/kind.*必须是.*animated-webp/)
+      assertError(result)
+      expect(result.errorCode).toBe('pet.importError.wrongKind')
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('rejects a zip with missing states in pet.json', () => {
+    const dir = tempDir()
+    const targetDir = join(dir, 'jiangxiao')
+    try {
+      const petJson = JSON.stringify({ id: 'jiangxiao', kind: 'animated-webp', transitions: { 'idle->thinking': { webp: 'idle-to-thinking.webp', durationMs: 500 } } })
+      const raw = zipSync({
+        'pet.json': strToU8(petJson),
+      })
+      const result = importPetZip(Buffer.from(raw), targetDir)
+      assertError(result)
+      expect(result.errorCode).toBe('pet.importError.invalidStates')
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('rejects a zip with missing transitions in pet.json', () => {
+    const dir = tempDir()
+    const targetDir = join(dir, 'jiangxiao')
+    try {
+      const petJson = JSON.stringify({
+        id: 'jiangxiao',
+        kind: 'animated-webp',
+        states: { idle: 'idle.webp', thinking: 'thinking.webp', reading: 'reading.webp', replying: 'replying.webp', working: 'working.webp', error: 'error.webp', welcome: 'welcome.webp', done: 'done.webp', permission: 'permission.webp', listening: 'listening.webp' },
+      })
+      const raw = zipSync({
+        'pet.json': strToU8(petJson),
+      })
+      const result = importPetZip(Buffer.from(raw), targetDir)
+      assertError(result)
+      expect(result.errorCode).toBe('pet.importError.invalidTransitions')
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
@@ -151,8 +231,8 @@ describe('importPetZip', () => {
         'pet.json': strToU8('{ not json }'),
       })
       const result = importPetZip(Buffer.from(raw), targetDir)
-      expect(result.ok).toBe(false)
-      expect((result as { ok: false; error: string }).error).toMatch(/JSON/)
+      assertError(result)
+      expect(result.errorCode).toBe('pet.importError.invalidJson')
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
@@ -165,8 +245,8 @@ describe('importPetZip', () => {
       mkdirSync(targetDir, { recursive: true })
       writeFileSync(join(targetDir, 'pet.json'), '{}', 'utf8')
       const result = importPetZip(validPetZip(), targetDir)
-      expect(result.ok).toBe(false)
-      expect((result as { ok: false; error: string }).error).toMatch(/已存在/)
+      assertError(result)
+      expect(result.errorCode).toBe('pet.importExists')
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
@@ -179,8 +259,8 @@ describe('importPetZip', () => {
       // Create an empty zip (valid zip container with no entries).
       const raw = zipSync({})
       const result = importPetZip(Buffer.from(raw), targetDir)
-      expect(result.ok).toBe(false)
-      expect((result as { ok: false; error: string }).error).toMatch(/为空/)
+      assertError(result)
+      expect(result.errorCode).toBe('pet.importError.zipEmpty')
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
@@ -194,8 +274,8 @@ describe('importPetZip', () => {
         'idle.webp': strToU8('fake-webp-data'),
       })
       const result = importPetZip(Buffer.from(raw), targetDir)
-      expect(result.ok).toBe(false)
-      expect((result as { ok: false; error: string }).error).toMatch(/未找到 pet.json/)
+      assertError(result)
+      expect(result.errorCode).toBe('pet.importError.petJsonNotFound')
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
@@ -220,7 +300,8 @@ describe('importPetZip', () => {
       if (result.ok) {
         expect(existsSync(join(targetDir, 'pet.json'))).toBe(true)
       } else {
-        expect((result as { ok: false; error: string }).error).toMatch(/不安全/)
+        assertError(result)
+        expect(result.errorCode).toBe('pet.importError.zipSlip')
       }
     } finally {
       rmSync(dir, { recursive: true, force: true })
@@ -235,7 +316,10 @@ describe('importPetZip', () => {
       // by creating a file at the target path (so mkdirSync fails).
       writeFileSync(targetDir, 'not-a-directory', 'utf8') // This is a file, not a dir
       const result = importPetZip(validPetZip(), targetDir)
-      expect(result.ok).toBe(false)
+      assertError(result)
+      // The exists check fires before the write attempt, so the error is
+      // importExists rather than writeFailed.
+      expect(result.errorCode).toBe('pet.importExists')
       // The file should still exist (we couldn't write anything).
       expect(existsSync(targetDir)).toBe(true)
     } finally {

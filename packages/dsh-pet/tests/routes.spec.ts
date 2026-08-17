@@ -10,6 +10,8 @@ import { PetService } from '../src/service.ts'
 import { makePetRoutes } from '../src/routes.ts'
 import { loadPetRegistry } from '../src/registry.ts'
 import type { JiangxiaoState } from '../src/registry.ts'
+import { resolveTransition } from '../src/scheduler.ts'
+import type { TransitionTable } from '../src/scheduler.ts'
 
 const WEBP_BYTES = Buffer.from([0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50])
 const GIF_BYTES = Buffer.from([0x47, 0x49, 0x46, 0x38, 0x39, 0x61])
@@ -49,9 +51,9 @@ beforeAll(async () => {
     writeFileSync(join(assets, 'jiangxiao', file), WEBP_BYTES)
   }
   const transitions = {
-    'idle→thinking': { webp: 'transitions/idle-to-thinking.webp', durationMs: 300 },
-    'thinking→idle': { webp: 'transitions/thinking-to-idle.webp', durationMs: 250 },
-    'idle→working': { webp: 'transitions/idle-to-working.webp', durationMs: 320 },
+    'idle->thinking': { webp: 'transitions/idle-to-thinking.webp', durationMs: 300 },
+    'thinking->idle': { webp: 'transitions/thinking-to-idle.webp', durationMs: 250 },
+    'idle->working': { webp: 'transitions/idle-to-working.webp', durationMs: 320 },
   }
   for (const value of Object.values(transitions)) {
     writeFileSync(join(assets, 'jiangxiao', value.webp), WEBP_BYTES)
@@ -179,10 +181,17 @@ describe('pet routes animated-webp', () => {
     expect(jiangxiao.states!.idle).toBe('/pet/jiangxiao/states/idle.webp')
     expect(jiangxiao.states!.listening).toBe('/pet/jiangxiao/states/listening.webp')
     expect(jiangxiao.transitions).toBeDefined()
-    expect(jiangxiao.transitions!['idle→thinking']).toEqual({
+    expect(jiangxiao.transitions!['idle->thinking']).toEqual({
       webp: '/pet/jiangxiao/transitions/idle-to-thinking.webp',
       durationMs: 300,
     })
+
+    // End-to-end: production transitionKey format resolves the same entries.
+    const table = jiangxiao.transitions as unknown as TransitionTable
+    expect(resolveTransition('idle', 'thinking', table, 'e2e-1').segments).toHaveLength(1)
+    expect(resolveTransition('idle', 'thinking', table, 'e2e-1').segments[0]!.webp).toBe(
+      '/pet/jiangxiao/transitions/idle-to-thinking.webp',
+    )
   })
 
   it('serves every declared state webp', async () => {

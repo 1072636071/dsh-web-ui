@@ -17,7 +17,7 @@ import type { WebRoute } from '@deepseek-ai/dsh-host-webserver'
 import type { PetService } from './service.ts'
 import type { PetInteraction } from './affinity.ts'
 import { petEntryView, petAssetFiles, codexPetsDir, type PetEntry, type PetRegistry } from './registry.ts'
-import { importPetZip } from './import.ts'
+import { importPetZip, type ImportResult } from './import.ts'
 
 /** Browser-facing base path of the pet API. */
 export const PET_API_PREFIX = '/api/pet'
@@ -36,6 +36,54 @@ const MIME_BY_EXT: Readonly<Record<string, string>> = {
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
   '.json': 'application/json',
+}
+
+/** Import error i18n dictionaries (zh/en) — host-side copy of the keys in
+ *  src/client/locales.ts so the HTTP route can resolve them without depending
+ *  on the browser bundle. */
+const IMPORT_ERROR_ZH: Record<string, string> = {
+  'pet.importExists': '动画包已存在，请先删除旧目录再导入',
+  'pet.importError.zipParse': 'ZIP 解析失败：{detail}',
+  'pet.importError.zipEmpty': 'ZIP 文件为空',
+  'pet.importError.zipSlip': 'ZIP 包含不安全的路径：{path}',
+  'pet.importError.fileTooBig': '文件 {name} 超过大小限制（{limit} 字节）',
+  'pet.importError.totalTooBig': 'ZIP 总大小超过限制（{limit} 字节）',
+  'pet.importError.petJsonNotFound': 'ZIP 中未找到 pet.json',
+  'pet.importError.invalidJson': 'pet.json 不是有效的 JSON',
+  'pet.importError.invalidId': 'pet.json id 不能为空',
+  'pet.importError.wrongKind': 'pet.json kind 必须是 "animated-webp"',
+  'pet.importError.invalidStates': 'pet.json 缺少完整的 states 结构',
+  'pet.importError.invalidTransitions': 'pet.json 缺少有效的 transitions 结构',
+  'pet.importError.writeFailed': '文件写入失败：{detail}',
+}
+
+const IMPORT_ERROR_EN: Record<string, string> = {
+  'pet.importExists': 'The pet pack already exists. Delete the old directory before importing.',
+  'pet.importError.zipParse': 'ZIP parse failed: {detail}',
+  'pet.importError.zipEmpty': 'ZIP file is empty',
+  'pet.importError.zipSlip': 'ZIP contains an unsafe path: {path}',
+  'pet.importError.fileTooBig': 'File {name} exceeds the size limit ({limit} bytes)',
+  'pet.importError.totalTooBig': 'ZIP total size exceeds the limit ({limit} bytes)',
+  'pet.importError.petJsonNotFound': 'pet.json not found in the ZIP',
+  'pet.importError.invalidJson': 'pet.json is not valid JSON',
+  'pet.importError.invalidId': 'pet.json id must not be empty',
+  'pet.importError.wrongKind': 'pet.json kind must be "animated-webp"',
+  'pet.importError.invalidStates': 'pet.json has an incomplete states structure',
+  'pet.importError.invalidTransitions': 'pet.json has an invalid transitions structure',
+  'pet.importError.writeFailed': 'File write failed: {detail}',
+}
+
+/** Resolve an import error code to a localized message. */
+function resolveImportError(req: IncomingMessage, errorCode: string, errorData?: Record<string, string>): string {
+  const lang = (req.headers['accept-language'] ?? '').toLowerCase()
+  const dict = lang.startsWith('en') ? IMPORT_ERROR_EN : IMPORT_ERROR_ZH
+  let text = dict[errorCode] ?? errorCode
+  if (errorData !== undefined) {
+    for (const [name, value] of Object.entries(errorData)) {
+      text = text.replaceAll(`{${name}}`, value)
+    }
+  }
+  return text
 }
 
 /** Content type by file extension (safe fallback: octet-stream). */
@@ -313,7 +361,12 @@ export function makePetRoutes(deps: { service: PetService }): WebRoute[] {
           (body) => {
             const targetDir = join(codexPetsDir(), 'jiangxiao')
             const result = importPetZip(body, targetDir)
-            json(res, result.ok ? 200 : 400, result)
+            if (!result.ok) {
+              const error = resolveImportError(req, result.errorCode, result.errorData)
+              json(res, 400, { ok: false, error })
+              return
+            }
+            json(res, 200, result)
           },
           (error) => {
             json(res, 400, { ok: false, error: error instanceof Error ? error.message : String(error) })

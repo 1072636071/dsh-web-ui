@@ -6,6 +6,7 @@
 - **语义审查**：`.scratch/01-jiangxiao/REVIEW.md`（判定：准奏）
 - **ADR**：`docs/adr/0001-jiangxiao-skin-pet.md`（D1-D14 决策基线）
 - **词汇表**：根目录 `CONTEXT.md`（术语 + D1-D14 决策表）
+- **代码审查**：`.temp/code-review-20260817-141243.diff`（审查产出 10 个补救工单）
 
 ## 工单清单
 
@@ -18,13 +19,24 @@
 | 05 | 资产包导入 gating | `issues/05-import.md` | 02, 04 |
 | 06 | 打包脚本 + hash-manifest + CI 校验 | `issues/06-pack.md` | 无 |
 | 07 | 双语文档与发布同步 | `issues/07-docs.md` | 01, 04, 05, 06 |
+| 08 | Gating 修复：移除内置 pet.json | `issues/08-gating-fix.md` | 无 |
+| 09 | 过渡表 key 分隔符测试对齐 | `issues/09-transition-key-test.md` | 无 |
+| 10 | 皮肤设置卡补全导入引导文案 | `issues/10-skin-guide-text.md` | 无 |
+| 11 | WebP 加载占位透明度修复 | `issues/11-webp-placeholder.md` | 无 |
+| 12 | 代码异味清理：工厂函数提取 | `issues/12-smell-factory-extract.md` | 无 |
+| 13 | 代码异味清理：fileHashes 提取 | `issues/13-smell-filehashes-extract.md` | 06 |
+| 14 | 导入错误消息 i18n 化 | `issues/14-import-i18n.md` | 05 |
+| 15 | 不可达态防御断言 | `issues/15-unreachable-assert.md` | 03 |
+| 16 | 导入路径泛化 | `issues/16-import-generalize.md` | 05 |
+| 17 | release.yml 扩展资产上传 | `issues/17-release-yml-asset.md` | 06 |
 
 ## 前沿
 
-无阻塞工单：**01**（皮肤）、**02**（manifest）、**06**（打包）。三条线可并行推进：
+无阻塞工单：**01**（皮肤）、**02**（manifest）、**06**（打包）、**08/09/10/11/12**（补救无依赖）。三条实现线 + 一条补救线可并行推进：
 - 皮肤线：01 → 07
 - 宠物核心线：02 → 03 → 04 → 05 → 07
 - 素材线：06 → 07
+- 补救线：08/09/10/11/12（无阻塞） → 13/14/15/16/17（阻塞于 03/05/06 完成）
 
 ## 已做决策
 

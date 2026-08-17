@@ -212,32 +212,37 @@ describe('petToJiangxiao', () => {
 })
 
 describe('resolveTransition D13 — only 10 cyclic states are indexed', () => {
-  it('never queries keys outside the JiangxiaoState set', () => {
-    // The scheduler builds keys purely from its JiangxiaoState inputs and the
-    // hub (idle). Micro-expression states (cheek-rest/chin-rest/nod-smile/
-    // shush/shy-smile/frown-wave) are not in JiangxiaoState and can never
-    // appear in a queried key. reading/permission are in the type but the pet
-    // mapping never emits them, so they only appear if a caller asks for them
-    // directly — at which point the lookup is still between two JiangxiaoState
-    // values, never a micro-expression state.
+  it('degrades unreachable states (reading, permission) to crossfade fallback', () => {
+    // reading/permission are pet-unreachable per D13. resolveTransition now
+    // defensively checks REACHABLE_STATES and returns empty segments instead
+    // of attempting to route through the hub.
     const transitions = table([
       ['reading', 'idle', 'reading->idle.webp', 200],
       ['idle', 'thinking', 'idle->thinking.webp', 200],
     ])
-    // reading is a JiangxiaoState; the scheduler can route through it, but
-    // only because the caller asked. The key space stays within the 10
-    // cyclic states.
     const result = resolveTransition('reading', 'thinking', transitions, 'k')
-    expect(result.segments).toHaveLength(2)
-    expect(result.segments[0]).toEqual({
-      webp: 'reading->idle.webp',
-      durationMs: 200,
-      reversed: true,
-    })
-    expect(result.segments[1]).toEqual({
-      webp: 'idle->thinking.webp',
-      durationMs: 200,
-    })
+    expect(result.segments).toEqual([])
+    expect(result.final).toBe('thinking')
+    expect(result.key).toBe('k')
+  })
+
+  it('degrades permission as a from-state to crossfade fallback', () => {
+    const transitions = table([
+      ['permission', 'idle', 'permission->idle.webp', 200],
+      ['idle', 'working', 'idle->working.webp', 200],
+    ])
+    const result = resolveTransition('permission', 'working', transitions, 'k2')
+    expect(result.segments).toEqual([])
+    expect(result.final).toBe('working')
+  })
+
+  it('degrades unreachable to-state the same way', () => {
+    const transitions = table([
+      ['idle', 'reading', 'idle->reading.webp', 200],
+    ])
+    const result = resolveTransition('idle', 'reading', transitions, 'k3')
+    expect(result.segments).toEqual([])
+    expect(result.final).toBe('reading')
   })
 
   it('the pet mapping never produces reading or permission', () => {

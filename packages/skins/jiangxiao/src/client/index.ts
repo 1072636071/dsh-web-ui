@@ -8,7 +8,8 @@
  * Tang title + window glyphs), the status bar (cinnabar dot + status cells),
  * the injected favicon, and the document title. The CSS rides the bundle's
  * CSS-modules auto-inject (style tag owned by the loader, removed on entry
- * dispose). No services are injected: the skin needs only the DOM.
+ * dispose). In addition the skin registers a first-level settings section
+ * (skin settings card) that shows the animation-pack import guidance.
  *
  * Dark is the default scope (body[data-dsh-jiangxiao]); the light plum-blossom
  * variant overrides on body[data-dsh-jiangxiao]:not([data-ds-dark-theme]),
@@ -20,8 +21,18 @@
  * Reads are wrapped so a blocked/absent storage degrades to the defaults.
  */
 import type { Context } from '@deepseek-ai/cordis'
+import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
+// Type-only: pulls the locale plugin's Context merge (ctx.locale).
+import type {} from '@deepseek-ai/dsh-client-locale/client'
+// Type-only: pulls the settings-surface Context merge (ctx.settingsScope).
+import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
 import css from './jiangxiao.module.css'
 import { JIANGXIAO_FONT_MASHANZHENG, JIANGXIAO_FONT_NOTOSERIFSC } from './art.ts'
+import { NS, en, zh, type JiangxiaoKey } from './locales.ts'
+import { SkinJiangxiaoSection } from './SkinSettingsCard.tsx'
+
+/** Required services: slots (settings section), locale (i18n). */
+export const inject = ['slots', 'locale']
 
 /** The product title the skin pins (captured by the shell's DocumentTitle after settle). */
 const SKIN_TITLE = '姜晓 · 墨染 · DeepSeek 在线'
@@ -132,7 +143,7 @@ function resolveCells(): readonly string[] {
  * effect disposer on dispose.
  * @param ctx - owning context (the effect lifecycle owns retraction).
  */
-export function apply(ctx: Context): void {
+export function apply(ctx: ClientContext): void {
   const body = document.body
   const originalTitle = document.title
   const pinnedTitle = resolveTitle()
@@ -198,4 +209,27 @@ export function apply(ctx: Context): void {
     // projected by the shell must not be clobbered by skin teardown.
     if (document.title === pinnedTitle) document.title = originalTitle
   }, 'ui-skin-jiangxiao: Jiangxiao chrome')
+
+  // Register locale dictionaries for the skin settings card.
+  // Guarded behind ctx.get('locale') so the skin works in test environments
+  // that create a plain Context without the locale service injected.
+  const locale = ctx.get('locale')
+  if (locale !== undefined) {
+    ctx.effect(() => locale.register(NS, { zh, en }), 'ui-skin-jiangxiao: dictionaries')
+  }
+
+  // Register the first-level settings section (skin settings card) that
+  // shows the animation-pack import guidance. Guarded by the slots service
+  // availability for the same reason.
+  const slots = ctx.get('slots')
+  if (slots !== undefined) {
+    slots.inject('settings.section', () => slots.register({
+      name: 'settings.section',
+      id: 'skin-jiangxiao',
+      order: 125,
+      label: () => locale!.bind('skinJiangxiao')('settings.title'),
+      locale: 'skinJiangxiao',
+      inject: () => ({}),
+    }, SkinJiangxiaoSection))
+  }
 }

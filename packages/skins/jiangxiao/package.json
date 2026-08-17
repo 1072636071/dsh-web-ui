@@ -15,7 +15,10 @@
       "patch": "./cordis.patch.yml"
     },
     "client": {
-      "inject": [],
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-locale"
+      ],
       "platform": "web"
     }
   },
@@ -26,14 +29,21 @@
     "test": "vitest run"
   },
   "license": "BSD-3-Clause",
-  "peerDependencies": {},
+  "peerDependencies": {
+    "react": "^18.2.0"
+  },
   "devDependencies": {
     "jsdom": "29.1.1",
     "lightningcss": "^1.32.0",
+    "react": "^18.2.0",
     "tsdown": "^0.22.2",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.8",
-    "@deepseek-ai/cordis": "^4.0.1"
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@deepseek-ai/dsh-client-locale": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-client-runtime": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-client-ui-settings": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-client-ui-slots": "^0.1.0-rc.6"
   },
   "files": [
     "lib",

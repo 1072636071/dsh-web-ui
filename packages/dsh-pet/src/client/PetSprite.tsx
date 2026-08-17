@@ -351,7 +351,8 @@ export function PetSprite(props: PetSpriteProps): ReactPortal {
           style={{
             width: spriteWidth,
             height: spriteHeight,
-            opacity: webpLoaded ? 1 : 0.5,
+            opacity: 1,
+            backgroundColor: 'rgba(30, 41, 59, 0.35)',
             transition: 'opacity 0.3s ease',
             cursor: dragRef.current === null ? 'grab' : 'grabbing',
           }}

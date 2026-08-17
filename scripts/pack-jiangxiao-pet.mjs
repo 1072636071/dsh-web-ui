@@ -431,6 +431,29 @@ export function readZip(buf) {
 // ---------------------------------------------------------------------------
 
 /**
+ * Build the fileHashes array for the hash-manifest from pet.json bytes and
+ * the 46 webp files. Shared by cmdInitManifest() and cmdPack().
+ *
+ * @param {Buffer} petJsonBytes  serialized pet.json
+ * @param {{ name: string, data: Buffer }[]} files  webp file entries
+ * @returns {{ name: string, sha256: string, size: number }[]}
+ */
+export function buildFileHashes(petJsonBytes, files) {
+  return [
+    {
+      name: "pet.json",
+      sha256: sha256(petJsonBytes),
+      size: petJsonBytes.length,
+    },
+    ...files.map((f) => ({
+      name: f.name,
+      sha256: sha256(f.data),
+      size: f.data.length,
+    })),
+  ];
+}
+
+/**
  * Build the hash-manifest object from per-file hashes and the zip hash.
  * Shape:
  *   {
@@ -597,18 +620,7 @@ function cmdInitManifest() {
     "utf8",
   );
 
-  const fileHashes = [
-    {
-      name: "pet.json",
-      sha256: sha256(petJsonBytes),
-      size: petJsonBytes.length,
-    },
-    ...files.map((f) => ({
-      name: f.name,
-      sha256: sha256(f.data),
-      size: f.data.length,
-    })),
-  ];
+  const fileHashes = buildFileHashes(petJsonBytes, files);
 
   const manifest = buildHashManifest({
     fileHashes,
@@ -660,18 +672,7 @@ function cmdPack() {
   writeFileSync(zipPath, zipBuf);
 
   // hash-manifest
-  const fileHashes = [
-    {
-      name: "pet.json",
-      sha256: sha256(petJsonBytes),
-      size: petJsonBytes.length,
-    },
-    ...files.map((f) => ({
-      name: f.name,
-      sha256: sha256(f.data),
-      size: f.data.length,
-    })),
-  ];
+  const fileHashes = buildFileHashes(petJsonBytes, files);
   const manifest = buildHashManifest({
     fileHashes,
     zipEntry: { name: zipName, sha256: zipSha, size: zipBuf.length },

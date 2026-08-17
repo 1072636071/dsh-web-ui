@@ -377,15 +377,17 @@ window.__ModuleLoader__.load({
 				favicon.remove();
 				if (document.title === pinnedTitle) document.title = originalTitle;
 			}, "ui-skin-jiangxiao: Jiangxiao chrome");
-			ctx.effect(() => ctx.locale.register(NS, {
+			const locale = ctx.get("locale");
+			if (locale !== void 0) ctx.effect(() => locale.register(NS, {
 				zh,
 				en
 			}), "ui-skin-jiangxiao: dictionaries");
-			ctx.slots.inject("settings.section", () => ctx.slots.register({
+			const slots = ctx.get("slots");
+			if (slots !== void 0) slots.inject("settings.section", () => slots.register({
 				name: "settings.section",
 				id: "skin-jiangxiao",
 				order: 125,
-				label: () => ctx.locale.bind("skinJiangxiao")("settings.title"),
+				label: () => locale.bind("skinJiangxiao")("settings.title"),
 				locale: "skinJiangxiao",
 				inject: () => ({})
 			}, SkinJiangxiaoSection));

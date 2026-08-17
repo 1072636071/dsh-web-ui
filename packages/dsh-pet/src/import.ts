@@ -2,7 +2,9 @@
  * Pet asset zip import — pure function that validates and extracts a pet asset
  * zip archive into the target directory. The zip must contain a valid pet.json
  * manifest with `kind: "animated-webp"` and `id: "jiangxiao"` so the import
- * is gated to exactly the Jiangxiao animated-webp pet.
+ * is gated to exactly the Jiangxiao animated-webp pet. Returns error codes
+ * (i18n keys from the pet locale namespace) instead of hardcoded messages;
+ * the caller (routes.ts) resolves them to localized text.
  * @module @linxin666/dsh-pet/import
  */
 
@@ -15,6 +17,12 @@ const MAX_FILE_SIZE = 500 * 1024 * 1024
 
 /** Max total size of all extracted files (1 GB). */
 const MAX_TOTAL_SIZE = 1024 * 1024 * 1024
+
+/** Import result with an i18n error code. */
+export type ImportErrorResult = { ok: false; errorCode: string; errorData?: Record<string, string> }
+
+/** Import result type. */
+export type ImportResult = { ok: true } | ImportErrorResult
 
 /** Normalize a zip entry path to a safe relative path using the platform
  * separator, or return undefined when the path is unsafe (zip slip). */
@@ -36,14 +44,54 @@ function safeEntryPath(raw: string): string | undefined {
 }
 
 /** Validate a parsed pet.json manifest for import eligibility. Returns an
- * error message string on failure, or undefined on success. */
+ * error code on failure, or undefined on success. The manifest must be a
+ * well-formed animated-webp pet with complete states and transitions. Any
+ * valid id passes — not just "jiangxiao". */
 function validatePetManifest(raw: unknown): string | undefined {
-  if (typeof raw !== 'object' || raw === null) return 'pet.json 不是有效的 JSON 对象'
+  if (typeof raw !== 'object' || raw === null) return 'pet.importError.invalidJson'
   const source = raw as Record<string, unknown>
   const id = typeof source.id === 'string' ? source.id.trim() : ''
-  if (id !== 'jiangxiao') return 'pet.json id 必须是 "jiangxiao"'
+  if (id === '') return 'pet.importError.invalidId'
   const kind = source.kind
-  if (kind !== 'animated-webp') return 'pet.json kind 必须是 "animated-webp"'
+  if (kind !== 'animated-webp') return 'pet.importError.wrongKind'
+
+  // Validate states: must be an object covering all 10 JiangxiaoState keys.
+  const REQUIRED_STATES = [
+    'idle', 'thinking', 'reading', 'replying', 'working',
+    'error', 'welcome', 'done', 'permission', 'listening',
+  ] as const
+  const rawStates = source.states
+  if (typeof rawStates !== 'object' || rawStates === null || Array.isArray(rawStates)) {
+    return 'pet.importError.invalidStates'
+  }
+  const statesRecord = rawStates as Record<string, unknown>
+  for (const state of REQUIRED_STATES) {
+    if (typeof statesRecord[state] !== 'string' || statesRecord[state] === '') {
+      return 'pet.importError.invalidStates'
+    }
+  }
+
+  // Validate transitions: must be an object with at least one entry.
+  const rawTransitions = source.transitions
+  if (typeof rawTransitions !== 'object' || rawTransitions === null || Array.isArray(rawTransitions)) {
+    return 'pet.importError.invalidTransitions'
+  }
+  const transitionEntries = Object.entries(rawTransitions as Record<string, unknown>)
+  if (transitionEntries.length === 0) return 'pet.importError.invalidTransitions'
+  for (const [key, value] of transitionEntries) {
+    if (key === '') return 'pet.importError.invalidTransitions'
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+      return 'pet.importError.invalidTransitions'
+    }
+    const record = value as Record<string, unknown>
+    if (typeof record.webp !== 'string' || record.webp === '') {
+      return 'pet.importError.invalidTransitions'
+    }
+    if (typeof record.durationMs !== 'number' || !Number.isFinite(record.durationMs) || record.durationMs <= 0) {
+      return 'pet.importError.invalidTransitions'
+    }
+  }
+
   return undefined
 }
 
@@ -70,12 +118,12 @@ function findPetJsonEntry(
  * @param zipBuffer - The raw zip archive bytes.
  * @param targetDir - Absolute path to the pet directory
  *   (e.g. ~/.codex/pets/jiangxiao).
- * @returns Success or error result.
+ * @returns Success or error result with i18n error codes.
  */
 export function importPetZip(
   zipBuffer: Buffer,
   targetDir: string,
-): { ok: true } | { ok: false; error: string } {
+): ImportResult {
   // Parse the zip archive.
   let entries: Unzipped
   try {
@@ -83,13 +131,14 @@ export function importPetZip(
   } catch (error) {
     return {
       ok: false,
-      error: 'ZIP 解析失败: ' + (error instanceof Error ? error.message : String(error)),
+      errorCode: 'pet.importError.zipParse',
+      errorData: { detail: error instanceof Error ? error.message : String(error) },
     }
   }
 
   const entryKeys = Object.keys(entries)
   if (entryKeys.length === 0) {
-    return { ok: false, error: 'ZIP 文件为空' }
+    return { ok: false, errorCode: 'pet.importError.zipEmpty' }
   }
 
   // Validate zip slip and collect safe entry paths.
@@ -102,14 +151,15 @@ export function importPetZip(
 
     const safe = safeEntryPath(key)
     if (safe === undefined) {
-      return { ok: false, error: 'ZIP 包含不安全的路径: ' + JSON.stringify(key) }
+      return { ok: false, errorCode: 'pet.importError.zipSlip', errorData: { path: JSON.stringify(key) } }
     }
 
     // Check file size.
     if (data.byteLength > MAX_FILE_SIZE) {
       return {
         ok: false,
-        error: '文件 ' + JSON.stringify(key) + ' 超过大小限制 (' + String(MAX_FILE_SIZE) + ' 字节)',
+        errorCode: 'pet.importError.fileTooBig',
+        errorData: { name: JSON.stringify(key), limit: String(MAX_FILE_SIZE) },
       }
     }
 
@@ -117,7 +167,8 @@ export function importPetZip(
     if (totalSize > MAX_TOTAL_SIZE) {
       return {
         ok: false,
-        error: 'ZIP 总大小超过限制 (' + String(MAX_TOTAL_SIZE) + ' 字节)',
+        errorCode: 'pet.importError.totalTooBig',
+        errorData: { limit: String(MAX_TOTAL_SIZE) },
       }
     }
 
@@ -127,7 +178,7 @@ export function importPetZip(
   // Find pet.json in the safe entries.
   const petJsonEntry = findPetJsonEntry(safeEntries)
   if (petJsonEntry === undefined) {
-    return { ok: false, error: 'ZIP 中未找到 pet.json' }
+    return { ok: false, errorCode: 'pet.importError.petJsonNotFound' }
   }
 
   // Parse and validate pet.json.
@@ -136,17 +187,17 @@ export function importPetZip(
     const text = new TextDecoder().decode(petJsonEntry.data)
     petJsonRaw = JSON.parse(text)
   } catch {
-    return { ok: false, error: 'pet.json 不是有效的 JSON' }
+    return { ok: false, errorCode: 'pet.importError.invalidJson' }
   }
 
   const validationError = validatePetManifest(petJsonRaw)
   if (validationError !== undefined) {
-    return { ok: false, error: validationError }
+    return { ok: false, errorCode: validationError }
   }
 
   // Check if target directory already exists.
   if (existsSync(targetDir)) {
-    return { ok: false, error: '动画包已存在，请先删除旧目录再导入' }
+    return { ok: false, errorCode: 'pet.importExists' }
   }
 
   // Create target directory and write all files.
@@ -165,7 +216,8 @@ export function importPetZip(
     try { rmSync(targetDir, { recursive: true, force: true }) } catch { /* ignore */ }
     return {
       ok: false,
-      error: '文件写入失败: ' + (error instanceof Error ? error.message : String(error)),
+      errorCode: 'pet.importError.writeFailed',
+      errorData: { detail: error instanceof Error ? error.message : String(error) },
     }
   }
 

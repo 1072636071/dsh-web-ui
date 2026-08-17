@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+﻿import { describe, expect, it } from 'vitest'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
@@ -13,6 +13,8 @@ import {
   resolvePetManifest,
 } from './registry.ts'
 import type { JiangxiaoState, PetManifest } from './registry.ts'
+import { resolveTransition } from './scheduler.ts'
+import type { TransitionTable } from './scheduler.ts'
 
 function tempDir(): string {
   return mkdtempSync(join(tmpdir(), 'dsh-pet-registry-'))
@@ -183,9 +185,9 @@ function webpManifest(overrides: Partial<PetManifest> = {}): PetManifest {
     kind: 'animated-webp',
     states,
     transitions: {
-      'idle→thinking': { webp: 'transitions/idle-to-thinking.webp', durationMs: 300 },
-      'thinking→idle': { webp: 'transitions/thinking-to-idle.webp', durationMs: 250 },
-      'idle→working': { webp: 'transitions/idle-to-working.webp', durationMs: 320 },
+      'idle->thinking': { webp: 'transitions/idle-to-thinking.webp', durationMs: 300 },
+      'thinking->idle': { webp: 'transitions/thinking-to-idle.webp', durationMs: 250 },
+      'idle->working': { webp: 'transitions/idle-to-working.webp', durationMs: 320 },
     },
     ...overrides,
   }
@@ -204,7 +206,7 @@ describe('resolvePetManifest animated-webp', () => {
     expect(entry!.states!.listening).toBe('/pet/jiangxiao/states/listening.webp')
     // Every transition carries a URL and its duration.
     expect(entry!.transitions).toBeDefined()
-    expect(entry!.transitions!['idle→thinking']).toEqual({
+    expect(entry!.transitions!['idle->thinking']).toEqual({
       webp: '/pet/jiangxiao/transitions/idle-to-thinking.webp',
       durationMs: 300,
     })
@@ -212,10 +214,17 @@ describe('resolvePetManifest animated-webp', () => {
     expect(entry!.statePaths).toBeDefined()
     expect(entry!.statePaths!.idle).toBe('states/idle.webp')
     expect(entry!.transitionPaths).toBeDefined()
-    expect(entry!.transitionPaths!['idle→thinking']).toEqual({
+    expect(entry!.transitionPaths!['idle->thinking']).toEqual({
       webp: 'transitions/idle-to-thinking.webp',
       durationMs: 300,
     })
+
+    // End-to-end: production transitionKey format resolves the same entries.
+    const table = entry!.transitions as unknown as TransitionTable
+    expect(resolveTransition('idle', 'thinking', table, 'e2e-1').segments).toHaveLength(1)
+    expect(resolveTransition('idle', 'thinking', table, 'e2e-1').segments[0]!.webp).toBe(
+      '/pet/jiangxiao/transitions/idle-to-thinking.webp',
+    )
     // Spritesheet geometry is filled with defaults so the PetDefinition shape
     // stays compatible; the browser half dispatches on 'kind'.
     expect(entry!.cell).toEqual(DEFAULT_PET_CELL)
@@ -252,21 +261,29 @@ describe('resolvePetManifest animated-webp', () => {
     // pet-unreachable keys and confirm every one survives.
     const transitions: Record<string, { webp: string; durationMs: number }> = {}
     const sample = [
-      'idle→thinking', 'thinking→idle', 'idle→working', 'working→idle',
-      'idle→replying', 'replying→idle', 'idle→error', 'error→idle',
-      'idle→done', 'done→idle', 'idle→welcome', 'welcome→idle',
-      'idle→listening', 'listening→idle', 'idle→reading', 'reading→idle',
-      'idle→permission', 'permission→idle',
+      'idle->thinking', 'thinking->idle', 'idle->working', 'working->idle',
+      'idle->replying', 'replying->idle', 'idle->error', 'error->idle',
+      'idle->done', 'done->idle', 'idle->welcome', 'welcome->idle',
+      'idle->listening', 'listening->idle', 'idle->reading', 'reading->idle',
+      'idle->permission', 'permission->idle',
     ]
     for (const key of sample) {
-      transitions[key] = { webp: 'transitions/' + key.replace('→', '-to-') + '.webp', durationMs: 200 }
+      transitions[key] = { webp: 'transitions/' + key.replace('->', '-to-') + '.webp', durationMs: 200 }
     }
     const entry = resolvePetManifest(webpManifest({ transitions }), join(tmpdir(), 'jiangxiao'))!
     expect(entry).toBeDefined()
     expect(Object.keys(entry.transitionPaths!)).toHaveLength(sample.length)
     // Pet-unreachable keys (reading, permission) are kept by the resolver.
-    expect(entry.transitionPaths!['idle→reading']).toBeDefined()
-    expect(entry.transitionPaths!['idle→permission']).toBeDefined()
+    expect(entry.transitionPaths!['idle->reading']).toBeDefined()
+    expect(entry.transitionPaths!['idle->permission']).toBeDefined()
+
+    // End-to-end: production scheduler resolves the same keys.
+    const table = entry.transitions as unknown as TransitionTable
+    expect(resolveTransition('idle', 'thinking', table, 'e2e-d13').segments).toHaveLength(1)
+    expect(resolveTransition('thinking', 'idle', table, 'e2e-d13').segments).toHaveLength(1)
+    expect(resolveTransition('idle', 'working', table, 'e2e-d13').segments).toHaveLength(1)
+    // Same state: empty segments.
+    expect(resolveTransition('idle', 'idle', table, 'e2e-d13').segments).toHaveLength(0)
   })
 
   it('rejects an unknown kind with a warning', () => {
@@ -312,7 +329,7 @@ describe('resolvePetManifest animated-webp', () => {
       states[state] = 'states/' + state + '.webp'
     }
     const entry = resolvePetManifest(
-      { id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', states, transitions: { 'idle→thinking': { webp: 't.webp', durationMs: 100 } } },
+      { id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', states, transitions: { 'idle->thinking': { webp: 't.webp', durationMs: 100 } } },
       '/tmp',
       { warnings },
     )
@@ -326,7 +343,7 @@ describe('resolvePetManifest animated-webp', () => {
     for (const state of JIANGXIAO_STATES) states[state] = 'states/' + state + '.webp'
     ;(states as Record<string, string>).listenting2 = 'states/listening2.webp'
     const entry = resolvePetManifest(
-      { id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', states, transitions: { 'idle→thinking': { webp: 't.webp', durationMs: 100 } } },
+      { id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', states, transitions: { 'idle->thinking': { webp: 't.webp', durationMs: 100 } } },
       '/tmp',
       { warnings },
     )
@@ -340,7 +357,7 @@ describe('resolvePetManifest animated-webp', () => {
     for (const state of JIANGXIAO_STATES) states[state] = 'states/' + state + '.webp'
     states.idle = '../etc/passwd'
     const entry = resolvePetManifest(
-      { id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', states, transitions: { 'idle→thinking': { webp: 't.webp', durationMs: 100 } } },
+      { id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', states, transitions: { 'idle->thinking': { webp: 't.webp', durationMs: 100 } } },
       '/tmp',
       { warnings },
     )
@@ -353,7 +370,7 @@ describe('resolvePetManifest animated-webp', () => {
     const entry = resolvePetManifest(
       {
         ...webpManifest(),
-        transitions: { 'idle→thinking': { webp: '/absolute.webp', durationMs: 100 } },
+        transitions: { 'idle->thinking': { webp: '/absolute.webp', durationMs: 100 } },
       },
       '/tmp',
       { warnings },
@@ -367,7 +384,7 @@ describe('resolvePetManifest animated-webp', () => {
     const entry = resolvePetManifest(
       {
         ...webpManifest(),
-        transitions: { 'idle→thinking': { webp: 't.webp', durationMs: 0 } },
+        transitions: { 'idle->thinking': { webp: 't.webp', durationMs: 0 } },
       },
       '/tmp',
       { warnings },

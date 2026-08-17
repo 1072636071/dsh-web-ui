@@ -13,8 +13,19 @@ import type { PetDefinition, PetTrackDef } from '../registry.ts'
 import type { JiangxiaoState } from '../registry.ts'
 import type { PetAnimation } from '../state.ts'
 
-/** A minimal pet definition (geometry + tracks) as served by the host. */
-function petDefinition(): PetDefinition {
+/**
+ * Shared spritesheet geometry and track definitions. Both the spritesheet and
+ * webp fixture pets share the same cell size, grid, frame durations, and track
+ * structure; only the identity fields (id/displayName/kind/states/transitions)
+ * differ between the two.
+ */
+function spritesheetTracks(): {
+  track: (frames: number[], durations: number[], loop?: boolean, fallback?: PetAnimation) => PetTrackDef
+  tracks: Record<string, PetTrackDef>
+  cell: { width: number; height: number }
+  columns: number
+  rows: number[]
+} {
   const track = (frames: number[], durations: number[], loop = true, fallback?: PetAnimation): PetTrackDef => ({
     frames,
     durations,
@@ -22,13 +33,7 @@ function petDefinition(): PetDefinition {
     ...(fallback === undefined ? {} : { fallback }),
   })
   return {
-    id: 'whale-girl',
-    displayName: '鲸鱼娘',
-    description: '测试用鲸鱼娘',
-    kind: 'spritesheet',
-    cell: { width: 192, height: 208 },
-    columns: 8,
-    rows: [6, 8, 8, 4, 5, 8, 6, 6, 6],
+    track,
     tracks: {
       idle: track([0, 1, 2, 3, 4, 5], [400, 400, 400, 400, 400, 400]),
       'running-right': track([0, 1, 2, 3, 4, 5, 6, 7], [225, 225, 225, 225, 225, 225, 225, 225]),
@@ -40,6 +45,24 @@ function petDefinition(): PetDefinition {
       running: track([0, 1, 2, 3, 4, 5], [250, 250, 250, 250, 250, 250]),
       review: track([0, 1, 2, 3, 4, 5], [550, 550, 550, 550, 550, 550]),
     },
+    cell: { width: 192, height: 208 },
+    columns: 8,
+    rows: [6, 8, 8, 4, 5, 8, 6, 6, 6],
+  }
+}
+
+/** A minimal pet definition (geometry + tracks) as served by the host. */
+function petDefinition(): PetDefinition {
+  const { track, tracks, cell, columns, rows } = spritesheetTracks()
+  return {
+    id: 'whale-girl',
+    displayName: '鲸鱼娘',
+    description: '测试用鲸鱼娘',
+    kind: 'spritesheet',
+    cell,
+    columns,
+    rows,
+    tracks,
     atlasUrl: '/pet/whale-girl/spritesheet.webp',
     manifestUrl: '/pet/whale-girl/pet.json',
   }
@@ -301,12 +324,7 @@ describe('PetSprite definition-driven render', () => {
 
 /** A minimal webp pet definition (animated-webp kind). */
 function webpPetDefinition(includeTransitions: boolean): PetDefinition {
-  const track = (frames: number[], durations: number[], loop = true, fallback?: PetAnimation): PetTrackDef => ({
-    frames,
-    durations,
-    loop,
-    ...(fallback === undefined ? {} : { fallback }),
-  })
+  const { tracks, cell, columns, rows } = spritesheetTracks()
   const states: Record<JiangxiaoState, string> = {
     idle: '/pet/jiangxiao/states/idle.webp',
     thinking: '/pet/jiangxiao/states/thinking.webp',
@@ -331,20 +349,10 @@ function webpPetDefinition(includeTransitions: boolean): PetDefinition {
     displayName: '墨染',
     description: '测试用墨染',
     kind: 'animated-webp',
-    cell: { width: 192, height: 208 },
-    columns: 8,
-    rows: [6, 8, 8, 4, 5, 8, 6, 6, 6],
-    tracks: {
-      idle: track([0, 1, 2, 3, 4, 5], [400, 400, 400, 400, 400, 400]),
-      'running-right': track([0, 1, 2, 3, 4, 5, 6, 7], [225, 225, 225, 225, 225, 225, 225, 225]),
-      'running-left': track([0, 1, 2, 3, 4, 5, 6, 7], [225, 225, 225, 225, 225, 225, 225, 225]),
-      waving: track([0, 1, 2, 3], [350, 350, 350, 350]),
-      jumping: track([0, 1, 2, 3, 4], [300, 300, 300, 300, 300], false, 'idle'),
-      failed: track([0, 1, 2, 3, 4, 5, 6, 7], [450, 450, 450, 450, 450, 450, 450, 450], false, 'idle'),
-      waiting: track([0, 1, 2, 3, 4, 5], [450, 450, 450, 450, 450, 450]),
-      running: track([0, 1, 2, 3, 4, 5], [250, 250, 250, 250, 250, 250]),
-      review: track([0, 1, 2, 3, 4, 5], [550, 550, 550, 550, 550, 550]),
-    },
+    cell,
+    columns,
+    rows,
+    tracks,
     atlasUrl: '/pet/jiangxiao/spritesheet.webp',
     manifestUrl: '/pet/jiangxiao/pet.json',
     states,
@@ -426,6 +434,16 @@ describe('PetSprite webp rendering', () => {
     expect(img!.tagName).toBe('IMG')
     // The src should be set to the idle state webp
     expect(img!.getAttribute('src')).toBe('/pet/jiangxiao/states/idle.webp')
+  })
+
+  it('shows opaque placeholder with background color before webp loads', () => {
+    renderWebpPet()
+    const img = screen.getByRole('button', { name: '墨染' }) as HTMLImageElement
+    // Placeholder: opacity 1 (fully opaque) with a background color
+    expect(img.style.opacity).toBe('1')
+    expect(img.style.backgroundColor).toBeTruthy()
+    // Transition property is preserved for fade-in
+    expect(img.style.transition).toContain('opacity')
   })
 
   it('updates the webp src when animation changes', () => {

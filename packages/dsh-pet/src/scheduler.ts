@@ -65,6 +65,39 @@ export type TransitionTable = Record<string, { webp: string; durationMs: number 
 const HUB: JiangxiaoState = 'idle'
 
 /**
+ * The set of JiangxiaoState values that the pet state machine can actually
+ * emit through petToJiangxiao. States outside this set (reading, permission)
+ * exist in the type for asset completeness per D13 — they are never queried
+ * by the pet loop. resolveTransition checks this set defensively so that an
+ * unexpected caller passes degrade to crossfade rather than crash.
+ */
+const REACHABLE_STATES: ReadonlySet<JiangxiaoState> = new Set([
+  'idle',
+  'thinking',
+  'working',
+  'replying',
+  'listening',
+  'done',
+  'error',
+  'welcome',
+])
+
+/**
+ * Emit a development-only warning when resolveTransition receives an
+ * unreachable state. No-op in production bundles.
+ */
+function warnUnreachableState(from: JiangxiaoState, to: JiangxiaoState): void {
+  if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[dsh-pet/scheduler] resolveTransition called with unreachable state: ` +
+      `from=${from}, to=${to}. Falling back to crossfade. ` +
+      `reading/permission are pet-unreachable per D13.`,
+    )
+  }
+}
+
+/**
  * Module-level counter for default key generation. Only advances when the
  * caller omits keySeed, so explicit-keySeed calls are fully pure. This is
  * the single tolerated side effect; tests pass keySeed for determinism.
@@ -102,6 +135,15 @@ export function resolveTransition(
   keySeed?: string,
 ): ResolvedTransition {
   const key = keySeed !== undefined ? keySeed : transitionKey(from, to) + '#' + (++keyCounter)
+
+  // Defensive assertion: unreachable states (reading, permission) are in the
+  // JiangxiaoState type for asset completeness (D13) but are never emitted by
+  // petToJiangxiao. If a caller passes one through, degrade gracefully to
+  // crossfade instead of crashing or producing a broken transition.
+  if (!REACHABLE_STATES.has(from) || !REACHABLE_STATES.has(to)) {
+    warnUnreachableState(from, to)
+    return { segments: [], final: to, key }
+  }
 
   // Same state: nothing to play. Avoids a spurious idle round-trip when the
   // state machine re-emits the current state.
@@ -147,6 +189,14 @@ export function resolveTransition(
  * and feed the scheduler. `running-left` and `waving` are reserve slots the
  * state machine never emits today; they map to `idle` and `welcome` so a
  * future emitter stays well-typed without redefining the table.
+ *
+ * Unreachable state handling (D13): JiangxiaoState includes `reading` and
+ * `permission` for asset completeness (transition webp files ship in the
+ * package), but they are never emitted by this mapping. resolveTransition
+ * defensively checks REACHABLE_STATES and degrades any unreachable input to
+ * crossfade in production, with a warning in development. This ensures the
+ * pet loop never crashes or produces a broken transition even if a caller
+ * passes an unexpected state directly.
  */
 export const PET_TO_JIANGXIAO: Readonly<Record<PetAnimation, JiangxiaoState>> = {
   idle: 'idle',
