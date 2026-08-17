@@ -8,6 +8,9 @@ node_modules/
 *.log
 .DS_Store
 
+# 临时文件（临时脚本 / 输出 / 日志，见 AGENTS.md "Agent skills" 约定）
+.temp/
+
 # GUI 测试截图
 gui-test-screenshots/
 
@@ -25,3 +28,6 @@ REVIEW-PROMPT.md
 
 # pnpm 11 项目内包存储（本地依赖缓存，不入库）
 .pnpm-store/
+
+# 本地素材源（姜晓动画资产 232MB，不入库；由 scripts/pack-jiangxiao-pet.mjs 打包）
+local-assets/

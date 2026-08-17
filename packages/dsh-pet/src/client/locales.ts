@@ -20,6 +20,11 @@ export const zh = {
   'pet.state.loading': '宠物正在赶来…',
   'pet.state.error': '宠物迷路了（连接失败）',
   'pet.openSessionHint': '点击跳转到对应会话',
+  'pet.importAsset': '导入资产包...',
+  'pet.importing': '正在导入...',
+  'pet.importSuccess': '姜晓动画包已导入，请重新加载页面以选择',
+  'pet.importError': '导入失败：{error}',
+  'pet.importExists': '动画包已存在，请先删除旧目录再导入',
   // 一级设置页（settings.section 席位）。
   'settings.title': '宠物',
   'settings.description': '选择宠物并调整它的显示布局。',
@@ -66,6 +71,11 @@ export const en = {
   'pet.state.loading': 'The pet is on its way…',
   'pet.state.error': 'The pet is lost (connection failed)',
   'pet.openSessionHint': 'Click to jump to this session',
+  'pet.importAsset': 'Import asset pack...',
+  'pet.importing': 'Importing...',
+  'pet.importSuccess': 'Jiangxiao pet pack imported. Reload the page to select it.',
+  'pet.importError': 'Import failed: {error}',
+  'pet.importExists': 'The pet pack already exists. Delete the old directory before importing.',
   // First-level settings section (the `settings.section` seat).
   'settings.title': 'Pet',
   'settings.description': 'Pick a pet and tune its display layout.',

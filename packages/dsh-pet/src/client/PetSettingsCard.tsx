@@ -7,7 +7,7 @@
  * the sprite renders from — so the card carries no per-pet knowledge.
  */
 
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import type { SettingsScope, SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
 // Type-only: pulls the settings-surface SlotMap merge (the 'settings.section' entry).
@@ -158,6 +158,42 @@ export function PetSettingsCard(props: PetSettingsCardProps) {
   const { t } = props
   const state = props.usePetSettingsCard(snapshot => snapshot)
   const disabled = !state.writable
+  const [importStatus, setImportStatus] = useState<'idle' | 'importing' | 'success' | 'error'>('idle')
+  const [importError, setImportError] = useState<string>('')
+
+  const handleImportClick = (): void => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.zip'
+    input.onchange = (): void => {
+      const file = input.files?.[0]
+      if (!file) return
+      setImportStatus('importing')
+      setImportError('')
+      const reader = new FileReader()
+      reader.onload = async (): Promise<void> => {
+        const buffer = reader.result as ArrayBuffer
+        try {
+          const response = await fetch('/api/pet/import-zip', {
+            method: 'POST',
+            body: buffer,
+          })
+          const result = await response.json() as { ok: boolean; error?: string }
+          if (result.ok) {
+            setImportStatus('success')
+          } else {
+            setImportStatus('error')
+            setImportError(result.error ?? '')
+          }
+        } catch (error) {
+          setImportStatus('error')
+          setImportError(error instanceof Error ? error.message : String(error))
+        }
+      }
+      reader.readAsArrayBuffer(file)
+    }
+    input.click()
+  }
   const fieldProps = {
     overriddenLabel: t('settings.overridden'),
     resetLabel: t('settings.reset'),
@@ -239,6 +275,29 @@ export function PetSettingsCard(props: PetSettingsCardProps) {
         onEdit={(text) => { props.edit('bottom', text) }}
         onReset={() => { props.resetField('bottom') }}
       />
+      <div className={sectionCss.sectionRow}>
+        {importStatus === 'success' ? (
+          <span className={sectionCss.importSuccess}>
+            {t('pet.importSuccess')}
+          </span>
+        ) : (
+          <>
+            <button
+              type="button"
+              className={sectionCss.importButton}
+              onClick={handleImportClick}
+              disabled={importStatus === 'importing'}
+            >
+              {importStatus === 'importing' ? t('pet.importing') : t('pet.importAsset')}
+            </button>
+            {importStatus === 'error' && (
+              <span className={sectionCss.importError}>
+                {t('pet.importError', { error: importError })}
+              </span>
+            )}
+          </>
+        )}
+      </div>
     </PluginSettingsCard>
   )
 }

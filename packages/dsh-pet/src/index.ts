@@ -11,24 +11,36 @@
  * @module @linxin666/dsh-pet
  */
 
-import { Context } from '@deepseek-ai/cordis'
-import { installSettingsSection, settingsNamespace } from '@deepseek-ai/dsh-settings'
-import type {} from '@deepseek-ai/dsh-host-webserver'
-import z from 'schemastery'
-import { PetService, PET_SETTINGS_NAMESPACE, type PetConfig, type PetSettingsSection } from './service.ts'
-import { makePetRoutes } from './routes.ts'
-import { loadPetRegistry, petPackageRoot } from './registry.ts'
-import { DISPLAY_INSET_MAX, DISPLAY_SIZE_MAX, DISPLAY_SIZE_MIN } from './persist.ts'
-import { mountOnce } from './mount-once.ts'
+import { Context } from "@deepseek-ai/cordis";
+import {
+  installSettingsSection,
+  settingsNamespace,
+} from "@deepseek-ai/dsh-settings";
+import type {} from "@deepseek-ai/dsh-host-webserver";
+import z from "schemastery";
+import {
+  PetService,
+  PET_SETTINGS_NAMESPACE,
+  type PetConfig,
+  type PetSettingsSection,
+} from "./service.ts";
+import { makePetRoutes } from "./routes.ts";
+import { loadPetRegistry, petPackageRoot } from "./registry.ts";
+import {
+  DISPLAY_INSET_MAX,
+  DISPLAY_SIZE_MAX,
+  DISPLAY_SIZE_MIN,
+} from "./persist.ts";
+import { mountOnce } from "./mount-once.ts";
 
-export { PetService, MAX_SESSION_BUBBLES } from './service.ts'
+export { PetService, MAX_SESSION_BUBBLES } from "./service.ts";
 export type {
   PetConfig,
   PetInteractResult,
   PetSettingsSection,
   PetSessionView,
   PetStateView,
-} from './service.ts'
+} from "./service.ts";
 export {
   AFFINITY_MAX,
   AFFINITY_RANKS,
@@ -36,32 +48,28 @@ export {
   applyTurnReward,
   emptyAffinity,
   rankOf,
-} from './affinity.ts'
+} from "./affinity.ts";
 export type {
   AffinityConfig,
   AffinityState,
   InteractionOutcome,
   PetInteraction,
-} from './affinity.ts'
-export {
-  animationForPhase,
-  PetStateMachine,
-  rowOf,
-} from './state.ts'
+} from "./affinity.ts";
+export { animationForPhase, PetStateMachine, rowOf } from "./state.ts";
 export type {
   ActivityPhase,
   PetAnimation,
   PetStateConfig,
   PetStateInput,
   PetStateSnapshot,
-} from './state.ts'
+} from "./state.ts";
 export {
   consumeTreat,
   defaultTreatConfig,
   emptyTreatLedger,
   settleTreatGrants,
-} from './treats.ts'
-export type { TreatConfig, TreatLedger, TreatSettlement } from './treats.ts'
+} from "./treats.ts";
+export type { TreatConfig, TreatLedger, TreatSettlement } from "./treats.ts";
 export {
   BUILTIN_REMARKS,
   REMARK_KINDS,
@@ -70,8 +78,8 @@ export {
   RemarkPicker,
   builtinRemark,
   normalizePetRemarks,
-} from './remarks.ts'
-export type { PetRemarks, PetRemarksManifest, RemarkKind } from './remarks.ts'
+} from "./remarks.ts";
+export type { PetRemarks, PetRemarksManifest, RemarkKind } from "./remarks.ts";
 export {
   DEFAULT_PET_ID,
   DEFAULT_PET_NAME,
@@ -81,42 +89,55 @@ export {
   loadPetPersist,
   petHomeDir,
   savePetPersist,
-} from './persist.ts'
-export type { PetDisplayConfig, PetPersist } from './persist.ts'
+} from "./persist.ts";
+export type { PetDisplayConfig, PetPersist } from "./persist.ts";
 export {
   DEFAULT_FRAME_COUNTS,
   DEFAULT_PET_CELL,
   DEFAULT_PET_COLUMNS,
   DEFAULT_PET_ROW_COUNT,
   DEFAULT_TRACK_PATTERNS,
+  JIANGXIAO_STATES,
   PET_ROW_ORDER,
   codexPetsDir,
   loadPetRegistry,
+  petAssetFiles,
   petEntryView,
   petPackageRoot,
   resolvePetManifest,
-} from './registry.ts'
+} from "./registry.ts";
 export type {
+  JiangxiaoState,
   PetDefinition,
   PetEntry,
   PetManifest,
+  PetManifestKind,
   PetRegistry,
   PetRegistryOptions,
   PetTrackDef,
   PetTrackOverride,
-} from './registry.ts'
+  WebpPetTransition,
+  WebpPetTransitionEntry,
+  WebpPetTransitionView,
+} from "./registry.ts";
 
+export { makePetRoutes, PET_API_PREFIX, PET_ASSET_PREFIX } from "./routes.ts";
 export {
-  makePetRoutes,
-  PET_API_PREFIX,
-  PET_ASSET_PREFIX,
-} from './routes.ts'
+  PET_TO_JIANGXIAO,
+  petToJiangxiao,
+  resolveTransition,
+} from "./scheduler.ts";
+export type {
+  ResolvedTransition,
+  TransitionSegment,
+  TransitionTable,
+} from "./scheduler.ts";
 
 /** Stable cordis plugin name (matches cordis.patch.yml insert id). */
-export const name = 'pet'
+export const name = "pet";
 
 /** Services required before the pet can mount its surfaces. */
-export const inject = ['webServer']
+export const inject = ["webServer"];
 
 /**
  * Settings section schema: pet selection and display fields the web settings
@@ -129,24 +150,30 @@ export const inject = ['webServer']
 export function makePetSettingsSchema(fallbackPetId: string) {
   return z.object({
     visible: z.boolean().default(true),
-    size: z.number().step(1).min(DISPLAY_SIZE_MIN).max(DISPLAY_SIZE_MAX).default(160),
+    size: z
+      .number()
+      .step(1)
+      .min(DISPLAY_SIZE_MIN)
+      .max(DISPLAY_SIZE_MAX)
+      .default(160),
     right: z.number().step(1).min(0).max(DISPLAY_INSET_MAX).default(24),
     bottom: z.number().step(1).min(0).max(DISPLAY_INSET_MAX).default(20),
     petId: z.string().default(fallbackPetId),
     enabled: z.boolean().default(true),
-  })
+  });
 }
 
 /** Register the pet service and its API + asset routes on the context. */
-export const apply = mountOnce('@linxin666/dsh-pet', applyImpl)
+export const apply = mountOnce("@linxin666/dsh-pet", applyImpl);
 
 function applyImpl(ctx: Context, config: PetConfig = {}): void {
-  const registry = config.registry
-    ?? loadPetRegistry({
+  const registry =
+    config.registry ??
+    loadPetRegistry({
       packageRoot: petPackageRoot(import.meta.url),
       ...(config.pets === undefined ? {} : { extra: config.pets }),
-    })
-  const service = new PetService(ctx, { ...config, registry })
+    });
+  const service = new PetService(ctx, { ...config, registry });
 
   // The settings surface edits the pet selection + display config through
   // the 'pet' namespace. The composition 'base' starts as the persisted
@@ -155,7 +182,7 @@ function applyImpl(ctx: Context, config: PetConfig = {}): void {
   // never overwrites a customized layout, and reset re-inherits it. Runtime
   // drag interactions mirror back into the settings document through the
   // service (see syncSettingsFromPet), keeping both views consistent.
-  let current: () => PetSettingsSection = () => base
+  let current: () => PetSettingsSection = () => base;
   const base: PetSettingsSection = {
     visible: service.display().visible,
     size: service.display().size,
@@ -163,44 +190,45 @@ function applyImpl(ctx: Context, config: PetConfig = {}): void {
     bottom: service.display().bottom,
     petId: service.selectedPetId(),
     enabled: config.enabled ?? true,
-  }
+  };
   // The browser half talks to the pet through same-origin JSON endpoints and
   // loads each pet's atlas from the registry's own media route (RPC domains
   // are platform-registered, so the pet serves its own API — the same
   // pattern as dsh-remote-web-ui's /api/pair family). The routes are
   // registered while the plugin is enabled; toggling the setting off makes
   // the pet API disappear until it is re-enabled.
-  const routes = makePetRoutes({ service })
-  let disposeRoutes: (() => void) | undefined
+  const routes = makePetRoutes({ service });
+  let disposeRoutes: (() => void) | undefined;
   const syncRoutes = (): void => {
-    const enabled = current().enabled ?? true
+    const enabled = current().enabled ?? true;
     if (disposeRoutes === undefined && enabled) {
-      disposeRoutes = ctx.effect(
-        () => {
-          const disposers = routes.map((route) => ctx.webServer.register(route))
-          return () => { for (const dispose of disposers) dispose() }
-        },
-        'pet: routes',
-      )
+      disposeRoutes = ctx.effect(() => {
+        const disposers = routes.map((route) => ctx.webServer.register(route));
+        return () => {
+          for (const dispose of disposers) dispose();
+        };
+      }, "pet: routes");
     } else if (disposeRoutes !== undefined && !enabled) {
-      disposeRoutes()
-      disposeRoutes = undefined
+      disposeRoutes();
+      disposeRoutes = undefined;
     }
-  }
+  };
   installSettingsSection(
     ctx,
     settingsNamespace(PET_SETTINGS_NAMESPACE),
     makePetSettingsSchema(service.selectedPetId()),
     base,
     {
-      setSource: (source) => { current = source },
+      setSource: (source) => {
+        current = source;
+      },
       onChange: () => {
-        const section = current()
-        service.applySettingsSection(section)
-        service.setEnabled(section.enabled ?? true)
-        syncRoutes()
+        const section = current();
+        service.applySettingsSection(section);
+        service.setEnabled(section.enabled ?? true);
+        syncRoutes();
       },
     },
-  )
-  syncRoutes()
+  );
+  syncRoutes();
 }

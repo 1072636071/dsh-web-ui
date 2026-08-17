@@ -25,6 +25,10 @@
 | 妙语库 | 内置默认妙语库（每类事件 10 句）+ 宠物 manifest 的 remarks 块自定义台词——社区 PR 可以给自家宠物配上专属妙语 |
 | 状态气泡 | 每个并行活动的顶层会话各自一个气泡，在宠物头顶堆叠（最多 12 个）；子代理会话借由其发起会话体现，不占用独立气泡；点击气泡跳转到对应会话；瞬时互动反馈临时优先 |
 | 多会话活动 | 宠物是宿主全局的：最近一次有意义事件驱动精灵动画，同时每个活动的顶层会话用自己的气泡报告各自状态；每个会话（含子代理）完成的轮次都计入亲密度与小鱼干 |
+| animated-webp 宠物类型 | 支持 `animated-webp` 宠物类型：独立的 WebP 状态机，通过枢纽式过渡切换。每个状态是一个独立的 WebP 文件；调度器在状态之间播放过渡片段，以 idle 为枢纽路由 |
+| 内置姜晓宠物 | 内置姜晓（jiangxiao）宠物，唐风二次元角色，10 个动画循环态 + 36 个过渡片段覆盖所有宠物可达路径 |
+| 资产包导入 | 通过宠物设置中的「导入资产包...」按钮导入 WebP 资产包；选择 zip 文件将宠物资产解压到自定义宠物目录 |
+| 导入门控 | 姜晓宠物的 manifest 已内置，但 WebP 文件单独分发；导入资产包后宠物才出现在选择器中。删除 `~/.codex/pets/jiangxiao/` 并重启 `dsh web` 可移除 |
 
 ## 宠物契约
 
@@ -61,6 +65,54 @@
 
 注册表在宿主启动时构建一次；新增或修改宠物后重启 `dsh web` 生效。
 
+### animated-webp 宠物契约
+
+`animated-webp` 类型宠物（kind 为 `"animated-webp"`）将图集替换为一组独立的 WebP 文件——每态一个循环 WebP 文件，外加状态之间过渡片段。manifest 声明 10 个循环态和一个过渡表；[调度器](src/scheduler.ts) 通过枢纽式路由（以 idle 为枢纽）解析状态间过渡，浏览器半区将每个 WebP 渲染为独立的 `<img>` 元素。
+
+```jsonc
+{
+  "id": "jiangxiao",                     // 唯一的小写 kebab id
+  "displayName": "姜晓",                 // 显示在设置选择器与面板上
+  "description": "唐风二次元角色姜晓。",    // 可选
+  "kind": "animated-webp",               // 必需：选择 WebP 渲染路径
+  "states": {                            // 10 个循环态，每个为相对 WebP 路径
+    "idle": "idle.webp",
+    "thinking": "thinking.webp",
+    "reading": "reading.webp",
+    "replying": "replying.webp",
+    "working": "working.webp",
+    "error": "error.webp",
+    "welcome": "welcome.webp",
+    "done": "done.webp",
+    "permission": "permission.webp",
+    "listening": "listening.webp"
+  },
+  "transitions": {                       // 状态间过渡片段
+    "idle->thinking": { "webp": "transition-idle-thinking.webp", "durationMs": 600 },
+    "thinking->idle": { "webp": "transition-thinking-idle.webp", "durationMs": 600 },
+    // ... 共 36 个过渡片段，覆盖所有宠物可达路径
+  }
+}
+```
+
+- `states` 映射必须覆盖所有 10 个 `JiangxiaoState` 键：`idle`、`thinking`、`reading`、`replying`、`working`、`error`、`welcome`、`done`、`permission`、`listening`。
+- `transitions` 映射键使用 ASCII `->` 分隔符（`${from}->${to}`）。调度器通过枢纽式路由解析过渡：若当前态到目标态有直接边，则播放一个片段；否则经由 idle 中转（先反向播放 `from->idle` 片段，再正向播放 `idle->to` 片段）。两段均无素材时，渲染器回退为 crossfade 渐变。
+- `PET_TO_JIANGXIAO` 映射（位于 `scheduler.ts`）将状态机的 9 个 `PetAnimation` 轨道（`idle`、`running`、`running-right`、`review`、`waiting`、`jumping`、`failed`、`running-left`、`waving`）映射到 10 个循环态，使 WebP 调度器与图集宠物使用同一事件驱动状态机。
+- 图集几何字段（`cell`、`columns`、`frames`、`tracks`）以默认值填充以保持形态兼容，但 WebP 渲染路径不使用它们。
+
+### 导入 WebP 宠物资产包
+
+姜晓宠物的 manifest 已内置在插件中（`assets/jiangxiao/pet.json`），但实际的 WebP 动画文件因体积较大需单独以 zip 压缩包分发。通过宠物设置 UI 导入资产包：
+
+1. 从 [发布页面](https://github.com/zhu1090093659/dsh-web-ui/releases) 下载 zip 压缩包（例如 `jiangxiao-pet-anim-0.1.19.zip`）。
+2. 进入 DSH Web GUI 设置面板的**宠物设置**。
+3. 点击**导入资产包...**按钮。
+4. 选择下载的 zip 文件。
+5. 导入成功后，**刷新页面**（`Ctrl+Shift+R`）。
+6. 再次打开宠物设置，从宠物下拉列表中选择**姜晓**。
+
+门控：宠物仅在导入资产包后出现在选择器中。要移除已导入的宠物，删除 `~/.codex/pets/jiangxiao/` 目录并重启 `dsh web`；内置 manifest 仍在但 WebP 资产不可用。重新导入 zip 可恢复。
+
 ## 动画预览
 
 精灵图是由 [hatch-pet](https://github.com/dsh2026) 流水线生成的 8 列 × 9 行图集（192×208 单元格）；各状态预览：
@@ -82,6 +134,7 @@ dsh-pet/
 |   |-- registry.ts          # 多宠物契约：manifest 扫描 + 归一化（内置 + 自定义宠物）
 |   |-- service.ts           # PetService：宠物选择 + 状态机 + 亲密度 + 配置
 |   |-- state.ts             # 宠物状态机：会话活动投影 → 9 态动画
+|   |-- scheduler.ts         # 过渡调度器：为 animated-webp 宠物提供枢纽式路由
 |   |-- remarks.ts           # 妙语库：内置默认池 + 每宠物覆盖 + 轮询选取
 |   |-- affinity.ts          # 亲密度账本（纯函数 + 冷却）
 |   |-- treats.ts            # 小鱼干库存账本
@@ -90,11 +143,12 @@ dsh-pet/
 |   `-- client/             # 浏览器半区
 |       |-- index.ts         # 全局挂载（createRoot → body）+ 注册表拉取 + 轮询 + 接线
 |       |-- PetDockEntry.tsx # 全局浮层入口（document.body，始终显示）
-|       |-- PetSprite.tsx    # 由定义驱动的浮层精灵（portal + rAF + 拖动）
+|       |-- PetSprite.tsx    # 由定义驱动的浮层精灵（portal + rAF + 拖动；animated-webp 路径）
 |       |-- PetSettingsCard.tsx # 设置卡片：宠物选择器 + 显示布局
 |       |-- spritesheet.ts   # 图集几何辅助 + 轨道裁剪
 |       `-- pet.module.css
 |-- assets/whale/            # 内置鲸鱼娘（pet.json + spritesheet.webp + 预览）
+|-- assets/jiangxiao/        # 内置姜晓 manifest（pet.json + hash-manifest.json；WebP 资产单独导入）
 `-- cordis.patch.yml         # bundle 补丁：插入宠物插件行
 ```
 
@@ -150,6 +204,8 @@ pnpm typecheck    # 仅类型检查
 ## 精灵图与动画轨道校准
 
 内置鲸鱼娘图集由 hatch-pet 流水线生成，9 态 × 8 列：`assets/whale/spritesheet.webp`（1536×1872，8 列 × 9 行，192×208 单元格）+ `assets/whale/pet.json`。每行的帧数与节奏就写在该 manifest 的 `frames` 与 `tracks` 字段里——鲸鱼娘带着自己更慢的治愈系时长，未覆盖的宠物沿用 hatch-pet 契约节奏。重做美术因此只需修改 `assets/whale/pet.json`（行序契约：0 idle / 1 running-right / 2 running-left / 3 waving / 4 jumping / 5 failed / 6 waiting / 7 running / 8 review）。
+
+内置姜晓宠物使用 `animated-webp` 类型：10 个独立的 WebP 文件作为循环态（`idle`、`thinking`、`reading`、`replying`、`working`、`error`、`welcome`、`done`、`permission`、`listening`），外加 36 个状态间过渡片段。manifest 位于 `assets/jiangxiao/pet.json`；实际 WebP 资产以 zip 压缩包分发，通过宠物设置中的「导入资产包...」按钮导入。枢纽式路由调度器（`src/scheduler.ts`）通过 `PET_TO_JIANGXIAO` 将 9 个 `PetAnimation` 轨道映射到 10 个 `JiangxiaoState` 值，解析状态间过渡时播放相应的 WebP 片段。
 
 ## 许可证
 

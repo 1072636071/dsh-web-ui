@@ -19,6 +19,7 @@ import type { PetStateView } from '../service.ts'
 import type { PetDefinition } from '../registry.ts'
 import type { PetFeedback } from './pet-store.ts'
 import { framePosition, rowOfTrack, trimTrack } from './spritesheet.ts'
+import { petToJiangxiao, resolveTransition } from '../scheduler.ts'
 import type { PetAnimation } from '../state.ts'
 import { NS } from './locales.ts'
 import styles from './pet.module.css'
@@ -79,6 +80,31 @@ export function PetSprite(props: PetSpriteProps): ReactPortal {
     elapsed: 0,
   })
 
+  // Kind dispatch: 'animated-webp' takes the <img> + scheduler path; any
+  // other value (including 'spritesheet' and the legacy omitted kind) falls
+  // back to the existing spritesheet frame loop. The spritesheet path is
+  // untouched under `isWebp === false`, so legacy pets regress nothing.
+  const isWebp = definition.kind === 'animated-webp'
+
+  // ---- animated-webp render state ---------------------------------------
+  // The current <img> src (a loop-state webp or a transition-segment webp)
+  // plus a loaded flag driving the placeholder fade-in (D14). The play key
+  // invalidates a stale transition when a newer target arrives mid-play;
+  // prevAnimationRef feeds the scheduler with the from-state.
+  const initialWebpSrc: string | null = isWebp && definition.states !== undefined
+    ? definition.states[petToJiangxiao(snapshot?.animation ?? 'idle')]
+    : null
+  const [webpSrc, setWebpSrc] = useState<string | null>(initialWebpSrc)
+  const [webpLoaded, setWebpLoaded] = useState(false)
+  const webpPlayKeyRef = useRef<string | null>(null)
+  const webpTimeoutsRef = useRef<readonly number[]>([])
+  const prevAnimationRef = useRef<PetAnimation>(snapshot?.animation ?? 'idle')
+  /** Swap the webp src and reset the loaded flag in one batch (no flicker). */
+  const setWebp = (src: string): void => {
+    setWebpSrc(src)
+    setWebpLoaded(false)
+  }
+
   const cell = definition.cell
   const columns = definition.columns
   const rows = definition.rows
@@ -86,7 +112,9 @@ export function PetSprite(props: PetSpriteProps): ReactPortal {
 
   // Load the atlas once; the definition carries the authoritative per-row
   // frame counts and per-track durations, so nothing else is fetched.
+  // Skipped on the animated-webp path (per-state webps load instead).
   useEffect(() => {
+    if (isWebp) return
     let cancelled = false
     const img = new Image()
     img.onload = () => {
@@ -97,7 +125,7 @@ export function PetSprite(props: PetSpriteProps): ReactPortal {
       cancelled = true
       img.onload = null
     }
-  }, [definition.atlasUrl])
+  }, [definition.atlasUrl, isWebp])
 
   // Frame loop: advance the current track and write background-position.
   // Offsets must be in SCALED coordinates (background-position applies to the
@@ -110,6 +138,7 @@ export function PetSprite(props: PetSpriteProps): ReactPortal {
   const scaleRef = useRef(spriteScale)
   scaleRef.current = spriteScale
   useEffect(() => {
+    if (isWebp) return // webp path plays <img> webps; no rAF frame loop.
     const reduceMotion = typeof window !== 'undefined'
       && window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches === true
     const row = rowOfTrack(animation)
@@ -160,7 +189,7 @@ export function PetSprite(props: PetSpriteProps): ReactPortal {
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [animation, cell, columns, rows, tracks])
+  }, [animation, cell, columns, rows, tracks, isWebp])
 
   // Auto-clear the feedback bubble after its CSS animation. The callback
   // rides a ref so re-renders never reset the timer: the 2s poll rebuilds
@@ -173,6 +202,76 @@ export function PetSprite(props: PetSpriteProps): ReactPortal {
     return () => window.clearTimeout(timer)
   }, [feedback])
 
+  // ---- animated-webp transition -------------------------------------------
+  // When the animation changes, resolve the transition through the scheduler
+  // and play segments sequentially. Key invalidation via effect cleanup
+  // cancels stale timeouts when a newer target arrives mid-play.
+  useEffect(() => {
+    if (!isWebp) return
+
+    const prevAnimation = prevAnimationRef.current
+    prevAnimationRef.current = animation
+
+    const from = petToJiangxiao(prevAnimation)
+    const to = petToJiangxiao(animation)
+
+    // Pre-fetch the target state's loop webp so the final swap is instant.
+    if (definition.states !== undefined) {
+      new Image().src = definition.states[to]
+    }
+
+    // Same state — ensure the loop webp is set (initial render).
+    if (from === to) {
+      if (definition.states !== undefined) {
+        setWebp(definition.states[to])
+      }
+      return
+    }
+
+    // Resolve the transition (hub-routed through idle).
+    const resolved = resolveTransition(from, to, definition.transitions ?? {})
+    webpPlayKeyRef.current = resolved.key
+
+    if (resolved.segments.length === 0) {
+      // No transition material; crossfade directly to the target loop.
+      if (definition.states !== undefined) {
+        setWebp(definition.states[resolved.final])
+      }
+      return
+    }
+
+    // Play segments sequentially. Each segment's webp is pre-fetched by the
+    // scheduler's caller (the segment webp was already loaded upstream), so
+    // just swap the src without resetting the loaded flag.
+    const timeouts: number[] = []
+    let cumulativeDelay = 0
+
+    for (const segment of resolved.segments) {
+      const delay = cumulativeDelay
+      const timeout = window.setTimeout(() => {
+        setWebpSrc(segment.webp)
+      }, delay)
+      timeouts.push(timeout)
+      cumulativeDelay += segment.durationMs
+    }
+
+    // After all segments complete, settle on the target loop state.
+    const finalTimeout = window.setTimeout(() => {
+      if (definition.states !== undefined) {
+        setWebp(definition.states[resolved.final])
+      }
+    }, cumulativeDelay)
+    timeouts.push(finalTimeout)
+
+    webpTimeoutsRef.current = timeouts
+
+    return () => {
+      const ids = webpTimeoutsRef.current
+      webpTimeoutsRef.current = []
+      ids.forEach(id => window.clearTimeout(id))
+    }
+  }, [animation, isWebp, definition.states, definition.transitions])
+
   // Dragging: pointer events on the sprite; position is right/bottom based.
   // `draggedRef` records whether the pointer actually moved, so the browser's
   // trailing click (fired after pointerup) does not pet the sprite.
@@ -184,7 +283,7 @@ export function PetSprite(props: PetSpriteProps): ReactPortal {
     }
   }
 
-  const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>): void => {
+  const onPointerDown = (e: ReactPointerEvent): void => {
     e.preventDefault()
     ;(e.target as HTMLElement).setPointerCapture?.(e.pointerId)
     const current = dragPos ?? { right: display.right, bottom: display.bottom }
@@ -192,7 +291,7 @@ export function PetSprite(props: PetSpriteProps): ReactPortal {
     draggedRef.current = false
     setHovered(false)
   }
-  const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>): void => {
+  const onPointerMove = (e: ReactPointerEvent): void => {
     const drag = dragRef.current
     if (drag === null) return
     const dx = e.clientX - drag.startX
@@ -245,30 +344,56 @@ export function PetSprite(props: PetSpriteProps): ReactPortal {
         hideTimerRef.current = window.setTimeout(() => setHovered(false), 300)
       }}
     >
-      <div
-        ref={spriteRef}
-        className={styles.sprite}
-        style={{
-          width: spriteWidth,
-          height: spriteHeight,
-          backgroundImage: imageReady ? 'url(' + definition.atlasUrl + ')' : undefined,
-          backgroundSize: (cell.width * columns * spriteScale) + 'px ' + (cell.height * rows.length * spriteScale) + 'px',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: '0 0',
-          cursor: dragRef.current === null ? 'grab' : 'grabbing',
-        }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onClick={() => {
-          // A pointer sequence that moved (dragged) still fires a trailing
-          // click; skip the pet when that happened.
-          if (draggedRef.current) return
-          props.onPet()
-        }}
-        role="button"
-        aria-label={definition.displayName}
-      />
+      {isWebp ? (
+        <img
+          className={clsx(styles.webpSprite, styles.sprite)}
+          src={webpSrc ?? undefined}
+          style={{
+            width: spriteWidth,
+            height: spriteHeight,
+            opacity: webpLoaded ? 1 : 0.5,
+            transition: 'opacity 0.3s ease',
+            cursor: dragRef.current === null ? 'grab' : 'grabbing',
+          }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onClick={() => {
+            if (draggedRef.current) return
+            props.onPet()
+          }}
+          onLoad={() => setWebpLoaded(true)}
+          role="button"
+          aria-label={definition.displayName}
+          draggable={false}
+          alt={definition.displayName}
+        />
+      ) : (
+        <div
+          ref={spriteRef}
+          className={styles.sprite}
+          style={{
+            width: spriteWidth,
+            height: spriteHeight,
+            backgroundImage: imageReady ? 'url(' + definition.atlasUrl + ')' : undefined,
+            backgroundSize: (cell.width * columns * spriteScale) + 'px ' + (cell.height * rows.length * spriteScale) + 'px',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: '0 0',
+            cursor: dragRef.current === null ? 'grab' : 'grabbing',
+          }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onClick={() => {
+            // A pointer sequence that moved (dragged) still fires a trailing
+            // click; skip the pet when that happened.
+            if (draggedRef.current) return
+            props.onPet()
+          }}
+          role="button"
+          aria-label={definition.displayName}
+        />
+      )}
       {feedback !== null && (
         <div key={feedback.at} className={clsx(styles.bubble, feedback.kind === 'feed' ? styles.bubbleFeed : styles.bubblePet)}>
           {feedback.text}

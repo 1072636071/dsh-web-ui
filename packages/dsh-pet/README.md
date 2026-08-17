@@ -25,6 +25,10 @@ Re-implemented from the pet feature of the Codex desktop app, as an official DSH
 | Witty remarks | Built-in remark library (10 lines per event) plus per-pet custom lines from a manifest remarks block — community PRs give their pet its own voice |
 | Status bubbles | Each concurrently active top-level session gets its own bubble, stacked above the pet (up to 12); subagent sessions report through their spawning conversation and never occupy a bubble of their own; click a bubble to jump to its session; transient interaction feedback temporarily takes priority |
 | Multi-session activity | The pet is host-global: the most recent meaningful event drives the sprite animation while every active top-level session reports its own state in a separate bubble; completed turns from every session (subagents included) contribute affinity and treats |
+| animated-webp pet type | Support for `animated-webp` pet kind: an independent WebP state machine with hub-route transitions. Each state is a separate WebP file; the scheduler plays transition clips between states, routing through idle as the hub |
+| Built-in jiangxiao pet | Built-in jiangxiao (姜晓) pet, a Tang-style anime character with 10 animated cyclic states and 36 transition clips covering all pet-reachable paths |
+| Asset pack import | Import a WebP asset pack through the Pet Settings "导入资产包..." (Import Asset Pack) button; select a zip file to extract the pet assets into the custom pets directory |
+| Import gating | The jiangxiao pet manifest is built-in but the WebP assets are distributed separately; the pet only appears in the selector after the asset pack is imported. To remove it, delete `~/.codex/pets/jiangxiao/` and restart `dsh web` |
 
 ## Pet contract
 
@@ -61,6 +65,54 @@ Where pets come from (later sources override earlier ones on id collision):
 
 The registry is built once at host startup; add or change a pet, then restart `dsh web`.
 
+### animated-webp pet contract
+
+An `animated-webp` pet (kind `"animated-webp"`) replaces the spritesheet atlas with a set of independent WebP files — one per cyclic state plus transition clips between states. The manifest declares 10 cyclic states and a transition table; the [scheduler](src/scheduler.ts) resolves state-to-state transitions through hub routing (idle is the hub), and the browser half renders each WebP as a standalone `<img>` element.
+
+```jsonc
+{
+  "id": "jiangxiao",                     // unique lowercase kebab id
+  "displayName": "姜晓",                 // shown in the settings selector and panel
+  "description": "A Tang-style anime character.", // optional
+  "kind": "animated-webp",               // required: selects the WebP render path
+  "states": {                            // 10 cyclic states, each a relative WebP path
+    "idle": "idle.webp",
+    "thinking": "thinking.webp",
+    "reading": "reading.webp",
+    "replying": "replying.webp",
+    "working": "working.webp",
+    "error": "error.webp",
+    "welcome": "welcome.webp",
+    "done": "done.webp",
+    "permission": "permission.webp",
+    "listening": "listening.webp"
+  },
+  "transitions": {                       // state-to-state transition clips
+    "idle->thinking": { "webp": "transition-idle-thinking.webp", "durationMs": 600 },
+    "thinking->idle": { "webp": "transition-thinking-idle.webp", "durationMs": 600 },
+    // ... 36 transitions total covering all pet-reachable paths
+  }
+}
+```
+
+- The `states` map must cover all 10 `JiangxiaoState` keys: `idle`, `thinking`, `reading`, `replying`, `working`, `error`, `welcome`, `done`, `permission`, `listening`.
+- The `transitions` map keys use the ASCII `->` separator (`${from}->${to}`). The scheduler resolves a transition through hub routing: if a direct edge from the current state to the target exists, it plays one clip; otherwise it routes through idle (play the `from->idle` clip in reverse, then the `idle->to` clip forward). When neither path has material, the renderer falls back to a crossfade.
+- The `PET_TO_JIANGXIAO` mapping (in `scheduler.ts`) translates the state machine's 9 `PetAnimation` tracks (`idle`, `running`, `running-right`, `review`, `waiting`, `jumping`, `failed`, `running-left`, `waving`) onto the 10 cyclic states, so the WebP scheduler works with the same event-driven state machine as spritesheet pets.
+- Spritesheet geometry fields (`cell`, `columns`, `frames`, `tracks`) are filled with defaults for shape compatibility but are unused by the WebP render path.
+
+### Importing a webp pet asset pack
+
+The jiangxiao pet manifest is built into the plugin (`assets/jiangxiao/pet.json`), but the actual WebP animation files are distributed separately as a zip archive due to their large size. Import the asset pack through the Pet Settings UI:
+
+1. Download the zip archive (e.g. `jiangxiao-pet-anim-0.1.19.zip`) from the [releases page](https://github.com/zhu1090093659/dsh-web-ui/releases).
+2. Go to **Pet Settings** in the DSH Web GUI settings panel.
+3. Click the **导入资产包...** (Import Asset Pack) button.
+4. Select the downloaded zip file.
+5. After the import succeeds, **reload the page** (`Ctrl+Shift+R`).
+6. Open Pet Settings again and select **姜晓** from the pet dropdown.
+
+Gating: the pet only appears in the selector after the asset pack has been imported. To remove the imported pet, delete the `~/.codex/pets/jiangxiao/` directory and restart `dsh web`; the built-in manifest remains but the WebP assets will be unavailable. Re-import the zip to restore it.
+
 ## Animation preview
 
 The sprites are an 8-column × 9-row atlas (192×208 cells) generated by the [hatch-pet](https://github.com/dsh2026) pipeline; below are previews of each state:
@@ -82,6 +134,7 @@ dsh-pet/
 |   |-- registry.ts          # multi-pet contract: manifest scan + normalization (assets + custom pets)
 |   |-- service.ts           # PetService: pet selection + state machine + affinity + config
 |   |-- state.ts             # pet state machine: projected session activity → 9 state animations
+|   |-- scheduler.ts         # transition scheduler: hub routing for animated-webp pets
 |   |-- remarks.ts           # witty-remark library: built-in pools + per-pet overrides + picker
 |   |-- affinity.ts          # affinity ledger (pure functions + cooldowns)
 |   |-- treats.ts            # dried-fish stock ledger
@@ -90,11 +143,12 @@ dsh-pet/
 |   `-- client/             # browser half
 |       |-- index.ts         # global mount (createRoot → body) + registry fetch + polling + wiring
 |       |-- PetDockEntry.tsx # global floating entry (document.body, always shown)
-|       |-- PetSprite.tsx    # definition-driven floating sprite (portal + rAF + dragging)
+|       |-- PetSprite.tsx    # definition-driven floating sprite (portal + rAF + dragging; animated-webp path)
 |       |-- PetSettingsCard.tsx # settings card: pet selector + display layout
 |       |-- spritesheet.ts   # atlas geometry helpers + track trimming
 |       `-- pet.module.css
 |-- assets/whale/            # built-in whale-girl (pet.json + spritesheet.webp + previews)
+|-- assets/jiangxiao/        # built-in jiangxiao manifest (pet.json + hash-manifest.json; WebP assets imported separately)
 `-- cordis.patch.yml         # bundle patch: inserts the pet plugin row
 ```
 
@@ -150,6 +204,8 @@ The browser bundle rides the `window.__ModuleLoader__.load` contract; React/cord
 ## Sprites and animation-track calibration
 
 The built-in whale-girl atlas is generated by the hatch-pet pipeline as 9 states × 8 columns: `assets/whale/spritesheet.webp` (1536×1872, 8 columns × 9 rows of 192×208 cells) + `assets/whale/pet.json`. The frame count and rhythm of each row live in that manifest's `frames` and `tracks` fields — the whale girl carries its own slower healing durations, while pets without overrides follow the hatch-pet contract rhythm. Redoing artwork therefore only edits `assets/whale/pet.json` (row-order contract: 0 idle / 1 running-right / 2 running-left / 3 waving / 4 jumping / 5 failed / 6 waiting / 7 running / 8 review).
+
+The built-in jiangxiao pet uses the `animated-webp` kind: 10 independent WebP files for cyclic states (`idle`, `thinking`, `reading`, `replying`, `working`, `error`, `welcome`, `done`, `permission`, `listening`) plus 36 transition clips between states. The manifest lives at `assets/jiangxiao/pet.json`; the actual WebP assets are distributed as a zip archive and imported through the Pet Settings "导入资产包..." button. The hub routing scheduler (`src/scheduler.ts`) maps the 9 `PetAnimation` tracks onto the 10 `JiangxiaoState` values via `PET_TO_JIANGXIAO`, resolving state-to-state transitions by playing the appropriate WebP clips.
 
 ## License
 

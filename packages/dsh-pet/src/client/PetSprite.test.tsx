@@ -4,12 +4,13 @@
  * Enter/Escape keydowns that arrive during IME composition (candidate
  * selection) as composition input, never as submit/cancel (issue #89).
  */
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { PetSprite, type PetSpriteProps } from './PetSprite.tsx'
 import { t } from './locales.ts'
 import type { PetStateView } from '../service.ts'
 import type { PetDefinition, PetTrackDef } from '../registry.ts'
+import type { JiangxiaoState } from '../registry.ts'
 import type { PetAnimation } from '../state.ts'
 
 /** A minimal pet definition (geometry + tracks) as served by the host. */
@@ -24,6 +25,7 @@ function petDefinition(): PetDefinition {
     id: 'whale-girl',
     displayName: '鲸鱼娘',
     description: '测试用鲸鱼娘',
+    kind: 'spritesheet',
     cell: { width: 192, height: 208 },
     columns: 8,
     rows: [6, 8, 8, 4, 5, 8, 6, 6, 6],
@@ -292,5 +294,183 @@ describe('PetSprite definition-driven render', () => {
     renderPet()
     fireEvent.pointerOver(screen.getByRole('button', { name: '鲸鱼娘' }))
     expect(screen.queryByText('泡泡')).not.toBeNull()
+  })
+})
+
+// ---- animated-webp fixture helpers ----------------------------------------
+
+/** A minimal webp pet definition (animated-webp kind). */
+function webpPetDefinition(includeTransitions: boolean): PetDefinition {
+  const track = (frames: number[], durations: number[], loop = true, fallback?: PetAnimation): PetTrackDef => ({
+    frames,
+    durations,
+    loop,
+    ...(fallback === undefined ? {} : { fallback }),
+  })
+  const states: Record<JiangxiaoState, string> = {
+    idle: '/pet/jiangxiao/states/idle.webp',
+    thinking: '/pet/jiangxiao/states/thinking.webp',
+    reading: '/pet/jiangxiao/states/reading.webp',
+    replying: '/pet/jiangxiao/states/replying.webp',
+    working: '/pet/jiangxiao/states/working.webp',
+    error: '/pet/jiangxiao/states/error.webp',
+    welcome: '/pet/jiangxiao/states/welcome.webp',
+    done: '/pet/jiangxiao/states/done.webp',
+    permission: '/pet/jiangxiao/states/permission.webp',
+    listening: '/pet/jiangxiao/states/listening.webp',
+  }
+  const transitions: Record<string, { webp: string; durationMs: number }> | undefined = includeTransitions
+    ? {
+        'idle->thinking': { webp: '/pet/jiangxiao/transitions/idle-thinking.webp', durationMs: 500 },
+        'idle->listening': { webp: '/pet/jiangxiao/transitions/idle-listening.webp', durationMs: 500 },
+        'thinking->listening': { webp: '/pet/jiangxiao/transitions/thinking-listening.webp', durationMs: 500 },
+      }
+    : undefined
+  return {
+    id: 'jiangxiao',
+    displayName: '墨染',
+    description: '测试用墨染',
+    kind: 'animated-webp',
+    cell: { width: 192, height: 208 },
+    columns: 8,
+    rows: [6, 8, 8, 4, 5, 8, 6, 6, 6],
+    tracks: {
+      idle: track([0, 1, 2, 3, 4, 5], [400, 400, 400, 400, 400, 400]),
+      'running-right': track([0, 1, 2, 3, 4, 5, 6, 7], [225, 225, 225, 225, 225, 225, 225, 225]),
+      'running-left': track([0, 1, 2, 3, 4, 5, 6, 7], [225, 225, 225, 225, 225, 225, 225, 225]),
+      waving: track([0, 1, 2, 3], [350, 350, 350, 350]),
+      jumping: track([0, 1, 2, 3, 4], [300, 300, 300, 300, 300], false, 'idle'),
+      failed: track([0, 1, 2, 3, 4, 5, 6, 7], [450, 450, 450, 450, 450, 450, 450, 450], false, 'idle'),
+      waiting: track([0, 1, 2, 3, 4, 5], [450, 450, 450, 450, 450, 450]),
+      running: track([0, 1, 2, 3, 4, 5], [250, 250, 250, 250, 250, 250]),
+      review: track([0, 1, 2, 3, 4, 5], [550, 550, 550, 550, 550, 550]),
+    },
+    atlasUrl: '/pet/jiangxiao/spritesheet.webp',
+    manifestUrl: '/pet/jiangxiao/pet.json',
+    states,
+    ...(transitions === undefined ? {} : { transitions }),
+  }
+}
+
+/** A snapshot fixture for the webp pet (idle 墨染). */
+const webpSnapshot: PetStateView = {
+  animation: 'idle',
+  phase: 'idle',
+  sessionActive: true,
+  affinity: {
+    points: 0,
+    rank: '墨染',
+    rankEmoji: '*',
+    pets: 0,
+    feeds: 0,
+    turns: 0,
+    petCooldown: false,
+    feedCooldown: false,
+  },
+  display: { visible: true, size: 160, right: 24, bottom: 20 },
+  pet: { id: 'jiangxiao', displayName: '墨染', description: '测试用墨染' },
+  name: '墨染',
+  treats: { stocked: 3, max: 5 },
+}
+
+/** Render a webp pet with mocked callbacks; returns helpers for re-render. */
+function renderWebpPet(
+  overrides: Partial<PetSpriteProps> = {},
+): {
+  onRename: ReturnType<typeof vi.fn>
+  onOpenSession: ReturnType<typeof vi.fn>
+  rerender: (newOverrides: Partial<PetSpriteProps>) => void
+} {
+  const onRename = vi.fn()
+  const onOpenSession = vi.fn()
+  const makeProps = (extra: Partial<PetSpriteProps> = {}): PetSpriteProps => ({
+    snapshot: { ...webpSnapshot },
+    definition: webpPetDefinition(false), // no transitions by default
+    display: { visible: true, size: 160, right: 24, bottom: 20 },
+    feedback: null,
+    onPet: vi.fn(),
+    onFeed: vi.fn(),
+    onHide: vi.fn(),
+    onDragEnd: vi.fn(),
+    onRename,
+    onOpenSession,
+    onFeedbackDone: vi.fn(),
+    t,
+    ...extra,
+  })
+  const { rerender: rawRerender } = render(<PetSprite {...makeProps(overrides)} />)
+  return {
+    onRename,
+    onOpenSession,
+    rerender: (newOverrides: Partial<PetSpriteProps>) => {
+      rawRerender(<PetSprite {...makeProps(newOverrides)} />)
+    },
+  }
+}
+
+// ---- animated-webp rendering tests ----------------------------------------
+
+describe('PetSprite webp rendering', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('renders an img element for animated-webp pets', () => {
+    renderWebpPet()
+    const img = screen.queryByRole('button', { name: '墨染' })
+    expect(img).not.toBeNull()
+    expect(img!.tagName).toBe('IMG')
+    // The src should be set to the idle state webp
+    expect(img!.getAttribute('src')).toBe('/pet/jiangxiao/states/idle.webp')
+  })
+
+  it('updates the webp src when animation changes', () => {
+    const { rerender } = renderWebpPet()
+    const img = screen.getByRole('button', { name: '墨染' }) as HTMLImageElement
+
+    // Initial src is idle.webp
+    expect(img.src).toContain('/pet/jiangxiao/states/idle.webp')
+
+    // Re-render with running animation (maps to 'thinking' via petToJiangxiao)
+    rerender({
+      snapshot: { ...webpSnapshot, animation: 'running' },
+    })
+
+    // After re-render, the src should update to thinking.webp
+    // (no transitions defined, so crossfade fallback sets the loop state directly)
+    const updatedImg = screen.getByRole('button', { name: '墨染' }) as HTMLImageElement
+    expect(updatedImg.src).toContain('/pet/jiangxiao/states/thinking.webp')
+  })
+
+  it('handles rapid animation switching without stale transitions', () => {
+    const { rerender } = renderWebpPet({
+      definition: webpPetDefinition(true), // with transitions for segment playback
+    })
+    const img = screen.getByRole('button', { name: '墨染' }) as HTMLImageElement
+
+    // Initial: idle
+    expect(img.src).toContain('/pet/jiangxiao/states/idle.webp')
+
+    // Switch to running (thinking state) - starts a transition sequence
+    rerender({
+      snapshot: { ...webpSnapshot, animation: 'running' },
+    })
+
+    // Quickly switch to waiting (listening state) before timers fire
+    // The effect cleanup from the previous run should clear pending timeouts
+    rerender({
+      snapshot: { ...webpSnapshot, animation: 'waiting' },
+    })
+
+    // Run all pending timers
+    vi.runAllTimers()
+
+    // The final src should be listening.webp (waiting maps to listening)
+    const updatedImg = screen.getByRole('button', { name: '墨染' }) as HTMLImageElement
+    expect(updatedImg.src).toContain('/pet/jiangxiao/states/listening.webp')
   })
 })

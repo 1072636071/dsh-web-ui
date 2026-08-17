@@ -1,0 +1,109 @@
+/* Jiangxiao skin settings card styles. Rendered inside the settings
+   section as a first-level settings page. Uses the jiangxiao color
+   tokens via var() so the card matches the active skin. */
+
+.sectionList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.card {
+  background: var(--jx-surface-1, #121016);
+  border: 1px solid var(--jx-border-deco, #3d3218);
+  border-radius: var(--jx-radius-md, 6px);
+  padding: 16px 20px;
+  color: var(--jx-text-base, #f2ead8);
+  font-family: var(--jx-font-ui, 'Noto Serif SC', serif);
+}
+
+.head {
+  margin-bottom: 14px;
+}
+
+.title {
+  display: block;
+  font-family: var(--jx-font-display, 'Ma Shan Zheng', serif);
+  font-size: 16px;
+  color: var(--jx-gold-bright, #f6d365);
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.description {
+  display: block;
+  font-size: 12px;
+  color: var(--jx-text-weak, #a99c8a);
+  line-height: 1.5;
+}
+
+.body {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.guidance {
+  padding: 12px 14px;
+  background: color-mix(in srgb, var(--jx-gold-deep, #b8860b) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--jx-gold-deep, #b8860b) 20%, transparent);
+  border-radius: var(--jx-radius-sm, 4px);
+}
+
+.guidanceText {
+  margin: 0 0 8px;
+  color: var(--jx-text-base, #f2ead8);
+  font-weight: 500;
+}
+
+.activated {
+  padding: 12px 14px;
+  background: color-mix(in srgb, var(--jx-success, #86b08a) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--jx-success, #86b08a) 25%, transparent);
+  border-radius: var(--jx-radius-sm, 4px);
+}
+
+.activatedBadge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  background: var(--jx-success, #86b08a);
+  color: var(--jx-surface-0, #0b090d);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
+.hint {
+  margin: 0 0 10px;
+  color: var(--jx-text-weak, #a99c8a);
+  font-size: 12px;
+}
+
+.statusChecking {
+  color: var(--jx-text-weak, #a99c8a);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.linkButton {
+  display: inline-block;
+  border: 1px solid var(--jx-gold, #d6b34a);
+  background: transparent;
+  color: var(--jx-gold-bright, #f6d365);
+  border-radius: var(--jx-radius-sm, 4px);
+  padding: 5px 14px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.linkButton:hover {
+  background: color-mix(in srgb, var(--jx-gold-deep, #b8860b) 20%, transparent);
+  color: var(--jx-gold-bright, #f6d365);
+}
+
+.linkButton:active {
+  background: color-mix(in srgb, var(--jx-gold-deep, #b8860b) 30%, transparent);
+}

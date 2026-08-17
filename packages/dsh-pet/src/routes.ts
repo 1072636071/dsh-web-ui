@@ -16,7 +16,8 @@ import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { WebRoute } from '@deepseek-ai/dsh-host-webserver'
 import type { PetService } from './service.ts'
 import type { PetInteraction } from './affinity.ts'
-import { petEntryView, type PetEntry, type PetRegistry } from './registry.ts'
+import { petEntryView, petAssetFiles, codexPetsDir, type PetEntry, type PetRegistry } from './registry.ts'
+import { importPetZip } from './import.ts'
 
 /** Browser-facing base path of the pet API. */
 export const PET_API_PREFIX = '/api/pet'
@@ -86,6 +87,28 @@ function readJsonBody(req: IncomingMessage): Promise<unknown> {
   })
 }
 
+/** Read a raw binary request body (up to 250 MB) for the zip import route. */
+function readRawBody(req: IncomingMessage): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    let size = 0
+    const MAX = 250 * 1024 * 1024
+    const chunks: Buffer[] = []
+    req.on('data', (chunk: Buffer) => {
+      size += chunk.length
+      if (size > MAX) {
+        reject(new Error('body-too-large'))
+        queueMicrotask(() => req.destroy())
+        return
+      }
+      chunks.push(chunk)
+    })
+    req.on('end', () => {
+      resolve(Buffer.concat(chunks))
+    })
+    req.on('error', reject)
+  })
+}
+
 /** Wrap one async service call as a GET JSON route. */
 function getRoute(path: string, run: () => Promise<unknown>): WebRoute {
   return {
@@ -135,7 +158,8 @@ function dirAliases(registry: PetRegistry): Map<string, PetEntry> {
 /**
  * The one asset handler behind the '/pet' prefix. Resolves the pet by id (or
  * legacy directory alias), then serves exactly the files a manifest declares:
- * pet.json, the declared spritesheet path, and optional 'previews/<name>'
+ * pet.json, the declared spritesheet path (spritesheet kind) or every state
+ * and transition webp (animated-webp kind), and optional 'previews/<name>'
  * media. Composed pets without a manifest file get a synthesized pet.json.
  */
 function assetHandler(registry: PetRegistry): WebRoute['handler'] {
@@ -194,7 +218,15 @@ function assetHandler(registry: PetRegistry): WebRoute['handler'] {
       file = existsSync(manifestFile) ? manifestFile : undefined
       if (file === undefined) synthesized = true
     } else if (rest.length > 0 && rel === entry.spritesheetPath) {
+      // Spritesheet atlas (the declared path). For animated-webp entries the
+      // spritesheetPath is a placeholder, so this branch never matches a real
+      // request; the asset-files branch below covers webp assets.
       file = join(entry.dir, entry.spritesheetPath)
+    } else if (rest.length > 0 && petAssetFiles(entry).includes(rel)) {
+      // Any declared asset file (animated-webp state/transition webps, or a
+      // spritesheet atlas under a non-default name). The whitelist keeps the
+      // route from reading undeclared files.
+      file = join(entry.dir, rel)
     } else if (rest.length === 2 && rest[0] === PREVIEW_DIR && PREVIEW_PATTERN.test(rest[1]!)) {
       const preview = join(entry.dir, PREVIEW_DIR, rest[1]!)
       file = existsSync(preview) ? preview : undefined
@@ -269,6 +301,26 @@ export function makePetRoutes(deps: { service: PetService }): WebRoute[] {
       if (typeof petId !== 'string') return Promise.reject(new Error('invalid-pet'))
       return service.setPetId(petId)
     }),
+    // Raw-binary POST route for pet asset zip import. Reads the body as a
+    // binary buffer (up to 250 MB), validates and extracts the zip into the
+    // codex pets directory. The import is gated to jiangxiao animated-webp.
+    {
+      kind: 'exact',
+      path: PET_API_PREFIX + '/import-zip',
+      handler: (req: IncomingMessage, res: ServerResponse): Promise<void> => {
+        if (!requireMethod(req, res, 'POST')) return Promise.resolve()
+        return readRawBody(req).then(
+          (body) => {
+            const targetDir = join(codexPetsDir(), 'jiangxiao')
+            const result = importPetZip(body, targetDir)
+            json(res, result.ok ? 200 : 400, result)
+          },
+          (error) => {
+            json(res, 400, { ok: false, error: error instanceof Error ? error.message : String(error) })
+          },
+        )
+      },
+    } as WebRoute,
   ]
 
   const assetRoute: WebRoute = {

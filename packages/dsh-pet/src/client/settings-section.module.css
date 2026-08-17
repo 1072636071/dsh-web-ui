@@ -3,3 +3,42 @@
   margin: 0;
   padding: 0;
 }
+
+.sectionRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.importButton {
+  border: 1px dashed rgba(125, 211, 252, 0.6);
+  background: rgba(15, 23, 42, 0.75);
+  color: #7dd3fc;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 120ms ease, color 120ms ease, background 120ms ease;
+}
+
+.importButton:hover:not(:disabled) {
+  border-color: rgba(125, 211, 252, 0.95);
+  color: #bae6fd;
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.importButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.importSuccess {
+  color: #4ade80;
+  font-size: 12px;
+}
+
+.importError {
+  color: #f87171;
+  font-size: 12px;
+}

@@ -332,6 +332,36 @@ window.SKIN_MANIFEST = {
         "dark": "packages/skins/matrix/preview/dark.png"
       },
       "order": 12
+    },
+    {
+      "id": "jiangxiao",
+      "name": "姜晓 · 墨染",
+      "nameEn": "Jiangxiao · Ink-Dyed",
+      "author": "dsh-web-ui",
+      "tagline": "唐风二次元 · 月夜墨染深色 + 梅花浅色双主题 · 朱砂印章 · 暗金正文 · 楷宋字体",
+      "description": "源自 openCodeMM 姜晓·墨染设计系统的唐风二次元皮肤：深色默认「月夜墨染」（墨黑底、暗金文、雾紫氛、朱砂点睛），浅色变体「梅花」（米白底、粉梅、金）跟随 DSH 深浅信号自动切换。朱砂印章发送钮、标题栏唐风纹样、金线滚动条与分隔，内置 Ma Shan Zheng 楷体 + Noto Serif SC 宋体两个 woff2 字体离线可用，代码块语法高亮保持上游专业配色。",
+      "tags": [
+        "jiangxiao",
+        "tang",
+        "ink",
+        "gold",
+        "cinnabar",
+        "dual-theme",
+        "chinese",
+        "kaiti"
+      ],
+      "accent": "#b8860b",
+      "bodyAttr": "data-dsh-jiangxiao",
+      "package": "@linxin666/dsh-client-ui-skin-jiangxiao",
+      "wiring": {
+        "id": "ui-skin-jiangxiao",
+        "bundleWired": false
+      },
+      "preview": {
+        "light": "packages/skins/jiangxiao/preview/light.png",
+        "dark": "packages/skins/jiangxiao/preview/dark.png"
+      },
+      "order": 13
     }
   ]
 };

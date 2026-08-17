@@ -9,9 +9,16 @@ import { Context } from '@deepseek-ai/cordis'
 import { PetService } from '../src/service.ts'
 import { makePetRoutes } from '../src/routes.ts'
 import { loadPetRegistry } from '../src/registry.ts'
+import type { JiangxiaoState } from '../src/registry.ts'
 
 const WEBP_BYTES = Buffer.from([0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50])
 const GIF_BYTES = Buffer.from([0x47, 0x49, 0x46, 0x38, 0x39, 0x61])
+
+/** The 10 cyclic states a webp manifest must declare. */
+const JIANGXIAO_STATES: readonly JiangxiaoState[] = [
+  'idle', 'thinking', 'reading', 'replying', 'working',
+  'error', 'welcome', 'done', 'permission', 'listening',
+]
 
 let dir: string
 let server: Server
@@ -32,6 +39,26 @@ beforeAll(async () => {
     id: 'otter', displayName: '水獭', spritesheetPath: 'spritesheet.webp',
   }), 'utf8')
   writeFileSync(join(assets, 'otter', 'spritesheet.webp'), WEBP_BYTES)
+  // An animated-webp pet: 10 state webps + 3 transition webps.
+  mkdirSync(join(assets, 'jiangxiao', 'states'), { recursive: true })
+  mkdirSync(join(assets, 'jiangxiao', 'transitions'), { recursive: true })
+  const states: Record<JiangxiaoState, string> = {} as Record<JiangxiaoState, string>
+  for (const state of JIANGXIAO_STATES) {
+    const file = 'states/' + state + '.webp'
+    states[state] = file
+    writeFileSync(join(assets, 'jiangxiao', file), WEBP_BYTES)
+  }
+  const transitions = {
+    'idle→thinking': { webp: 'transitions/idle-to-thinking.webp', durationMs: 300 },
+    'thinking→idle': { webp: 'transitions/thinking-to-idle.webp', durationMs: 250 },
+    'idle→working': { webp: 'transitions/idle-to-working.webp', durationMs: 320 },
+  }
+  for (const value of Object.values(transitions)) {
+    writeFileSync(join(assets, 'jiangxiao', value.webp), WEBP_BYTES)
+  }
+  writeFileSync(join(assets, 'jiangxiao', 'pet.json'), JSON.stringify({
+    id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', states, transitions,
+  }), 'utf8')
 
   const ctx = new Context()
   const registry = loadPetRegistry({ packageRoot: dir, petsDir: '' })
@@ -71,7 +98,7 @@ function url(path: string): string {
 describe('pet routes', () => {
   it('lists the registry and the selected state', async () => {
     const pets = await fetch(url('/api/pet/pets')).then(res => res.json()) as Array<{ id: string; atlasUrl: string }>
-    expect(pets.map(entry => entry.id)).toEqual(['otter', 'whale-girl'])
+    expect(pets.map(entry => entry.id)).toEqual(['jiangxiao', 'otter', 'whale-girl'])
     expect(pets.find(entry => entry.id === 'whale-girl')!.atlasUrl).toBe('/pet/whale-girl/spritesheet.webp')
 
     const state = await fetch(url('/api/pet/state')).then(res => res.json()) as { pet: { id: string }; name: string }
@@ -135,5 +162,64 @@ describe('pet routes', () => {
     expect(back.ok).toBe(true)
     const whaleState = await fetch(url('/api/pet/state')).then(res => res.json()) as { name: string }
     expect(whaleState.name).toBe('鲸鱼娘')
+  })
+})
+
+describe('pet routes animated-webp', () => {
+  it('serves a webp pet definition with states and transitions over /api/pet/pets', async () => {
+    const pets = await fetch(url('/api/pet/pets')).then(res => res.json()) as Array<{
+      id: string
+      kind: string
+      states?: Record<string, string>
+      transitions?: Record<string, { webp: string; durationMs: number }>
+    }>
+    const jiangxiao = pets.find(entry => entry.id === 'jiangxiao')!
+    expect(jiangxiao.kind).toBe('animated-webp')
+    expect(jiangxiao.states).toBeDefined()
+    expect(jiangxiao.states!.idle).toBe('/pet/jiangxiao/states/idle.webp')
+    expect(jiangxiao.states!.listening).toBe('/pet/jiangxiao/states/listening.webp')
+    expect(jiangxiao.transitions).toBeDefined()
+    expect(jiangxiao.transitions!['idle→thinking']).toEqual({
+      webp: '/pet/jiangxiao/transitions/idle-to-thinking.webp',
+      durationMs: 300,
+    })
+  })
+
+  it('serves every declared state webp', async () => {
+    for (const state of JIANGXIAO_STATES) {
+      const res = await fetch(url('/pet/jiangxiao/states/' + state + '.webp'))
+      expect(res.status).toBe(200)
+      expect(res.headers.get('content-type')).toBe('image/webp')
+      expect(Buffer.from(await res.arrayBuffer())).toEqual(WEBP_BYTES)
+    }
+  })
+
+  it('serves every declared transition webp', async () => {
+    const transitions = [
+      'idle-to-thinking',
+      'thinking-to-idle',
+      'idle-to-working',
+    ]
+    for (const name of transitions) {
+      const res = await fetch(url('/pet/jiangxiao/transitions/' + name + '.webp'))
+      expect(res.status).toBe(200)
+      expect(res.headers.get('content-type')).toBe('image/webp')
+      expect(Buffer.from(await res.arrayBuffer())).toEqual(WEBP_BYTES)
+    }
+  })
+
+  it('404s an undeclared webp file (path whitelist)', async () => {
+    expect((await fetch(url('/pet/jiangxiao/states/unknown.webp'))).status).toBe(404)
+    expect((await fetch(url('/pet/jiangxiao/transitions/nope.webp'))).status).toBe(404)
+    expect((await fetch(url('/pet/jiangxiao/evil.txt'))).status).toBe(404)
+  })
+
+  it('serves the webp pet manifest over /pet/<id>/pet.json', async () => {
+    const manifest = await fetch(url('/pet/jiangxiao/pet.json')).then(res => res.json()) as {
+      id: string
+      kind: string
+    }
+    expect(manifest.id).toBe('jiangxiao')
+    expect(manifest.kind).toBe('animated-webp')
   })
 })

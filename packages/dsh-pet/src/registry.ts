@@ -37,6 +37,65 @@ export const PET_ROW_ORDER: readonly PetAnimation[] = [
   'review',
 ]
 
+/**
+ * The 10 cyclic states an animated-webp pet declares (JiangxiaoState). The
+ * manifest's 'states' map must cover every key; the renderer (work item 04)
+ * indexes these for the loop animation. The pet animation contract maps onto
+ * this set via PET_TO_JIANGXIAO (work item 03).
+ */
+export type JiangxiaoState =
+  | 'idle'
+  | 'thinking'
+  | 'reading'
+  | 'replying'
+  | 'working'
+  | 'error'
+  | 'welcome'
+  | 'done'
+  | 'permission'
+  | 'listening'
+
+/** All 10 cyclic states in a stable order (manifest 'states' must cover each). */
+export const JIANGXIAO_STATES: readonly JiangxiaoState[] = [
+  'idle',
+  'thinking',
+  'reading',
+  'replying',
+  'working',
+  'error',
+  'welcome',
+  'done',
+  'permission',
+  'listening',
+]
+
+/** Manifest kind: spritesheet (default) or animated-webp (Jiangxiao-style). */
+export type PetManifestKind = 'spritesheet' | 'animated-webp'
+
+/** One animated-webp transition: a webp file plus its play duration in ms. */
+export interface WebpPetTransition {
+  /** Webp file path relative to the manifest's directory. */
+  webp: string
+  /** Play duration in ms (positive finite). */
+  durationMs: number
+}
+
+/** Host-side transition descriptor (file path + duration, no URL rewrite). */
+export interface WebpPetTransitionEntry {
+  /** Relative webp file path (safe, normalized). */
+  webp: string
+  /** Play duration in ms. */
+  durationMs: number
+}
+
+/** Browser-side transition descriptor (URL + duration). */
+export interface WebpPetTransitionView {
+  /** Browser URL of the webp (served by the host asset route). */
+  webp: string
+  /** Play duration in ms. */
+  durationMs: number
+}
+
 /** Atlas cell size in px. */
 export interface PetCell {
   width: number
@@ -122,8 +181,15 @@ export interface PetManifest {
   displayName: string
   /** One-line description. */
   description?: string
-  /** Atlas path relative to the manifest's directory. */
-  spritesheetPath: string
+  /**
+   * Manifest kind: 'spritesheet' (default) or 'animated-webp'. The kind
+   * decides which fields the resolver validates and which render path the
+   * browser half takes. Omitting it keeps the legacy spritesheet contract,
+   * so existing pets are unaffected.
+   */
+  kind?: PetManifestKind
+  /** Atlas path relative to the manifest's directory (spritesheet kind). */
+  spritesheetPath?: string
   /** Atlas cell size; defaults to the Codex contract 192x208. */
   cell?: { width?: number; height?: number }
   /** Columns per row; defaults to 8. */
@@ -142,6 +208,18 @@ export interface PetManifest {
    * built-in default pool for that slot only.
    */
   remarks?: PetRemarksManifest
+  /**
+   * animated-webp kind: 10 cyclic states → webp file paths. Required when
+   * kind is 'animated-webp'; ignored by the spritesheet resolver.
+   */
+  states?: Record<JiangxiaoState, string>
+  /**
+   * animated-webp kind: transition key '<from>→<to>' → {webp, durationMs}.
+   * Required when kind is 'animated-webp'. The resolver accepts every key
+   * (D13: all 36 transition files ship; the scheduler in work item 03
+   * filters to pet-reachable 10-state paths, not this layer).
+   */
+  transitions?: Record<string, WebpPetTransition>
 }
 
 /** Per-track rhythm overrides a manifest may carry. */
@@ -159,6 +237,8 @@ export interface PetDefinition {
   id: string
   displayName: string
   description: string
+  /** Manifest kind (spritesheet or animated-webp). */
+  kind: PetManifestKind
   /** Atlas cell size in px. */
   cell: PetCell
   /** Columns per row. */
@@ -171,6 +251,16 @@ export interface PetDefinition {
   atlasUrl: string
   /** Browser URL of the manifest (served by the host asset route). */
   manifestUrl: string
+  /**
+   * animated-webp kind: 10 cyclic states → browser URLs. Present only when
+   * kind is 'animated-webp'.
+   */
+  states?: Record<JiangxiaoState, string>
+  /**
+   * animated-webp kind: transition key → {webp URL, durationMs}. Present
+   * only when kind is 'animated-webp'.
+   */
+  transitions?: Record<string, WebpPetTransitionView>
 }
 
 /** A resolved pet plus its host-side file location. */
@@ -179,6 +269,16 @@ export interface PetEntry extends PetDefinition {
   dir: string
   /** Atlas path relative to 'dir' (declared by the manifest). */
   spritesheetPath: string
+  /**
+   * animated-webp kind: 10 cyclic states → relative file paths. Present
+   * only when kind is 'animated-webp'.
+   */
+  statePaths?: Record<JiangxiaoState, string>
+  /**
+   * animated-webp kind: transition key → {relative webp path, durationMs}.
+   * Present only when kind is 'animated-webp'.
+   */
+  transitionPaths?: Record<string, WebpPetTransitionEntry>
   /** Normalized per-pet remark pools (manifest 'remarks'), when declared. */
   remarks?: PetRemarks
 }
@@ -209,6 +309,30 @@ const PET_ID_PATTERN = /^[a-z0-9][a-z0-9-]*$/
 /** Safe path-segment charset for atlas files. */
 const PATH_SEGMENT_PATTERN = /^[A-Za-z0-9._-]+$/
 const PET_NAME_MAX_LENGTH = 80
+/** Upper bound on a transition key length (defensive; keys are arbitrary). */
+const TRANSITION_KEY_MAX_LENGTH = 64
+/** Upper bound on a transition duration in ms (defensive). */
+const TRANSITION_DURATION_MAX_MS = 60_000
+
+/**
+ * Validate one relative path segment list: no absolute paths, no backslash,
+ * no '..' segments, every segment matches the safe charset. Returns the
+ * normalized segments (joined by '/'), or undefined when the path is unsafe.
+ */
+function safeRelativePath(raw: string): string | undefined {
+  const trimmed = raw.trim()
+  if (trimmed === '') return undefined
+  const segments = trimmed.split('/').filter(segment => segment !== '')
+  if (
+    segments.length === 0
+    || isAbsolute(trimmed)
+    || trimmed.includes('\\')
+    || segments.some(segment => segment === '..' || !PATH_SEGMENT_PATTERN.test(segment))
+  ) {
+    return undefined
+  }
+  return segments.join('/')
+}
 
 /**
  * Normalize one parsed manifest into a renderable pet entry, or undefined
@@ -237,16 +361,176 @@ export function resolvePetManifest(
   const description = typeof source.description === 'string'
     ? source.description.trim()
     : ''
+  const remarks = normalizePetRemarks(source.remarks, message => warn('manifest ' + id + ': ' + message))
+  // Kind dispatch: 'animated-webp' takes the webp branch; anything else
+  // (including 'spritesheet' and the legacy omitted value) falls back to
+  // the spritesheet contract. An unknown kind is rejected.
+  const rawKind = source.kind
+  if (rawKind !== undefined && rawKind !== 'spritesheet' && rawKind !== 'animated-webp') {
+    warn('manifest ' + id + ': unknown kind ' + JSON.stringify(String(rawKind)))
+    return undefined
+  }
+  const kind: PetManifestKind = rawKind === 'animated-webp' ? 'animated-webp' : 'spritesheet'
+  if (kind === 'animated-webp') {
+    return resolveWebpManifest(source, id, displayName, description, dir, assetPrefix, remarks, warn)
+  }
+  return resolveSpritesheetManifest(source, id, displayName, description, dir, assetPrefix, remarks, warn)
+}
+
+/**
+ * Resolve an animated-webp manifest: 10 cyclic states + transition table.
+ * The spritesheet geometry fields are filled with defaults so the existing
+ * PetDefinition shape stays compatible; the browser half dispatches on
+ * 'kind' to pick the webp render path (work item 04).
+ */
+function resolveWebpManifest(
+  source: Record<string, unknown>,
+  id: string,
+  displayName: string,
+  description: string,
+  dir: string,
+  assetPrefix: string,
+  remarks: PetRemarks | undefined,
+  warn: (message: string) => void,
+): PetEntry | undefined {
+  // states: must be an object covering all 10 JiangxiaoState keys, each
+  // value a safe relative webp path.
+  const rawStates = source.states
+  if (typeof rawStates !== 'object' || rawStates === null || Array.isArray(rawStates)) {
+    warn('manifest ' + id + ': animated-webp requires a states object')
+    return undefined
+  }
+  const statePaths = {} as Record<JiangxiaoState, string>
+  for (const state of JIANGXIAO_STATES) {
+    const raw = (rawStates as Record<string, unknown>)[state]
+    if (typeof raw !== 'string') {
+      warn('manifest ' + id + ': states.' + state + ' is not a string')
+      return undefined
+    }
+    const safe = safeRelativePath(raw)
+    if (safe === undefined) {
+      warn('manifest ' + id + ': states.' + state + ' ' + JSON.stringify(raw) + ' is not a safe relative path')
+      return undefined
+    }
+    statePaths[state] = safe
+  }
+  // Reject extra state keys (typos surface early; the contract is exactly 10).
+  for (const key of Object.keys(rawStates as Record<string, unknown>)) {
+    if (!JIANGXIAO_STATES.includes(key as JiangxiaoState)) {
+      warn('manifest ' + id + ': states.' + key + ' is not a known JiangxiaoState')
+      return undefined
+    }
+  }
+  // transitions: must be an object; each value {webp, durationMs} with a
+  // safe relative webp path and a positive finite duration. Keys are
+  // arbitrary strings (D13: the resolver accepts all 36 transition keys;
+  // the scheduler filters to pet-reachable paths in work item 03).
+  const rawTransitions = source.transitions
+  if (typeof rawTransitions !== 'object' || rawTransitions === null || Array.isArray(rawTransitions)) {
+    warn('manifest ' + id + ': animated-webp requires a transitions object')
+    return undefined
+  }
+  const transitionPaths = {} as Record<string, WebpPetTransitionEntry>
+  for (const [key, value] of Object.entries(rawTransitions as Record<string, unknown>)) {
+    if (key === '' || key.length > TRANSITION_KEY_MAX_LENGTH) {
+      warn('manifest ' + id + ': transition key ' + JSON.stringify(key) + ' is empty or too long')
+      return undefined
+    }
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+      warn('manifest ' + id + ': transition ' + JSON.stringify(key) + ' is not an object')
+      return undefined
+    }
+    const record = value as Record<string, unknown>
+    const rawWebp = record.webp
+    if (typeof rawWebp !== 'string') {
+      warn('manifest ' + id + ': transition ' + JSON.stringify(key) + '.webp is not a string')
+      return undefined
+    }
+    const safeWebp = safeRelativePath(rawWebp)
+    if (safeWebp === undefined) {
+      warn('manifest ' + id + ': transition ' + JSON.stringify(key) + '.webp ' + JSON.stringify(rawWebp) + ' is not a safe relative path')
+      return undefined
+    }
+    const rawDuration = record.durationMs
+    if (typeof rawDuration !== 'number' || !Number.isFinite(rawDuration) || rawDuration <= 0 || rawDuration > TRANSITION_DURATION_MAX_MS) {
+      warn('manifest ' + id + ': transition ' + JSON.stringify(key) + '.durationMs is not a positive finite number')
+      return undefined
+    }
+    transitionPaths[key] = { webp: safeWebp, durationMs: rawDuration }
+  }
+  if (Object.keys(transitionPaths).length === 0) {
+    warn('manifest ' + id + ': animated-webp transitions is empty')
+    return undefined
+  }
+  // Build browser URLs for every state and transition webp.
+  const stateUrls = {} as Record<JiangxiaoState, string>
+  for (const state of JIANGXIAO_STATES) {
+    stateUrls[state] = assetUrl(assetPrefix, id, statePaths[state])
+  }
+  const transitionUrls = {} as Record<string, WebpPetTransitionView>
+  for (const [key, entry] of Object.entries(transitionPaths)) {
+    transitionUrls[key] = { webp: assetUrl(assetPrefix, id, entry.webp), durationMs: entry.durationMs }
+  }
+  // Spritesheet geometry is unused by the webp render path but kept as
+  // defaults so the PetDefinition shape stays compatible with existing
+  // consumers (the browser half dispatches on 'kind').
+  const cell = { ...DEFAULT_PET_CELL }
+  const columns = DEFAULT_PET_COLUMNS
+  const rows = [...DEFAULT_FRAME_COUNTS]
+  const tracks = {} as Record<PetAnimation, PetTrackDef>
+  for (const [row, animation] of PET_ROW_ORDER.entries()) {
+    const pattern = DEFAULT_TRACK_PATTERNS[animation]
+    const frameCount = Math.max(1, Math.min(rows[row]!, columns))
+    tracks[animation] = {
+      frames: Array.from({ length: frameCount }, (_, index) => index),
+      durations: pattern.durations.slice(0, frameCount),
+      loop: pattern.loop,
+      ...(pattern.fallback === undefined ? {} : { fallback: pattern.fallback }),
+    }
+  }
+  // spritesheetPath is required by the manifest shape but unused for webp
+  // pets; carry a placeholder so the entry stays shape-compatible.
+  const spritesheetPath = 'spritesheet.webp'
+  return {
+    id,
+    displayName,
+    description,
+    kind: 'animated-webp',
+    cell,
+    columns,
+    rows,
+    tracks,
+    atlasUrl: assetUrl(assetPrefix, id, spritesheetPath),
+    manifestUrl: assetUrl(assetPrefix, id, 'pet.json'),
+    states: stateUrls,
+    transitions: transitionUrls,
+    dir,
+    spritesheetPath,
+    statePaths,
+    transitionPaths,
+    ...(remarks === undefined ? {} : { remarks }),
+  }
+}
+
+/**
+ * Resolve a spritesheet manifest (the legacy Codex/hatch-pet contract).
+ * Extracted from the original resolvePetManifest body; behavior unchanged.
+ */
+function resolveSpritesheetManifest(
+  source: Record<string, unknown>,
+  id: string,
+  displayName: string,
+  description: string,
+  dir: string,
+  assetPrefix: string,
+  remarks: PetRemarks | undefined,
+  warn: (message: string) => void,
+): PetEntry | undefined {
   const spritesheet = typeof source.spritesheetPath === 'string' && source.spritesheetPath.trim() !== ''
     ? source.spritesheetPath.trim()
     : 'spritesheet.webp'
-  const spritesheetPath = spritesheet.split('/').filter(segment => segment !== '')
-  if (
-    spritesheetPath.length === 0
-    || isAbsolute(spritesheet)
-    || spritesheet.includes('\\')
-    || spritesheetPath.some(segment => segment === '..' || !PATH_SEGMENT_PATTERN.test(segment))
-  ) {
+  const spritesheetPath = safeRelativePath(spritesheet)
+  if (spritesheetPath === undefined) {
     warn('manifest spritesheetPath ' + JSON.stringify(spritesheet) + ' is not a safe relative path')
     return undefined
   }
@@ -260,7 +544,6 @@ export function resolvePetManifest(
     const value = Array.isArray(source.frames) ? source.frames[index] : undefined
     return finiteInt(value, fallback, columns)
   })
-  const remarks = normalizePetRemarks(source.remarks, message => warn('manifest ' + id + ': ' + message))
   const trackOverrides = (typeof source.tracks === 'object' && source.tracks !== null ? source.tracks : {}) as Partial<Record<PetAnimation, PetTrackOverride>>
   const tracks = {} as Record<PetAnimation, PetTrackDef>
   for (const [row, animation] of PET_ROW_ORDER.entries()) {
@@ -292,6 +575,7 @@ export function resolvePetManifest(
     id,
     displayName,
     description,
+    kind: 'spritesheet',
     cell,
     columns,
     rows,
@@ -299,7 +583,7 @@ export function resolvePetManifest(
     atlasUrl: assetUrl(assetPrefix, id, spritesheet),
     manifestUrl: assetUrl(assetPrefix, id, 'pet.json'),
     dir,
-    spritesheetPath: spritesheetPath.join('/'),
+    spritesheetPath,
     ...(remarks === undefined ? {} : { remarks }),
   }
 }
@@ -390,18 +674,41 @@ export function petEntryView(entry: PetEntry): PetDefinition {
     id: entry.id,
     displayName: entry.displayName,
     description: entry.description,
+    kind: entry.kind,
     cell: entry.cell,
     columns: entry.columns,
     rows: entry.rows,
     tracks: entry.tracks,
     atlasUrl: entry.atlasUrl,
     manifestUrl: entry.manifestUrl,
+    ...(entry.states === undefined ? {} : { states: entry.states }),
+    ...(entry.transitions === undefined ? {} : { transitions: entry.transitions }),
   }
 }
 
 /** The absolute file a pet's atlas resolves to (host asset route). */
 export function petAtlasFile(entry: PetEntry): string {
   return join(entry.dir, entry.spritesheetPath)
+}
+
+/**
+ * Every declared asset file for one entry, relative to its directory. The
+ * host asset route serves exactly this set (plus pet.json and previews) so
+ * a manifest can never read an undeclared file. Spritesheet entries declare
+ * one atlas; animated-webp entries declare every state and transition webp.
+ */
+export function petAssetFiles(entry: PetEntry): readonly string[] {
+  if (entry.kind === 'animated-webp') {
+    const files: string[] = []
+    if (entry.statePaths !== undefined) {
+      for (const path of Object.values(entry.statePaths)) files.push(path)
+    }
+    if (entry.transitionPaths !== undefined) {
+      for (const transition of Object.values(entry.transitionPaths)) files.push(transition.webp)
+    }
+    return files
+  }
+  return [entry.spritesheetPath]
 }
 
 /** The directory basename of one entry (legacy asset URL alias, e.g. whale). */

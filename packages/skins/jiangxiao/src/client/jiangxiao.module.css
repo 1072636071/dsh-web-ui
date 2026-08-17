@@ -1,0 +1,926 @@
+/* Jiangxiao skin — Tang-style anime theme for the dsh web GUI.
+   Source of truth: openCodeMM DESIGN.md §10 `--jx-*` token block.
+   Dark default "Moonlit Ink-Dyed" (ink-black ground, dark-gold text,
+   mist-purple atmosphere, cinnabar accent) lives on body[data-dsh-jiangxiao];
+   the light "Plum Blossom" variant (rice-white ground, pink plum, gold)
+   overrides on body[data-dsh-jiangxiao]:not([data-ds-dark-theme]).
+   The plugin's apply() sets data-dsh-jiangxiao and retracts it on dispose,
+   so the skin stays fully hot-pluggable. The --jx-* tokens are remapped
+   onto the dsh three-layer token system (--dsw-static-* / --dsw-alias-* /
+   --aion-*), so every component that reads those tokens lands in the
+   Tang-ink era. Decorative layer (cinnabar seal send button, title-bar
+   cloud pattern, gold scrollbar, gold rule) is ported selectively from
+   openCodeMM chrome/session. Code blocks / syntax highlighting keep the
+   upstream --syntax-* palette untouched. prefers-reduced-motion disables
+   all motion. No emoji anywhere (repo-wide rule). */
+
+/* --- jx token block: dark default ------------------------------------------- */
+/* DESIGN.md §10 — the canonical --jx-* values. Dark is the default scope;
+   light overrides below. These tokens are the only source of truth for
+   the Tang palette; every later rule references them via var(). */
+
+body[data-dsh-jiangxiao] {
+  /* Surface (0 deepest/ground, 3 raised) */
+  --jx-surface-0: #0b090d;
+  --jx-surface-1: #121016;
+  --jx-surface-2: #1a1620;
+  --jx-surface-3: #2d242f;
+  /* Text (strong brightest, faint dimmest) */
+  --jx-text-strong: #f2ead8;
+  --jx-text-base: #f2ead8;
+  --jx-text-weak: #a99c8a;
+  --jx-text-faint: #a99c8a;
+  /* Gold family */
+  --jx-gold-bright: #f6d365;
+  --jx-gold: #d6b34a;
+  --jx-gold-deep: #b8860b;
+  --jx-gold-dim: #996515;
+  --jx-ginkgo: #dfb793;
+  --jx-gold-foil: linear-gradient(135deg, #f6d365 0%, #fda085 50%, #b8860b 100%);
+  /* Seal (cinnabar button) */
+  --jx-seal: #c7493a;
+  --jx-seal-deep: #a8382b;
+  --jx-seal-bright: #d85444;
+  --jx-seal-ink: #fff8ef;
+  /* Atmosphere (gradient/fx/illustration only) */
+  --jx-mist: #b5a8b2;
+  --jx-mountain: #827686;
+  --jx-water: #767687;
+  --jx-cloud: #e7d3d2;
+  --jx-moon: #ecd8d8;
+  --jx-hair: #d1beca;
+  --jx-wisteria: #997694;
+  /* Cinnabar accent */
+  --jx-cinnabar: #c3272b;
+  /* Highlight variants */
+  --jx-hl-file: #7fd8e8;
+  --jx-hl-agent: #e5c07b;
+  --jx-success: #86b08a;
+  --jx-warn: #d9a05b;
+  --jx-error: #d06552;
+  --jx-border-deco: #3d3218;
+  --jx-selection: rgba(184, 134, 11, 0.3);
+  --jx-scroll-track: #2a2210;
+  --jx-scroll-thumb: #b8860b;
+  /* Typography */
+  --jx-font-display: 'Ma Shan Zheng', 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
+  --jx-font-ui: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+  --jx-font-code: ui-monospace, 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+  /* Spacing / radius */
+  --jx-radius-sm: 4px;
+  --jx-radius-md: 6px;
+  --jx-radius-lg: 8px;
+  --jx-radius-xl: 12px;
+  /* Depth */
+  --jx-shadow-1: 0 2px 8px rgba(5, 3, 8, 0.5);
+  --jx-shadow-2: 0 8px 24px rgba(5, 3, 8, 0.55);
+  --jx-gold-rim: 0 0 0 1px #3d3218, 0 0 14px rgba(246, 211, 101, 0.12);
+  /* Motion */
+  --jx-dur-fast: 0.15s;
+  --jx-dur: 0.35s;
+}
+
+/* --- jx token block: light plum-blossom variant ----------------------------- */
+/* body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) — the light override.
+   Values are the加深-on-light versions from DESIGN.md §10 light block so
+   contrast holds on the rice-white ground. */
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
+  --jx-surface-0: #faf5ee;
+  --jx-surface-1: #f5eddf;
+  --jx-surface-2: #efe3d0;
+  --jx-surface-3: #e8dcc8;
+  --jx-text-strong: #2a241a;
+  --jx-text-base: #5d4a42;
+  --jx-text-weak: #8d7a70;
+  --jx-text-faint: #b3a296;
+  --jx-gold-bright: #9c7a1e;
+  --jx-gold: #b8860b;
+  --jx-gold-deep: #8a6508;
+  --jx-gold-dim: #6f5306;
+  --jx-ginkgo: #b8860b;
+  --jx-gold-foil: linear-gradient(135deg, #b8860b 0%, #d97a8e 50%, #8a6508 100%);
+  --jx-seal: #b24a5c;
+  --jx-seal-deep: #8e3a49;
+  --jx-seal-bright: #d97a8e;
+  --jx-seal-ink: #fff8f6;
+  --jx-mist: #c9b8b4;
+  --jx-mountain: #b3a49a;
+  --jx-water: #a9a9b4;
+  --jx-cloud: #f0e4e2;
+  --jx-moon: #f3e2e2;
+  --jx-hair: #dcc4ca;
+  --jx-wisteria: #b85c74;
+  --jx-cinnabar: #b24a5c;
+  --jx-hl-file: #2c6a7a;
+  --jx-hl-agent: #9c7a1e;
+  --jx-success: #3d7a3d;
+  --jx-warn: #9c6b1e;
+  --jx-error: #a83a3a;
+  --jx-border-deco: #d9c9b5;
+  --jx-selection: rgba(178, 74, 92, 0.14);
+  --jx-scroll-track: #ece0d0;
+  --jx-scroll-thumb: #d97a8e;
+  --jx-shadow-1: 0 2px 8px rgba(5, 3, 8, 0.25);
+  --jx-shadow-2: 0 8px 24px rgba(5, 3, 8, 0.3);
+  --jx-gold-rim: 0 0 0 1px #d9c9b5, 0 0 14px rgba(184, 134, 11, 0.12);
+}
+
+/* --- Desktop, fonts --------------------------------------------------------- */
+
+body[data-dsh-jiangxiao] {
+  --dsw-font-family: var(--jx-font-ui);
+  --ds-font-family-code: var(--jx-font-code);
+  color: var(--jx-text-base);
+  background-color: var(--jx-surface-0);
+  /* Subtle Tang cloud pattern + ink gradient: a whisper of gold-leaf drift
+     over the ink-black ground, never competing with content. The plugin's
+     apply() also paints a fixed ink-gradient on the body inline background;
+     this is the no-art fallback. */
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(184, 134, 11, 0.06), transparent 42%),
+    radial-gradient(circle at 82% 28%, rgba(153, 118, 148, 0.05), transparent 38%),
+    radial-gradient(circle at 50% 92%, rgba(184, 134, 11, 0.04), transparent 45%),
+    linear-gradient(168deg, var(--jx-surface-0) 0%, var(--jx-surface-1) 60%, var(--jx-surface-2) 100%);
+  padding: 34px 8px 32px;
+  box-sizing: border-box;
+}
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(184, 134, 11, 0.08), transparent 42%),
+    radial-gradient(circle at 82% 28%, rgba(178, 74, 92, 0.06), transparent 38%),
+    radial-gradient(circle at 50% 92%, rgba(184, 134, 11, 0.05), transparent 45%),
+    linear-gradient(168deg, var(--jx-surface-0) 0%, var(--jx-surface-1) 60%, var(--jx-surface-2) 100%);
+}
+
+/* #root is the window body: transparent so the body ground shows through,
+   framed by a gold-deco hairline and a soft ink shadow. */
+body[data-dsh-jiangxiao] [id='root'] {
+  box-sizing: border-box;
+  background: transparent;
+  border: 1px solid var(--jx-border-deco);
+  box-shadow: var(--jx-shadow-2);
+}
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) [id='root'] {
+  border-color: var(--jx-border-deco);
+  box-shadow: var(--jx-shadow-2);
+}
+
+/* --- Static palette: dark default ------------------------------------------- */
+/* Remap the dsw-static-* families to the Tang-ink palette. The neutral and
+   neutral-bluish scales become the ink surface scale; blue/deepseek become
+   the gold family; red/green/amber stay semantic but shift to the
+   cinnabar / stone-green / rattan-yellow Tang semes. */
+
+body[data-dsh-jiangxiao] {
+  --dsw-static-amber-100: #3a2e18;
+  --dsw-static-amber-400: #d9a05b;
+  --dsw-static-amber-500: #c99a2e;
+  --dsw-static-amber-600: #a87c1e;
+  --dsw-static-amber-900: #4a3a12;
+  --dsw-static-blue-100: #2a2210;
+  --dsw-static-blue-300: #3d3218;
+  --dsw-static-blue-400: #6f5306;
+  --dsw-static-blue-450: #8a6508;
+  --dsw-static-blue-500: #b8860b;
+  --dsw-static-blue-50: #1a1620;
+  --dsw-static-blue-50p: #121016;
+  --dsw-static-blue-600: #d6b34a;
+  --dsw-static-blue-75: #2d242f;
+  --dsw-static-blue-800: #f6d365;
+  --dsw-static-blue-950: #fdf3dd;
+  --dsw-static-deepseek-100: #2a2210;
+  --dsw-static-deepseek-200: #3d3218;
+  --dsw-static-deepseek-300: #6f5306;
+  --dsw-static-deepseek-400: #8a6508;
+  --dsw-static-deepseek-450: #996515;
+  --dsw-static-deepseek-500: #b8860b;
+  --dsw-static-deepseek-50: #1a1620;
+  --dsw-static-deepseek-600: #d6b34a;
+  --dsw-static-deepseek-700-delete: #996515;
+  --dsw-static-deepseek-800: #f6d365;
+  --dsw-static-deepseek-900: #dfb793;
+  --dsw-static-green-100: #1c3d26;
+  --dsw-static-green-400: #86b08a;
+  --dsw-static-green-500: #5a8a5e;
+  --dsw-static-green-900: #1b4027;
+  --dsw-static-neutral-00: #0b090d;
+  --dsw-static-neutral-1000: #f2ead8;
+  --dsw-static-neutral-100: #121016;
+  --dsw-static-neutral-150: #1a1620;
+  --dsw-static-neutral-200: #1a1620;
+  --dsw-static-neutral-250: #2d242f;
+  --dsw-static-neutral-300: #2d242f;
+  --dsw-static-neutral-400: #3d343c;
+  --dsw-static-neutral-500: #4d4350;
+  --dsw-static-neutral-50: #0b090d;
+  --dsw-static-neutral-550: #5d5360;
+  --dsw-static-neutral-600: #6d6370;
+  --dsw-static-neutral-700: #8d8390;
+  --dsw-static-neutral-800: #a99c8a;
+  --dsw-static-neutral-850: #b9ac9a;
+  --dsw-static-neutral-900: #c9bca8;
+  --dsw-static-neutral-bluish-00: #0b090d;
+  --dsw-static-neutral-bluish-1000: #f2ead8;
+  --dsw-static-neutral-bluish-100: #121016;
+  --dsw-static-neutral-bluish-150: #1a1620;
+  --dsw-static-neutral-bluish-200: #1a1620;
+  --dsw-static-neutral-bluish-250: #2d242f;
+  --dsw-static-neutral-bluish-300: #2d242f;
+  --dsw-static-neutral-bluish-400: #3d343c;
+  --dsw-static-neutral-bluish-500: #4d4350;
+  --dsw-static-neutral-bluish-50: #0b090d;
+  --dsw-static-neutral-bluish-600: #6d6370;
+  --dsw-static-neutral-bluish-60: #1a1620;
+  --dsw-static-neutral-bluish-700: #8d8390;
+  --dsw-static-neutral-bluish-750: #9d9398;
+  --dsw-static-neutral-bluish-75: #2d242f;
+  --dsw-static-neutral-bluish-800: #a99c8a;
+  --dsw-static-neutral-bluish-850: #b9ac9a;
+  --dsw-static-neutral-bluish-875: #c9bca8;
+  --dsw-static-neutral-bluish-900: #d9cca8;
+  --dsw-static-neutral-bluish-950: #e9dcb8;
+  --dsw-static-red-100: #4a2222;
+  --dsw-static-red-400: #d06552;
+  --dsw-static-red-500: #c3272b;
+  --dsw-static-red-50: #3a1c1c;
+  --dsw-static-red-600: #d85444;
+  --dsw-static-red-900: #5c1414;
+}
+
+/* --- Static palette: light plum-blossom ------------------------------------- */
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
+  --dsw-static-amber-100: #fdf3dd;
+  --dsw-static-amber-400: #d9a05b;
+  --dsw-static-amber-500: #c99a2e;
+  --dsw-static-amber-600: #a87c1e;
+  --dsw-static-amber-900: #4a3a12;
+  --dsw-static-blue-100: #f5eddf;
+  --dsw-static-blue-300: #efe3d0;
+  --dsw-static-blue-400: #d9c9b5;
+  --dsw-static-blue-450: #c9b89a;
+  --dsw-static-blue-500: #b8860b;
+  --dsw-static-blue-50: #faf5ee;
+  --dsw-static-blue-50p: #f5eddf;
+  --dsw-static-blue-600: #9c7a1e;
+  --dsw-static-blue-75: #efe3d0;
+  --dsw-static-blue-800: #8a6508;
+  --dsw-static-blue-950: #6f5306;
+  --dsw-static-deepseek-100: #f5eddf;
+  --dsw-static-deepseek-200: #efe3d0;
+  --dsw-static-deepseek-300: #d9c9b5;
+  --dsw-static-deepseek-400: #c9b89a;
+  --dsw-static-deepseek-450: #b8860b;
+  --dsw-static-deepseek-500: #b8860b;
+  --dsw-static-deepseek-50: #faf5ee;
+  --dsw-static-deepseek-600: #9c7a1e;
+  --dsw-static-deepseek-700-delete: #8a6508;
+  --dsw-static-deepseek-800: #8a6508;
+  --dsw-static-deepseek-900: #6f5306;
+  --dsw-static-green-100: #ddf3e3;
+  --dsw-static-green-400: #3d7a3d;
+  --dsw-static-green-500: #2c6a2c;
+  --dsw-static-green-900: #1b4027;
+  --dsw-static-neutral-00: #faf5ee;
+  --dsw-static-neutral-1000: #2a241a;
+  --dsw-static-neutral-100: #f5eddf;
+  --dsw-static-neutral-150: #efe3d0;
+  --dsw-static-neutral-200: #efe3d0;
+  --dsw-static-neutral-250: #e8dcc8;
+  --dsw-static-neutral-300: #e8dcc8;
+  --dsw-static-neutral-400: #d9c9b5;
+  --dsw-static-neutral-500: #c9b89a;
+  --dsw-static-neutral-50: #faf5ee;
+  --dsw-static-neutral-550: #b3a296;
+  --dsw-static-neutral-600: #a39286;
+  --dsw-static-neutral-700: #8d7a70;
+  --dsw-static-neutral-800: #6d5a50;
+  --dsw-static-neutral-850: #5d4a42;
+  --dsw-static-neutral-900: #4d3a32;
+  --dsw-static-neutral-bluish-00: #faf5ee;
+  --dsw-static-neutral-bluish-1000: #2a241a;
+  --dsw-static-neutral-bluish-100: #f5eddf;
+  --dsw-static-neutral-bluish-150: #efe3d0;
+  --dsw-static-neutral-bluish-200: #efe3d0;
+  --dsw-static-neutral-bluish-250: #e8dcc8;
+  --dsw-static-neutral-bluish-300: #e8dcc8;
+  --dsw-static-neutral-bluish-400: #d9c9b5;
+  --dsw-static-neutral-bluish-500: #c9b89a;
+  --dsw-static-neutral-bluish-50: #faf5ee;
+  --dsw-static-neutral-bluish-600: #a39286;
+  --dsw-static-neutral-bluish-60: #efe3d0;
+  --dsw-static-neutral-bluish-700: #8d7a70;
+  --dsw-static-neutral-bluish-750: #7d6a60;
+  --dsw-static-neutral-bluish-75: #e8dcc8;
+  --dsw-static-neutral-bluish-800: #6d5a50;
+  --dsw-static-neutral-bluish-850: #5d4a42;
+  --dsw-static-neutral-bluish-875: #4d3a32;
+  --dsw-static-neutral-bluish-900: #3d2a22;
+  --dsw-static-neutral-bluish-950: #2d1a12;
+  --dsw-static-red-100: #f8dcdc;
+  --dsw-static-red-400: #d06552;
+  --dsw-static-red-500: #a83a3a;
+  --dsw-static-red-50: #fceeee;
+  --dsw-static-red-600: #8e3a49;
+  --dsw-static-red-900: #5c1414;
+}
+
+/* --- Alias layer: dark default --------------------------------------------- */
+
+body[data-dsh-jiangxiao] {
+  --dsw-alias-bg-base: var(--jx-surface-1);
+  --dsw-alias-bg-layer-1: var(--jx-surface-1);
+  --dsw-alias-bg-layer-2: var(--jx-surface-2);
+  --dsw-alias-bg-layer-3: var(--jx-surface-3);
+  --dsw-alias-bg-mask-1: rgba(5, 3, 8, 0.55);
+  --dsw-alias-bg-mask-2: rgba(5, 3, 8, 0.3);
+  --dsw-alias-bg-mask-3: rgba(5, 3, 8, 0.6);
+  --dsw-alias-bg-mask-photo: rgba(5, 3, 8, 0.88);
+  --dsw-alias-bg-module-platform: var(--jx-surface-2);
+  --dsw-alias-bg-multi-select: var(--jx-surface-2);
+  --dsw-alias-bg-overlay: var(--jx-surface-2);
+  --dsw-alias-bg-skeleton: rgba(246, 211, 101, 0.06);
+  --dsw-alias-border-inverted2: rgba(242, 234, 216, 0.6);
+  --dsw-alias-border-inverted: rgba(242, 234, 216, 0.4);
+  --dsw-alias-border-l1: rgba(184, 134, 11, 0.18);
+  --dsw-alias-border-l2-darkmode-thin: rgba(184, 134, 11, 0.22);
+  --dsw-alias-border-l2: rgba(184, 134, 11, 0.26);
+  --dsw-alias-border-l3: rgba(184, 134, 11, 0.34);
+  --dsw-alias-border-l4: rgba(184, 134, 11, 0.42);
+  --dsw-alias-brand-primary-invert: var(--jx-surface-0);
+  --dsw-alias-brand-primary-new-colorprimary-new-color: var(--jx-gold);
+  --dsw-alias-brand-primary: var(--jx-gold);
+  --dsw-alias-brand-text: var(--jx-gold-bright);
+  --dsw-alias-button-contrast-fill: var(--jx-gold-deep);
+  --dsw-alias-button-elevated-fill: var(--jx-surface-2);
+  --dsw-alias-button-floating-fill: var(--jx-surface-2);
+  --dsw-alias-button-floating-hover: var(--jx-surface-3);
+  --dsw-alias-button-ghost-active-border: var(--jx-gold-deep);
+  --dsw-alias-button-ghost-active-fill: var(--jx-surface-3);
+  --dsw-alias-button-ghost-active-hover: var(--jx-surface-3);
+  --dsw-alias-button-info-fill: var(--jx-gold-deep);
+  --dsw-alias-button-info-hover: var(--jx-gold);
+  --dsw-alias-button-primary-dimmed: var(--jx-surface-3);
+  --dsw-alias-button-primary-fill: var(--jx-gold-deep);
+  --dsw-alias-button-primary-hover: var(--jx-gold);
+  --dsw-alias-button-tool-bar-fill-invisible: rgba(184, 134, 11, 0.36);
+  --dsw-alias-button-tool-bar-fill: rgba(184, 134, 11, 0.5);
+  --dsw-alias-button-tool-bar-hover: rgba(184, 134, 11, 0.6);
+  --dsw-alias-interactive-bg-active: rgba(184, 134, 11, 0.16);
+  --dsw-alias-interactive-bg-hover-accent: rgba(184, 134, 11, 0.22);
+  --dsw-alias-interactive-bg-hover-danger: rgba(208, 101, 82, 0.12);
+  --dsw-alias-interactive-bg-hover-solid: var(--jx-surface-3);
+  --dsw-alias-interactive-bg-hover: rgba(246, 211, 101, 0.08);
+  --dsw-alias-label-caption: var(--jx-text-weak);
+  --dsw-alias-label-dimmed: var(--jx-text-faint);
+  --dsw-alias-label-primary-dimmed: var(--jx-text-weak);
+  --dsw-alias-label-primary-foreground: var(--jx-surface-0);
+  --dsw-alias-label-primary-inverted: var(--jx-surface-0);
+  --dsw-alias-label-primary: var(--jx-text-base);
+  --dsw-alias-label-secondary: var(--jx-text-base);
+  --dsw-alias-label-tertiary: var(--jx-text-weak);
+  --dsw-alias-markdown-citation: var(--jx-surface-2);
+  --dsw-alias-markdown-code-block-banner: var(--jx-surface-0);
+  --dsw-alias-markdown-code-block: var(--jx-surface-0);
+  --dsw-alias-markdown-code-segment-selected: var(--jx-surface-2);
+  --dsw-alias-markdown-code-segment-unselected: var(--jx-surface-1);
+  --dsw-alias-markdown-inline-code: var(--jx-surface-2);
+  --dsw-alias-markdown-placeholder: var(--jx-surface-1);
+  --dsw-alias-markdown-tag: var(--jx-surface-2);
+  --dsw-alias-scrollbar-bg-l1: var(--jx-scroll-track);
+  --dsw-alias-scrollbar-bg-l2: var(--jx-scroll-track);
+  --dsw-alias-scrollbar-hover-l1: var(--jx-scroll-thumb);
+  --dsw-alias-scrollbar-hover-l2: var(--jx-scroll-thumb);
+  --dsw-alias-state-business-primary: var(--jx-gold);
+  --dsw-alias-state-business-tertiary: var(--jx-surface-3);
+  --dsw-alias-state-error-primary: var(--jx-error);
+  --dsw-alias-state-error-secondary: var(--jx-seal-bright);
+  --dsw-alias-state-success-primary: var(--jx-success);
+  --dsw-alias-state-success-secondary: var(--jx-success);
+  --dsw-alias-state-success-tertiary: #1c3d26;
+  --dsw-alias-state-warn-label: var(--jx-warn);
+  --dsw-alias-state-warn-primary: var(--jx-warn);
+  --dsw-alias-state-warn-secondary: var(--jx-warn);
+  --dsw-alias-state-warn-tertiary: #3a2e18;
+  --dsw-alias-toast-bg: var(--jx-surface-2);
+  --dsw-alias-tooltip-bg: var(--jx-surface-2);
+  --dsw-alias-tooltip-fg: var(--jx-text-base);
+  --dsw-specific-bubble-highlight: var(--jx-surface-3);
+  --dsw-specific-bubble: var(--jx-surface-2);
+  --dsw-specific-input-major: var(--jx-surface-1);
+  --dsw-specific-login-input: var(--jx-surface-1);
+  --dsw-specific-menu: var(--jx-surface-2);
+  --dsw-specific-selector: var(--jx-surface-2);
+  --dsw-specific-sidebar-fill: var(--jx-gold-deep);
+  --dsw-specific-sidebar-nav-item-active-accent: var(--jx-gold);
+  --dsw-specific-sidebar-nav-item-active: var(--jx-surface-3);
+  --dsw-specific-sidebar-nav-item-hover: var(--jx-surface-3);
+  --dsw-specific-tip: var(--jx-surface-2);
+}
+
+/* --- Alias layer: light plum-blossom --------------------------------------- */
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
+  --dsw-alias-bg-base: var(--jx-surface-1);
+  --dsw-alias-bg-layer-1: var(--jx-surface-1);
+  --dsw-alias-bg-layer-2: var(--jx-surface-2);
+  --dsw-alias-bg-layer-3: var(--jx-surface-3);
+  --dsw-alias-bg-mask-1: rgba(42, 36, 26, 0.12);
+  --dsw-alias-bg-mask-2: rgba(42, 36, 26, 0.06);
+  --dsw-alias-bg-mask-3: rgba(42, 36, 26, 0.18);
+  --dsw-alias-bg-mask-photo: rgba(42, 36, 26, 0.88);
+  --dsw-alias-bg-module-platform: var(--jx-surface-2);
+  --dsw-alias-bg-multi-select: var(--jx-surface-2);
+  --dsw-alias-bg-overlay: var(--jx-surface-2);
+  --dsw-alias-bg-skeleton: rgba(184, 134, 11, 0.08);
+  --dsw-alias-border-inverted2: rgba(42, 36, 26, 0.6);
+  --dsw-alias-border-inverted: rgba(42, 36, 26, 0.4);
+  --dsw-alias-border-l1: rgba(184, 134, 11, 0.22);
+  --dsw-alias-border-l2-darkmode-thin: rgba(184, 134, 11, 0.26);
+  --dsw-alias-border-l2: rgba(184, 134, 11, 0.3);
+  --dsw-alias-border-l3: rgba(184, 134, 11, 0.38);
+  --dsw-alias-border-l4: rgba(184, 134, 11, 0.46);
+  --dsw-alias-brand-primary-invert: var(--jx-surface-0);
+  --dsw-alias-brand-primary-new-colorprimary-new-color: var(--jx-gold);
+  --dsw-alias-brand-primary: var(--jx-gold);
+  --dsw-alias-brand-text: var(--jx-gold-deep);
+  --dsw-alias-button-contrast-fill: var(--jx-gold-deep);
+  --dsw-alias-button-elevated-fill: var(--jx-surface-2);
+  --dsw-alias-button-floating-fill: var(--jx-surface-2);
+  --dsw-alias-button-floating-hover: var(--jx-surface-3);
+  --dsw-alias-button-ghost-active-border: var(--jx-gold-deep);
+  --dsw-alias-button-ghost-active-fill: var(--jx-surface-3);
+  --dsw-alias-button-ghost-active-hover: var(--jx-surface-3);
+  --dsw-alias-button-info-fill: var(--jx-gold-deep);
+  --dsw-alias-button-info-hover: var(--jx-gold);
+  --dsw-alias-button-primary-dimmed: var(--jx-surface-3);
+  --dsw-alias-button-primary-fill: var(--jx-gold-deep);
+  --dsw-alias-button-primary-hover: var(--jx-gold);
+  --dsw-alias-button-tool-bar-fill-invisible: rgba(184, 134, 11, 0.22);
+  --dsw-alias-button-tool-bar-fill: rgba(184, 134, 11, 0.32);
+  --dsw-alias-button-tool-bar-hover: rgba(184, 134, 11, 0.42);
+  --dsw-alias-interactive-bg-active: rgba(184, 134, 11, 0.14);
+  --dsw-alias-interactive-bg-hover-accent: rgba(184, 134, 11, 0.18);
+  --dsw-alias-interactive-bg-hover-danger: rgba(168, 58, 58, 0.08);
+  --dsw-alias-interactive-bg-hover-solid: var(--jx-surface-3);
+  --dsw-alias-interactive-bg-hover: rgba(184, 134, 11, 0.08);
+  --dsw-alias-label-caption: var(--jx-text-weak);
+  --dsw-alias-label-dimmed: var(--jx-text-faint);
+  --dsw-alias-label-primary-dimmed: var(--jx-text-weak);
+  --dsw-alias-label-primary-foreground: var(--jx-surface-0);
+  --dsw-alias-label-primary-inverted: var(--jx-surface-0);
+  --dsw-alias-label-primary: var(--jx-text-strong);
+  --dsw-alias-label-secondary: var(--jx-text-base);
+  --dsw-alias-label-tertiary: var(--jx-text-weak);
+  --dsw-alias-markdown-citation: var(--jx-surface-2);
+  --dsw-alias-markdown-code-block-banner: var(--jx-surface-1);
+  --dsw-alias-markdown-code-block: var(--jx-surface-1);
+  --dsw-alias-markdown-code-segment-selected: var(--jx-surface-2);
+  --dsw-alias-markdown-code-segment-unselected: var(--jx-surface-1);
+  --dsw-alias-markdown-inline-code: var(--jx-surface-2);
+  --dsw-alias-markdown-placeholder: var(--jx-surface-1);
+  --dsw-alias-markdown-tag: var(--jx-surface-2);
+  --dsw-alias-scrollbar-bg-l1: var(--jx-scroll-track);
+  --dsw-alias-scrollbar-bg-l2: var(--jx-scroll-track);
+  --dsw-alias-scrollbar-hover-l1: var(--jx-scroll-thumb);
+  --dsw-alias-scrollbar-hover-l2: var(--jx-scroll-thumb);
+  --dsw-alias-state-business-primary: var(--jx-gold);
+  --dsw-alias-state-business-tertiary: var(--jx-surface-3);
+  --dsw-alias-state-error-primary: var(--jx-error);
+  --dsw-alias-state-error-secondary: var(--jx-seal);
+  --dsw-alias-state-success-primary: var(--jx-success);
+  --dsw-alias-state-success-secondary: var(--jx-success);
+  --dsw-alias-state-success-tertiary: #ddf3e3;
+  --dsw-alias-state-warn-label: var(--jx-warn);
+  --dsw-alias-state-warn-primary: var(--jx-warn);
+  --dsw-alias-state-warn-secondary: var(--jx-warn);
+  --dsw-alias-state-warn-tertiary: #fdf3dd;
+  --dsw-alias-toast-bg: var(--jx-surface-2);
+  --dsw-alias-tooltip-bg: var(--jx-surface-2);
+  --dsw-alias-tooltip-fg: var(--jx-text-strong);
+  --dsw-specific-bubble-highlight: var(--jx-surface-3);
+  --dsw-specific-bubble: var(--jx-surface-2);
+  --dsw-specific-input-major: var(--jx-surface-1);
+  --dsw-specific-login-input: var(--jx-surface-1);
+  --dsw-specific-menu: var(--jx-surface-2);
+  --dsw-specific-selector: var(--jx-surface-2);
+  --dsw-specific-sidebar-fill: var(--jx-gold);
+  --dsw-specific-sidebar-nav-item-active-accent: var(--jx-gold-deep);
+  --dsw-specific-sidebar-nav-item-active: var(--jx-surface-3);
+  --dsw-specific-sidebar-nav-item-hover: var(--jx-surface-3);
+  --dsw-specific-tip: var(--jx-surface-2);
+}
+
+/* --- aionui tokens: dark default ------------------------------------------- */
+
+body[data-dsh-jiangxiao] {
+  --aion-bg-base: var(--jx-surface-1);
+  --aion-bg-1: var(--jx-surface-1);
+  --aion-bg-2: var(--jx-surface-2);
+  --aion-bg-3: var(--jx-surface-2);
+  --aion-bg-4: var(--jx-surface-3);
+  --aion-bg-hover: rgba(184, 134, 11, 0.12);
+  --aion-bg-active: rgba(184, 134, 11, 0.18);
+  --aion-text-primary: var(--jx-text-base);
+  --aion-text-secondary: var(--jx-text-base);
+  --aion-text-tertiary: var(--jx-text-weak);
+  --aion-text-disabled: var(--jx-text-faint);
+  --aion-primary: var(--jx-gold);
+  --aion-primary-hover: var(--jx-gold-bright);
+  --aion-success: var(--jx-success);
+  --aion-success-soft: #1c3d26;
+  --aion-warning: var(--jx-warn);
+  --aion-warning-soft: #3a2e18;
+  --aion-danger: var(--jx-error);
+  --aion-danger-soft: #3a1c1c;
+  --aion-brand: var(--jx-gold);
+  --aion-aou-1: var(--jx-surface-1);
+  --aion-aou-2: var(--jx-surface-2);
+  --aion-aou-3: var(--jx-surface-2);
+  --aion-aou-4: var(--jx-surface-3);
+  --aion-aou-5: var(--jx-gold);
+  --aion-aou-6: var(--jx-gold-deep);
+  --aion-fill-2: rgba(184, 134, 11, 0.12);
+  --aion-fill-3: rgba(184, 134, 11, 0.18);
+  --aion-border-base: rgba(184, 134, 11, 0.3);
+  --aion-overlay-shadow: var(--jx-shadow-2);
+  --aion-font-sans: var(--jx-font-ui);
+  --aion-font-mono: var(--jx-font-code);
+}
+
+/* --- aionui tokens: light plum-blossom ------------------------------------- */
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
+  --aion-bg-base: var(--jx-surface-1);
+  --aion-bg-1: var(--jx-surface-1);
+  --aion-bg-2: var(--jx-surface-2);
+  --aion-bg-3: var(--jx-surface-2);
+  --aion-bg-4: var(--jx-surface-3);
+  --aion-bg-hover: rgba(184, 134, 11, 0.1);
+  --aion-bg-active: rgba(184, 134, 11, 0.16);
+  --aion-text-primary: var(--jx-text-strong);
+  --aion-text-secondary: var(--jx-text-base);
+  --aion-text-tertiary: var(--jx-text-weak);
+  --aion-text-disabled: var(--jx-text-faint);
+  --aion-primary: var(--jx-gold);
+  --aion-primary-hover: var(--jx-gold-deep);
+  --aion-success: var(--jx-success);
+  --aion-success-soft: #ddf3e3;
+  --aion-warning: var(--jx-warn);
+  --aion-warning-soft: #fdf3dd;
+  --aion-danger: var(--jx-error);
+  --aion-danger-soft: #f8dcdc;
+  --aion-brand: var(--jx-gold);
+  --aion-aou-1: var(--jx-surface-1);
+  --aion-aou-2: var(--jx-surface-2);
+  --aion-aou-3: var(--jx-surface-2);
+  --aion-aou-4: var(--jx-surface-3);
+  --aion-aou-5: var(--jx-gold);
+  --aion-aou-6: var(--jx-gold-deep);
+  --aion-fill-2: rgba(184, 134, 11, 0.1);
+  --aion-fill-3: rgba(184, 134, 11, 0.16);
+  --aion-border-base: rgba(184, 134, 11, 0.28);
+  --aion-overlay-shadow: var(--jx-shadow-2);
+  --aion-font-sans: var(--jx-font-ui);
+  --aion-font-mono: var(--jx-font-code);
+}
+
+/* --- Geometry & controls ---------------------------------------------------- */
+
+body[data-dsh-jiangxiao] button {
+  background-image: none;
+  box-shadow: 0 1px 2px rgba(5, 3, 8, 0.4);
+}
+
+body[data-dsh-jiangxiao] button:hover:not(:disabled) {
+  background-image: none;
+  box-shadow: inset 0 0 0 1px rgba(184, 134, 11, 0.3), 0 1px 3px rgba(5, 3, 8, 0.5);
+}
+
+body[data-dsh-jiangxiao] button:active:not(:disabled) {
+  background-image: none;
+  box-shadow: inset 0 2px 4px rgba(5, 3, 8, 0.5);
+}
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) button {
+  box-shadow: 0 1px 2px rgba(5, 3, 8, 0.16);
+}
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) button:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 1px rgba(184, 134, 11, 0.32), 0 1px 3px rgba(5, 3, 8, 0.22);
+}
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) button:active:not(:disabled) {
+  box-shadow: inset 0 2px 4px rgba(5, 3, 8, 0.28);
+}
+
+body[data-dsh-jiangxiao] input:not([type='checkbox']):not([type='radio']),
+body[data-dsh-jiangxiao] textarea,
+body[data-dsh-jiangxiao] select {
+  box-shadow: inset 0 1px 2px rgba(5, 3, 8, 0.4);
+  background: var(--jx-surface-2);
+  color: var(--jx-text-base);
+}
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) input:not([type='checkbox']):not([type='radio']),
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) textarea,
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) select {
+  box-shadow: inset 0 1px 2px rgba(5, 3, 8, 0.16);
+  background: var(--jx-surface-0);
+  color: var(--jx-text-strong);
+}
+
+body[data-dsh-jiangxiao] :focus-visible {
+  outline: 2px solid var(--jx-gold);
+  outline-offset: 2px;
+}
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) :focus-visible {
+  outline-color: var(--jx-gold-deep);
+}
+
+/* --- Scrollbars: gold line -------------------------------------------------- */
+
+body[data-dsh-jiangxiao] {
+  --dsh-scrollbar-thumb: var(--jx-scroll-thumb);
+  --dsh-scrollbar-thumb-hover: var(--jx-gold-bright);
+}
+
+body[data-dsh-jiangxiao] ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+body[data-dsh-jiangxiao] ::-webkit-scrollbar-track {
+  background: var(--jx-scroll-track);
+}
+
+body[data-dsh-jiangxiao] ::-webkit-scrollbar-thumb {
+  background: var(--jx-scroll-thumb);
+  border: 2px solid var(--jx-scroll-track);
+  border-radius: 5px;
+}
+
+body[data-dsh-jiangxiao] ::-webkit-scrollbar-thumb:hover {
+  background: var(--jx-gold-bright);
+}
+
+body[data-dsh-jiangxiao] ::-webkit-scrollbar-corner {
+  background: var(--jx-scroll-track);
+}
+
+/* --- Selection, links ------------------------------------------------------- */
+
+body[data-dsh-jiangxiao] ::selection {
+  background: var(--jx-selection);
+  color: var(--jx-text-strong);
+}
+
+body[data-dsh-jiangxiao] a {
+  color: var(--jx-gold);
+}
+
+body[data-dsh-jiangxiao] a:visited {
+  color: var(--jx-wisteria);
+}
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) a {
+  color: var(--jx-gold-deep);
+}
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) a:visited {
+  color: var(--jx-wisteria);
+}
+
+/* --- Cinnabar seal send button --------------------------------------------- */
+/* The prompt submit button becomes a cinnabar seal roundel: cinnabar fill,
+   cream-ink icon, deep-cinnabar border, soft red glow on hover, press sinks.
+   Ported from openCodeMM session.css [data-action="prompt-submit"]. */
+
+body[data-dsh-jiangxiao] [data-action='prompt-submit'],
+body[data-dsh-jiangxiao] button[data-action='prompt-submit'] {
+  border-radius: 9999px !important;
+  background-image: none !important;
+  background-color: var(--jx-seal) !important;
+  border: 1px solid var(--jx-seal-deep) !important;
+  box-shadow:
+    0 2px 6px color-mix(in srgb, var(--jx-seal) 40%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--jx-seal-ink) 22%, transparent) !important;
+  color: var(--jx-seal-ink) !important;
+  transition:
+    background-color var(--jx-dur-fast) ease,
+    transform 0.1s ease;
+}
+
+body[data-dsh-jiangxiao] [data-action='prompt-submit']:hover:not(:disabled),
+body[data-dsh-jiangxiao] button[data-action='prompt-submit']:hover:not(:disabled) {
+  background-color: var(--jx-seal-bright) !important;
+  transform: translateY(-1px);
+}
+
+body[data-dsh-jiangxiao] [data-action='prompt-submit']:active:not(:disabled),
+body[data-dsh-jiangxiao] button[data-action='prompt-submit']:active:not(:disabled) {
+  background-color: var(--jx-seal-deep) !important;
+  transform: scale(0.96);
+}
+
+/* --- Title bar Tang cloud pattern + gold end-rule -------------------------- */
+/* The dsh title bar (header[data-slot="titlebar-v2"] in upstream) wears a
+   faint gold cloud-line SVG over the ink gradient, with a vertical gold
+   end-rule at the start. The plugin also renders its own jiangxiaoTitlebar
+   chrome strip; both paths get the Tang treatment. */
+
+body[data-dsh-jiangxiao] [data-slot='titlebar-v2'] {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='48' viewBox='0 0 180 48'%3E%3Cpath d='M20 24c6-10 18-12 26-6 6 4 14 4 20-2 4-4 10-6 16-4' fill='none' stroke='%23B8860B' stroke-opacity='0.16' stroke-width='1'/%3E%3Cpath d='M10 38c8-8 20-8 30-4 6 2 14 1 20-4 6-5 14-6 22-3' fill='none' stroke='%23B8860B' stroke-opacity='0.10' stroke-width='1'/%3E%3C/svg%3E"),
+    linear-gradient(to bottom, var(--jx-surface-1), var(--jx-surface-0));
+  border-bottom: 1px solid color-mix(in srgb, var(--jx-gold-deep) 22%, transparent);
+  position: relative;
+}
+
+body[data-dsh-jiangxiao] [data-slot='titlebar-v2']::after {
+  content: '';
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 0;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: linear-gradient(to bottom, transparent, var(--jx-gold-deep), transparent);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+body[data-dsh-jiangxiao] [data-slot='titlebar-v2'] [data-slot='tab-title'],
+body[data-dsh-jiangxiao] [data-slot='titlebar-v2'] [data-titlebar-tab-title] {
+  color: var(--jx-gold-bright);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+body[data-dsh-jiangxiao] [data-slot='titlebar-v2'] [data-slot='tab-link'],
+body[data-dsh-jiangxiao] [data-slot='titlebar-v2'] [data-titlebar-tab-link] {
+  color: var(--jx-text-base);
+  -webkit-text-fill-color: var(--jx-text-base);
+}
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) [data-slot='titlebar-v2'] [data-slot='tab-link'],
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) [data-slot='titlebar-v2'] [data-titlebar-tab-link] {
+  color: var(--jx-text-strong);
+  -webkit-text-fill-color: var(--jx-text-strong);
+}
+
+/* --- Headings: Kaiti display font ------------------------------------------ */
+
+body[data-dsh-jiangxiao] h1,
+body[data-dsh-jiangxiao] h2,
+body[data-dsh-jiangxiao] h3 {
+  font-family: var(--jx-font-display);
+  color: var(--jx-gold-bright);
+  letter-spacing: 0.02em;
+}
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) h1,
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) h2,
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) h3 {
+  color: var(--jx-gold-deep);
+}
+
+/* --- prefers-reduced-motion: disable all motion ---------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-dsh-jiangxiao] *,
+  body[data-dsh-jiangxiao] *::before,
+  body[data-dsh-jiangxiao] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Title bar chrome (plugin-rendered strip) ------------------------------ */
+/* The plugin's apply() renders a fixed jiangxiaoTitlebar strip with a
+   cinnabar seal icon, the Tang title, and window glyphs. Module classes
+   are consumed through the css class map. */
+
+.jiangxiaoTitlebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 30px;
+  padding: 0 12px;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='48' viewBox='0 0 180 48'%3E%3Cpath d='M20 24c6-10 18-12 26-6 6 4 14 4 20-2 4-4 10-6 16-4' fill='none' stroke='%23B8860B' stroke-opacity='0.18' stroke-width='1'/%3E%3Cpath d='M10 38c8-8 20-8 30-4 6 2 14 1 20-4 6-5 14-6 22-3' fill='none' stroke='%23B8860B' stroke-opacity='0.12' stroke-width='1'/%3E%3C/svg%3E"),
+    linear-gradient(to bottom, var(--jx-surface-1), var(--jx-surface-0));
+  border-bottom: 1px solid color-mix(in srgb, var(--jx-gold-deep) 30%, transparent);
+  color: var(--jx-gold-bright);
+  font-family: var(--jx-font-display);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  box-shadow: 0 1px 4px rgba(5, 3, 8, 0.4);
+  user-select: none;
+}
+
+.jiangxiaoTitlebarSeal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--jx-cinnabar);
+  color: var(--jx-seal-ink);
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.jiangxiaoTitlebarTitle {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jiangxiaoTitlebarBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  color: var(--jx-text-base);
+  font-size: 13px;
+  cursor: default;
+  transition: background-color var(--jx-dur-fast) ease, color var(--jx-dur-fast) ease;
+}
+
+.jiangxiaoTitlebarBtn:hover {
+  background: color-mix(in srgb, var(--jx-gold-deep) 18%, transparent);
+  color: var(--jx-gold-bright);
+}
+
+.jiangxiaoTitlebarBtn:last-child:hover {
+  background: var(--jx-cinnabar);
+  color: var(--jx-seal-ink);
+}
+
+/* --- Status bar chrome (plugin-rendered strip) ----------------------------- */
+
+.jiangxiaoStatusbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 28px;
+  padding: 0 14px;
+  background: linear-gradient(to right, var(--jx-surface-1), var(--jx-surface-2), var(--jx-surface-1));
+  border-top: 1px solid color-mix(in srgb, var(--jx-gold-deep) 22%, transparent);
+  color: var(--jx-text-weak);
+  font-family: var(--jx-font-ui);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  box-shadow: 0 -1px 4px rgba(5, 3, 8, 0.3);
+  user-select: none;
+}
+
+.jiangxiaoStatusbarSeal {
+  display: inline-flex;
+  align-items: center;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--jx-cinnabar);
+  flex-shrink: 0;
+}
+
+.jiangxiaoStatusbarSpacer {
+  flex: 1;
+}
+
+.jiangxiaoStatusbarCell {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 8px;
+  border-left: 1px solid color-mix(in srgb, var(--jx-gold-deep) 22%, transparent);
+  color: var(--jx-text-base);
+  white-space: nowrap;
+}
+
+.jiangxiaoStatusbarCell:first-of-type {
+  border-left: none;
+}

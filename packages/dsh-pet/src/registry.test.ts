@@ -1,14 +1,18 @@
 import { describe, expect, it } from 'vitest'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 import {
   DEFAULT_FRAME_COUNTS,
   DEFAULT_PET_CELL,
+  JIANGXIAO_STATES,
   codexPetsDir,
   loadPetRegistry,
+  petAssetFiles,
+  petEntryView,
   resolvePetManifest,
 } from './registry.ts'
+import type { JiangxiaoState, PetManifest } from './registry.ts'
 
 function tempDir(): string {
   return mkdtempSync(join(tmpdir(), 'dsh-pet-registry-'))
@@ -23,6 +27,7 @@ describe('resolvePetManifest', () => {
     }, join(tmpdir(), 'otter'))
     expect(entry).toBeDefined()
     expect(entry!.id).toBe('otter')
+    expect(entry!.kind).toBe('spritesheet')
     expect(entry!.cell).toEqual(DEFAULT_PET_CELL)
     expect(entry!.columns).toBe(8)
     expect(entry!.rows).toEqual([...DEFAULT_FRAME_COUNTS])
@@ -35,6 +40,9 @@ describe('resolvePetManifest', () => {
     expect(entry!.tracks.jumping.fallback).toBe('idle')
     expect(entry!.tracks.failed.loop).toBe(false)
     expect(entry!.tracks.running.loop).toBe(true)
+    // Spritesheet entries carry no webp state/transition tables.
+    expect(entry!.states).toBeUndefined()
+    expect(entry!.transitions).toBeUndefined()
   })
 
   it('keeps the legacy whale-girl frame counts and its own durations', () => {
@@ -152,8 +160,277 @@ describe('loadPetRegistry', () => {
 
 describe('codexPetsDir', () => {
   it('honors CODEX_HOME and expands a leading tilde', () => {
-    expect(codexPetsDir({ CODEX_HOME: '/opt/codex' }, '/home/user')).toBe('/opt/codex/pets')
-    expect(codexPetsDir({ CODEX_HOME: '~/codex' }, '/home/user')).toBe('/home/user/codex/pets')
-    expect(codexPetsDir({}, '/home/user')).toBe('/home/user/.codex/pets')
+    expect(codexPetsDir({ CODEX_HOME: '/opt/codex' }, '/home/user')).toBe(join('/opt/codex', 'pets'))
+    expect(codexPetsDir({ CODEX_HOME: '~/codex' }, '/home/user')).toBe(join('/home/user', 'codex', 'pets'))
+    expect(codexPetsDir({}, '/home/user')).toBe(join('/home/user', '.codex', 'pets'))
+  })
+})
+
+/**
+ * Build a legal animated-webp manifest fixture: 10 cyclic states plus a few
+ * transitions. The resolver accepts any number of transition keys (D13: all
+ * 36 ship; the scheduler filters later), so a small sample exercises every
+ * code path without bloating the test.
+ */
+function webpManifest(overrides: Partial<PetManifest> = {}): PetManifest {
+  const states = {} as Record<JiangxiaoState, string>
+  for (const state of JIANGXIAO_STATES) {
+    states[state] = 'states/' + state + '.webp'
+  }
+  return {
+    id: 'jiangxiao',
+    displayName: '姜晓',
+    kind: 'animated-webp',
+    states,
+    transitions: {
+      'idle→thinking': { webp: 'transitions/idle-to-thinking.webp', durationMs: 300 },
+      'thinking→idle': { webp: 'transitions/thinking-to-idle.webp', durationMs: 250 },
+      'idle→working': { webp: 'transitions/idle-to-working.webp', durationMs: 320 },
+    },
+    ...overrides,
+  }
+}
+
+describe('resolvePetManifest animated-webp', () => {
+  it('resolves a legal webp manifest into a webp entry with state and transition URLs', () => {
+    const entry = resolvePetManifest(webpManifest(), join(tmpdir(), 'jiangxiao'))
+    expect(entry).toBeDefined()
+    expect(entry!.id).toBe('jiangxiao')
+    expect(entry!.kind).toBe('animated-webp')
+    // Every state maps to a browser URL under the asset prefix.
+    expect(entry!.states).toBeDefined()
+    expect(entry!.states!.idle).toBe('/pet/jiangxiao/states/idle.webp')
+    expect(entry!.states!.thinking).toBe('/pet/jiangxiao/states/thinking.webp')
+    expect(entry!.states!.listening).toBe('/pet/jiangxiao/states/listening.webp')
+    // Every transition carries a URL and its duration.
+    expect(entry!.transitions).toBeDefined()
+    expect(entry!.transitions!['idle→thinking']).toEqual({
+      webp: '/pet/jiangxiao/transitions/idle-to-thinking.webp',
+      durationMs: 300,
+    })
+    // Host-side paths are kept for the asset route.
+    expect(entry!.statePaths).toBeDefined()
+    expect(entry!.statePaths!.idle).toBe('states/idle.webp')
+    expect(entry!.transitionPaths).toBeDefined()
+    expect(entry!.transitionPaths!['idle→thinking']).toEqual({
+      webp: 'transitions/idle-to-thinking.webp',
+      durationMs: 300,
+    })
+    // Spritesheet geometry is filled with defaults so the PetDefinition shape
+    // stays compatible; the browser half dispatches on 'kind'.
+    expect(entry!.cell).toEqual(DEFAULT_PET_CELL)
+    expect(entry!.columns).toBe(8)
+    expect(entry!.rows).toEqual([...DEFAULT_FRAME_COUNTS])
+  })
+
+  it('exposes states and transitions through petEntryView', () => {
+    const entry = resolvePetManifest(webpManifest(), join(tmpdir(), 'jiangxiao'))!
+    const view = petEntryView(entry)
+    expect(view.kind).toBe('animated-webp')
+    expect(view.states).toBe(entry.states)
+    expect(view.transitions).toBe(entry.transitions)
+    // Host-only fields are stripped.
+    expect((view as unknown as Record<string, unknown>).dir).toBeUndefined()
+    expect((view as unknown as Record<string, unknown>).statePaths).toBeUndefined()
+    expect((view as unknown as Record<string, unknown>).transitionPaths).toBeUndefined()
+  })
+
+  it('lists every declared webp file through petAssetFiles', () => {
+    const entry = resolvePetManifest(webpManifest(), join(tmpdir(), 'jiangxiao'))!
+    const files = petAssetFiles(entry)
+    // 10 state webps + 3 transition webps.
+    expect(files).toHaveLength(13)
+    expect(files).toContain('states/idle.webp')
+    expect(files).toContain('states/thinking.webp')
+    expect(files).toContain('transitions/idle-to-thinking.webp')
+    expect(files).toContain('transitions/thinking-to-idle.webp')
+  })
+
+  it('accepts all 36 transition keys without filtering (D13)', () => {
+    // The resolver must not filter transition keys by reachability; the
+    // scheduler (work item 03) owns that. Feed a mix of pet-reachable and
+    // pet-unreachable keys and confirm every one survives.
+    const transitions: Record<string, { webp: string; durationMs: number }> = {}
+    const sample = [
+      'idle→thinking', 'thinking→idle', 'idle→working', 'working→idle',
+      'idle→replying', 'replying→idle', 'idle→error', 'error→idle',
+      'idle→done', 'done→idle', 'idle→welcome', 'welcome→idle',
+      'idle→listening', 'listening→idle', 'idle→reading', 'reading→idle',
+      'idle→permission', 'permission→idle',
+    ]
+    for (const key of sample) {
+      transitions[key] = { webp: 'transitions/' + key.replace('→', '-to-') + '.webp', durationMs: 200 }
+    }
+    const entry = resolvePetManifest(webpManifest({ transitions }), join(tmpdir(), 'jiangxiao'))!
+    expect(entry).toBeDefined()
+    expect(Object.keys(entry.transitionPaths!)).toHaveLength(sample.length)
+    // Pet-unreachable keys (reading, permission) are kept by the resolver.
+    expect(entry.transitionPaths!['idle→reading']).toBeDefined()
+    expect(entry.transitionPaths!['idle→permission']).toBeDefined()
+  })
+
+  it('rejects an unknown kind with a warning', () => {
+    const warnings: string[] = []
+    const entry = resolvePetManifest(
+      { ...webpManifest(), kind: 'video-mp4' as unknown as 'animated-webp' },
+      '/tmp',
+      { warnings },
+    )
+    expect(entry).toBeUndefined()
+    expect(warnings.some(message => message.includes('unknown kind'))).toBe(true)
+  })
+
+  it('rejects a missing states object', () => {
+    const warnings: string[] = []
+    const entry = resolvePetManifest(
+      { id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', transitions: {} },
+      '/tmp',
+      { warnings },
+    )
+    expect(entry).toBeUndefined()
+    expect(warnings.some(message => message.includes('requires a states object'))).toBe(true)
+  })
+
+  it('rejects a missing transitions object', () => {
+    const warnings: string[] = []
+    const states = {} as Record<JiangxiaoState, string>
+    for (const state of JIANGXIAO_STATES) states[state] = 'states/' + state + '.webp'
+    const entry = resolvePetManifest(
+      { id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', states },
+      '/tmp',
+      { warnings },
+    )
+    expect(entry).toBeUndefined()
+    expect(warnings.some(message => message.includes('requires a transitions object'))).toBe(true)
+  })
+
+  it('rejects when a state key is missing', () => {
+    const warnings: string[] = []
+    const states = {} as Record<JiangxiaoState, string>
+    for (const state of JIANGXIAO_STATES) {
+      if (state === 'listening') continue
+      states[state] = 'states/' + state + '.webp'
+    }
+    const entry = resolvePetManifest(
+      { id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', states, transitions: { 'idle→thinking': { webp: 't.webp', durationMs: 100 } } },
+      '/tmp',
+      { warnings },
+    )
+    expect(entry).toBeUndefined()
+    expect(warnings.some(message => message.includes('states.listening'))).toBe(true)
+  })
+
+  it('rejects an extra state key (typo surfacing)', () => {
+    const warnings: string[] = []
+    const states = {} as Record<JiangxiaoState, string>
+    for (const state of JIANGXIAO_STATES) states[state] = 'states/' + state + '.webp'
+    ;(states as Record<string, string>).listenting2 = 'states/listening2.webp'
+    const entry = resolvePetManifest(
+      { id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', states, transitions: { 'idle→thinking': { webp: 't.webp', durationMs: 100 } } },
+      '/tmp',
+      { warnings },
+    )
+    expect(entry).toBeUndefined()
+    expect(warnings.some(message => message.includes('not a known JiangxiaoState'))).toBe(true)
+  })
+
+  it('rejects path traversal in a state file', () => {
+    const warnings: string[] = []
+    const states = {} as Record<JiangxiaoState, string>
+    for (const state of JIANGXIAO_STATES) states[state] = 'states/' + state + '.webp'
+    states.idle = '../etc/passwd'
+    const entry = resolvePetManifest(
+      { id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', states, transitions: { 'idle→thinking': { webp: 't.webp', durationMs: 100 } } },
+      '/tmp',
+      { warnings },
+    )
+    expect(entry).toBeUndefined()
+    expect(warnings.some(message => message.includes('states.idle') && message.includes('safe relative path'))).toBe(true)
+  })
+
+  it('rejects path traversal in a transition webp', () => {
+    const warnings: string[] = []
+    const entry = resolvePetManifest(
+      {
+        ...webpManifest(),
+        transitions: { 'idle→thinking': { webp: '/absolute.webp', durationMs: 100 } },
+      },
+      '/tmp',
+      { warnings },
+    )
+    expect(entry).toBeUndefined()
+    expect(warnings.some(message => message.includes('transition') && message.includes('safe relative path'))).toBe(true)
+  })
+
+  it('rejects a non-positive transition duration', () => {
+    const warnings: string[] = []
+    const entry = resolvePetManifest(
+      {
+        ...webpManifest(),
+        transitions: { 'idle→thinking': { webp: 't.webp', durationMs: 0 } },
+      },
+      '/tmp',
+      { warnings },
+    )
+    expect(entry).toBeUndefined()
+    expect(warnings.some(message => message.includes('durationMs') && message.includes('positive'))).toBe(true)
+  })
+
+  it('rejects an empty transitions table', () => {
+    const warnings: string[] = []
+    const entry = resolvePetManifest(
+      { ...webpManifest(), transitions: {} },
+      '/tmp',
+      { warnings },
+    )
+    expect(entry).toBeUndefined()
+    expect(warnings.some(message => message.includes('transitions is empty'))).toBe(true)
+  })
+
+  it('rejects an unsafe id (shared guard with spritesheet)', () => {
+    const warnings: string[] = []
+    const entry = resolvePetManifest(
+      { ...webpManifest(), id: 'Bad Id' },
+      '/tmp',
+      { warnings },
+    )
+    expect(entry).toBeUndefined()
+    expect(warnings.some(message => message.includes('lowercase kebab id'))).toBe(true)
+  })
+})
+
+describe('resolvePetManifest spritesheet regression', () => {
+  it('explicit kind: "spritesheet" resolves through the spritesheet path', () => {
+    const entry = resolvePetManifest({
+      id: 'otter',
+      displayName: '水獭',
+      kind: 'spritesheet',
+      spritesheetPath: 'spritesheet.webp',
+    }, join(tmpdir(), 'otter'))
+    expect(entry).toBeDefined()
+    expect(entry!.kind).toBe('spritesheet')
+    expect(entry!.states).toBeUndefined()
+    expect(entry!.transitions).toBeUndefined()
+    expect(entry!.statePaths).toBeUndefined()
+    expect(entry!.transitionPaths).toBeUndefined()
+  })
+
+  it('omitting kind defaults to spritesheet (legacy compatibility)', () => {
+    const entry = resolvePetManifest({
+      id: 'whale-girl',
+      displayName: '鲸鱼娘',
+      spritesheetPath: 'spritesheet.webp',
+    }, join(tmpdir(), 'whale'))
+    expect(entry).toBeDefined()
+    expect(entry!.kind).toBe('spritesheet')
+  })
+
+  it('petAssetFiles returns the single atlas for spritesheet entries', () => {
+    const entry = resolvePetManifest({
+      id: 'otter',
+      displayName: '水獭',
+      spritesheetPath: 'atlas.png',
+    }, join(tmpdir(), 'otter'))!
+    expect(petAssetFiles(entry)).toEqual(['atlas.png'])
   })
 })
