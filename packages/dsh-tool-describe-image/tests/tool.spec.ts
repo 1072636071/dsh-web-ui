@@ -96,6 +96,16 @@ async function setup(
   over: Partial<tool.Config> = {},
   options: { seed?: Record<string, string>; noInlineKey?: boolean; attachments?: boolean } = {},
 ): Promise<Context> {
+  // mountOnce is a process-wide singleton guard: a second mount of the same
+  // package on a fresh ctx is a no-op, so without this dispose loop every
+  // setup() call after the first would silently skip tool registration
+  // (the "strips the model thinking suffix" case mounts three times in one
+  // it-block). Dispose prior ctxs first so their mountOnce disposer unmarks
+  // and the new ctx mounts normally. afterEach does the same teardown.
+  while (contexts.length) {
+    const prior = contexts.pop()!
+    await Promise.resolve(prior.fiber.dispose())
+  }
   const ctx = new Context()
   contexts.push(ctx)
   if (options.seed !== undefined) await ctx.plugin(FakeCredentials, options.seed)

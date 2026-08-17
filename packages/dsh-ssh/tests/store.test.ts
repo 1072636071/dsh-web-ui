@@ -180,7 +180,9 @@ describe('import from ssh config', () => {
 })
 
 describe('file safety', () => {
-  it('writes the store with owner-only permissions', () => {
+  // Windows has no Unix permission model — chmod 0600 is a no-op there and
+  // the file lands at 0666, so the owner-only assertion is POSIX-only.
+  it.skipIf(process.platform === 'win32')('writes the store with owner-only permissions', () => {
     const store = makeStore()
     store.create(basePayload)
     const mode = statSync(store.path).mode & 0o777

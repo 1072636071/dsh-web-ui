@@ -5,7 +5,7 @@
  * SFTP upload/download/ls, and the connection probe.
  */
 
-import { mkdtempSync, readFileSync, writeFileSync, rmSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { connect, createServer, type AddressInfo } from 'node:net'
@@ -287,7 +287,10 @@ describe('tunnel', () => {
   })
 })
 
-describe('sftp (real sshd)', () => {
+// The real-sshd harness spawns /usr/sbin/sshd, which only exists on
+// POSIX systems with an sshd installed. Skip gracefully elsewhere so
+// the rest of the engine suite still runs on Windows / minimal CI.
+describe.skipIf(!existsSync('/usr/sbin/sshd'))('sftp (real sshd)', () => {
   it('uploads, lists, and downloads files', async () => {
     const sshd = await TestSshd.start()
     try {

@@ -339,6 +339,10 @@ export class HostStore {
 /** Expand a leading `~` in a filesystem path. */
 export function expandHome(path: string): string {
   if (path === '~') return homedir()
-  if (path.startsWith('~/')) return join(homedir(), path.slice(2))
+  // SSH key paths follow POSIX convention (e.g. ~/.ssh/id_rsa); normalize
+  // to '/' so stored keyPaths stay consistent across platforms and the
+  // "expands ~ in key paths" contract holds on Windows too. fs/ssh2 accept
+  // forward slashes on win32.
+  if (path.startsWith('~/')) return join(homedir(), path.slice(2)).split(/[\\/]/).join('/')
   return path
 }

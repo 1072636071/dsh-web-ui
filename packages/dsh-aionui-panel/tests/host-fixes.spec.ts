@@ -17,6 +17,15 @@ import { FsService, probeImageSize } from '../src/host/fs-service.ts'
 import { GitService, type GitRunner } from '../src/host/git-service.ts'
 import type { WorkspaceGate } from '../src/host/gate.ts'
 
+// Windows directory symlinks need SeCreateSymbolicLinkPrivilege (admin or
+// Developer Mode). A junction needs no privilege and realpath resolves it
+// the same way a symlink resolves, so the C1 escape guard (realpath-based)
+// stays exercised. On other platforms a normal symlink is fine.
+const linkDir =
+  process.platform === 'win32'
+    ? (target: string, linkPath: string) => symlink(target, linkPath, 'junction')
+    : (target: string, linkPath: string) => symlink(target, linkPath)
+
 /** Build a synthetic JPEG header (SOI + APP0 + SOF0 with known dims). */
 function buildJpeg(height: number, width: number): Buffer {
   const bytes: number[] = [0xff, 0xd8] // SOI
@@ -54,8 +63,8 @@ describe('FsService symlink escape (C1)', () => {
     await mkdir(root)
     await mkdir(outsideDir)
     await writeFile(join(outsideDir, 'secret.txt'), 'secret')
-    // A symlink inside root pointing at the outside directory.
-    await symlink(outsideDir, join(root, 'link'))
+    // A link inside root pointing at the outside directory.
+    await linkDir(outsideDir, join(root, 'link'))
     const service = new FsService(gate)
 
     // read through the link must be refused (path-outside-root).
@@ -209,7 +218,7 @@ describe('GitService.discard path derivation (H1)', () => {
     await mkdir(outsideDir)
     await mkdir(repoDir)
     await writeFile(join(outsideDir, 'victim.txt'), 'keep')
-    await symlink(outsideDir, join(repoDir, 'link'))
+    await linkDir(outsideDir, join(repoDir, 'link'))
     const runner: GitRunner = {
       async run(argv) {
         if (argv[0] === 'rev-parse' && argv[1] === '--show-toplevel') {

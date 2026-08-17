@@ -460,7 +460,10 @@ describe('useSkin / currentSkin against a throwaway HOME', () => {
     expect(currentSkin(undefined, { home: h })).toBe('none')
   })
 
-  it('useSkin preserves the permission bits of an existing patch file (0600 stays 0600)', () => {
+  // Windows has no Unix permission model — chmod 0600 is a no-op there and
+  // the file stays 0666, so the "permission bits preserved" assertion is a
+  // POSIX-only check.
+  it.skipIf(process.platform === 'win32')('useSkin preserves the permission bits of an existing patch file (0600 stays 0600)', () => {
     const h = fakeHome()
     const patch = patchPath(h)
     writeFileSync(patch, '# custom row survives\n')

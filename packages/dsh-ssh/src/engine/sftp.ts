@@ -18,7 +18,9 @@ export function walkLocalDir(root: string): string[] {
       const full = join(dir, name)
       const stat = statSync(full)
       if (stat.isDirectory()) visit(full)
-      else if (stat.isFile()) files.push(relative(root, full))
+      // SFTP remote paths are POSIX; normalize OS separators so the relative
+    // entries (and the upload path builder below) agree on '/' everywhere.
+    else if (stat.isFile()) files.push(relative(root, full).split(/[\\/]/).join('/'))
     }
   }
   visit(root)

@@ -40,7 +40,12 @@ test('aggregate ids never collide with standalone package ids', () => {
   for (const base of ['packages', 'packages/skins']) {
     for (const entry of readdirSync(join(ROOT, base), { withFileTypes: true })) {
       if (!entry.isDirectory()) continue
-      const patch = join(base, entry.name, 'cordis.patch.yml')
+      // Normalize to forward slashes so the equality checks below (which use
+      // POSIX paths to match the AGGREGATES constant) hold on Windows too:
+      // path.join returns "packages\dsh-skins\..." on win32, which would
+      // otherwise bypass the skip and flag the aggregate's own rows as
+      // colliding with themselves.
+      const patch = join(base, entry.name, 'cordis.patch.yml').split(/[\\/]/).join('/')
       const abs = join(ROOT, patch)
       try {
         readFileSync(abs)
