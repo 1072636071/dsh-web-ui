@@ -1,15 +1,19 @@
 // @vitest-environment jsdom
 /**
- * Jiangxiao skin apply spec — the template contract: the body
- * attribute the stylesheet is scoped on is set on apply and retracted on
- * dispose, the inlined woff2 @font-face style is injected and retracted,
- * and the skin injects no DOM chrome (no titlebar strip, no statusbar
- * strip, no favicon, no document.title override). DSH's native shell
- * surface owns the chrome unmodified.
+ * Jiangxiao skin apply spec — apply/dispose 契约 + CSS 炫技效果验证。
+ *
+ * 契约：body 属性设置/移除，woff2 @font-face 注入/移除，不注入 DOM chrome。
+ * CSS：侧边栏背景用 surface 色阶（非屎黄色），@property 注册，keyframes 存在，
+ * 银杏叶/梅花飘落 SVG，朱砂印章发送钮。
  */
 import { afterEach, describe, expect, it } from 'vitest'
 import { Context, type Fiber } from '@deepseek-ai/cordis'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { apply } from '../src/client/index.ts'
+
+const cssPath = fileURLToPath(new URL('../src/client/jiangxiao.module.css', import.meta.url))
+const css = readFileSync(cssPath, 'utf8')
 
 let fiber: Fiber | undefined
 
@@ -50,7 +54,6 @@ describe('Jiangxiao skin apply', () => {
     fiber = await mount()
     expect(document.body.querySelector('[data-skin-chrome="titlebar"]')).toBeNull()
     expect(document.body.querySelector('[data-skin-chrome="statusbar"]')).toBeNull()
-    // The only data-skin-chrome node is the fontface style in <head>, never in <body>.
     expect(document.body.querySelectorAll('[data-skin-chrome]').length).toBe(0)
     await fiber.dispose()
     expect(document.body.querySelectorAll('[data-skin-chrome]').length).toBe(0)
@@ -69,5 +72,71 @@ describe('Jiangxiao skin apply', () => {
     expect(document.head.querySelector('link[rel="icon"]')).toBeNull()
     await fiber.dispose()
     expect(document.head.querySelector('link[rel="icon"]')).toBeNull()
+  })
+})
+
+describe('Jiangxiao skin CSS — sidebar contrast fix', () => {
+  it('sidebar-fill uses surface-1, not gold-deep or gold', () => {
+    const fills = css.match(/--dsw-specific-sidebar-fill:\s*[^;]+;/g) ?? []
+    expect(fills.length).toBeGreaterThanOrEqual(2)
+    for (const fill of fills) {
+      expect(fill).toContain('surface-1')
+      expect(fill).not.toContain('gold')
+    }
+  })
+})
+
+describe('Jiangxiao skin CSS — @property animatable properties', () => {
+  it('registers --jx-gold-angle for conic flow', () => {
+    expect(css).toContain('@property --jx-gold-angle')
+  })
+  it('registers --jx-shimmer-x for gold-foil sweep', () => {
+    expect(css).toContain('@property --jx-shimmer-x')
+  })
+  it('registers --jx-breathe for ink pulse', () => {
+    expect(css).toContain('@property --jx-breathe')
+  })
+})
+
+describe('Jiangxiao skin CSS — keyframes', () => {
+  it('has jx-gold-rotate (liu-jin flow)', () => {
+    expect(css).toContain('@keyframes jx-gold-rotate')
+  })
+  it('has jx-shimmer-sweep (gold-foil text)', () => {
+    expect(css).toContain('@keyframes jx-shimmer-sweep')
+  })
+  it('has jx-leaf-fall (ginkgo leaves)', () => {
+    expect(css).toContain('@keyframes jx-leaf-fall')
+  })
+  it('has jx-petal-fall (plum blossoms)', () => {
+    expect(css).toContain('@keyframes jx-petal-fall')
+  })
+  it('has jx-ink-breathe (ink glow)', () => {
+    expect(css).toContain('@keyframes jx-ink-breathe')
+  })
+  it('has jx-seal-pulse (cinnabar seal)', () => {
+    expect(css).toContain('@keyframes jx-seal-pulse')
+  })
+})
+
+describe('Jiangxiao skin CSS — falling SVG', () => {
+  it('contains ginkgo leaf SVG (dark)', () => {
+    expect(css).toContain("fill='%23d6b34a'")
+    expect(css).toContain("fill='%23dfb793'")
+  })
+  it('contains plum blossom SVG (light)', () => {
+    expect(css).toContain("fill='%23d97a8e'")
+    expect(css).toContain("fill='%23e89aa8'")
+  })
+})
+
+describe('Jiangxiao skin CSS — cinnabar seal send button', () => {
+  it('styles prompt-submit as seal with pulse', () => {
+    expect(css).toContain("[data-action='prompt-submit']")
+    expect(css).toContain('jx-seal-pulse')
+  })
+  it('seal hover lifts and active presses', () => {
+    expect(css).toContain('translateY(-1px)')
+    expect(css).toContain('scale(0.96)')
   })
 })
