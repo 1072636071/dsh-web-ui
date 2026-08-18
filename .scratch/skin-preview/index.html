@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>姜晓 · 墨金卷轴 / 宣纸梅花 — 皮肤 Demo</title>
+<style>
+@property --gold-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@property --shimmer-x {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 100%;
+}
+@property --breathe {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1;
+}
+
+:root[data-theme="dark"] {
+  --surface-0: #0b090d;
+  --surface-1: #121016;
+  --surface-2: #1a1620;
+  --surface-3: #2d242f;
+  --text-strong: #f2ead8;
+  --text-base: #f2ead8;
+  --text-weak: #a99c8a;
+  --text-faint: #8a7e6e;
+  --gold-bright: #f6d365;
+  --gold: #d6b34a;
+  --gold-deep: #b8860b;
+  --gold-dim: #996515;
+  --ginkgo: #dfb793;
+  --seal: #c7493a;
+  --seal-deep: #a8382b;
+  --seal-bright: #d85444;
+  --seal-ink: #fff8ef;
+  --cinnabar: #c3272b;
+  --border-deco: #3d3218;
+  --scroll-track: #2a2210;
+  --scroll-thumb: #b8860b;
+  --gold-foil: linear-gradient(135deg, #f6d365 0%, #fda085 50%, #b8860b 100%);
+  --ink-glow: rgba(184,134,11,0.06);
+  --petal-color: #d6b34a;
+  --petal-color-2: #dfb793;
+  --petal-color-3: #b8860b;
+  --poem-color: #dfb793;
+  --seal-stamp-bg: #c3272b;
+  --seal-stamp-ink: #f2ead8;
+  --code-bg: #0b090d;
+  --code-border: rgba(184,134,11,0.26);
+  --kw: #d6b34a;
+  --str: #86b08a;
+  --fn: #7fd8e8;
+  --cmt: #8a7e6e;
+  --num: #f6d365;
+  --leaf-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 96L50 72C40 70 24 64 18 50C14 38 20 22 34 16C42 13 47 20 50 20C53 20 58 13 66 16C80 22 86 38 82 50C76 64 60 70 50 72Z' fill='%23d6b34a'/%3E%3Cpath d='M50 72L18 50M50 72L34 16M50 72L50 20M50 72L66 16M50 72L82 50' fill='none' stroke='%23996515' stroke-width='1.2' stroke-opacity='0.6'/%3E%3C/svg%3E");
+}
+
+:root[data-theme="light"] {
+  --surface-0: #faf5ee;
+  --surface-1: #f5eddf;
+  --surface-2: #efe3d0;
+  --surface-3: #e8dcc8;
+  --text-strong: #2a241a;
+  --text-base: #5d4a42;
+  --text-weak: #7d6a5e;
+  --text-faint: #8a7765;
+  --gold-bright: #9c7a1e;
+  --gold: #b8860b;
+  --gold-deep: #8a6508;
+  --gold-dim: #6f5306;
+  --ginkgo: #b8860b;
+  --seal: #8e3a49;
+  --seal-deep: #7a2a39;
+  --seal-bright: #d97a8e;
+  --seal-ink: #fff8f6;
+  --cinnabar: #8e3a49;
+  --border-deco: #d9c9b5;
+  --scroll-track: #ece0d0;
+  --scroll-thumb: #d97a8e;
+  --gold-foil: linear-gradient(135deg, #b8860b 0%, #d97a8e 50%, #8a6508 100%);
+  --ink-glow: rgba(178,74,92,0.05);
+  --petal-color: #d97a8e;
+  --petal-color-2: #e89aa8;
+  --petal-color-3: #b24a5c;
+  --poem-color: #8e3a49;
+  --seal-stamp-bg: #8e3a49;
+  --seal-stamp-ink: #fff8f6;
+  --code-bg: #f5eddf;
+  --code-border: rgba(138,101,8,0.22);
+  --kw: #8a6508;
+  --str: #3d7a3d;
+  --fn: #2c6a7a;
+  --cmt: #8a7765;
+  --num: #9c7a1e;
+  --leaf-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23d97a8e'%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(72 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(144 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(216 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(288 50 50)'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='5' fill='%23b24a5c'/%3E%3C/svg%3E");
+}
+
+@keyframes leaf-fall-1 { 0% { transform: translate3d(110vw,-10vh,0) rotate(0deg); opacity: 0; } 8% { opacity: .5; } 90% { opacity: .5; } 100% { transform: translate3d(-10vw,110vh,0) rotate(720deg); opacity: 0; } }
+@keyframes leaf-fall-2 { 0% { transform: translate3d(90vw,-8vh,0) rotate(45deg); opacity: 0; } 8% { opacity: .42; } 90% { opacity: .42; } 100% { transform: translate3d(-15vw,112vh,0) rotate(-540deg); opacity: 0; } }
+@keyframes leaf-fall-3 { 0% { transform: translate3d(75vw,-12vh,0) rotate(-30deg); opacity: 0; } 8% { opacity: .38; } 90% { opacity: .38; } 100% { transform: translate3d(5vw,108vh,0) rotate(900deg); opacity: 0; } }
+@keyframes leaf-fall-4 { 0% { transform: translate3d(60vw,-6vh,0) rotate(90deg); opacity: 0; } 8% { opacity: .45; } 90% { opacity: .45; } 100% { transform: translate3d(-20vw,110vh,0) rotate(-720deg); opacity: 0; } }
+@keyframes leaf-fall-5 { 0% { transform: translate3d(45vw,-10vh,0) rotate(180deg); opacity: 0; } 8% { opacity: .35; } 90% { opacity: .35; } 100% { transform: translate3d(10vw,105vh,0) rotate(540deg); opacity: 0; } }
+
+@keyframes gold-rotate { to { --gold-angle: 360deg; } }
+@keyframes shimmer-sweep { to { --shimmer-x: 0%; } }
+@keyframes ink-breathe { 0%,100% { --breathe: 1; } 50% { --breathe: 1.15; } }
+@keyframes seal-pulse { 0%,100% { box-shadow: 0 2px 6px rgba(199,73,58,.4), inset 0 1px 0 rgba(255,248,239,.22), 0 0 0 0 rgba(199,73,58,.3); } 50% { box-shadow: 0 2px 6px rgba(199,73,58,.4), inset 0 1px 0 rgba(255,248,239,.22), 0 0 12px 2px rgba(199,73,58,.15); } }
+@keyframes bpulse { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scroll-glow { 0%,100% { box-shadow: 0 0 4px rgba(184,134,11,.3); } 50% { box-shadow: 0 0 8px rgba(184,134,11,.5); } }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+  color: var(--text-base);
+  background-color: var(--surface-0);
+  background-image:
+    radial-gradient(circle at 18% 12%, var(--ink-glow), transparent 42%),
+    radial-gradient(circle at 82% 28%, var(--ink-glow), transparent 38%),
+    radial-gradient(circle at 50% 92%, var(--ink-glow), transparent 45%),
+    linear-gradient(168deg, var(--surface-0) 0%, var(--surface-1) 60%, var(--surface-2) 100%);
+  height: 100vh;
+  overflow: hidden;
+  transition: background-color .4s ease, color .4s ease;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 50% at 30% 40%, var(--ink-glow), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 70% 60%, var(--ink-glow), transparent 70%);
+  opacity: var(--breathe);
+  animation: ink-breathe 8s ease-in-out infinite;
+  will-change: opacity;
+}
+
+.deco-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  contain: strict;
+}
+
+.deco-leaf {
+  position: absolute;
+  width: 48px;
+  height: 64px;
+  background-image: var(--leaf-svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.2));
+}
+.deco-leaf:nth-child(1) { animation: leaf-fall-1 18s linear infinite; animation-delay: 0s; }
+.deco-leaf:nth-child(2) { animation: leaf-fall-2 22s linear infinite; animation-delay: -3s; width: 38px; height: 52px; }
+.deco-leaf:nth-child(3) { animation: leaf-fall-3 25s linear infinite; animation-delay: -7s; width: 56px; height: 72px; }
+.deco-leaf:nth-child(4) { animation: leaf-fall-4 20s linear infinite; animation-delay: -11s; width: 32px; height: 44px; }
+.deco-leaf:nth-child(5) { animation: leaf-fall-5 28s linear infinite; animation-delay: -15s; width: 44px; height: 60px; }
+.deco-leaf:nth-child(6) { animation: leaf-fall-1 24s linear infinite; animation-delay: -5s; width: 36px; height: 50px; }
+.deco-leaf:nth-child(7) { animation: leaf-fall-3 19s linear infinite; animation-delay: -9s; width: 50px; height: 68px; }
+.deco-leaf:nth-child(8) { animation: leaf-fall-2 26s linear infinite; animation-delay: -18s; width: 28px; height: 40px; }
+
+.poem-vertical {
+  position: fixed;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: 'Ma Shan Zheng', 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  color: var(--poem-color);
+  opacity: .5;
+  pointer-events: none;
+  line-height: 2.2;
+}
+
+.app {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 220px 1fr 220px;
+  grid-template-areas:
+    "sidebar  main  files";
+  height: 100vh;
+}
+
+.titlebar {
+  grid-area: titlebar;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  position: relative;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='48' viewBox='0 0 180 48'%3E%3Cpath d='M20 24c6-10 18-12 26-6 6 4 14 4 20-2 4-4 10-6 16-4' fill='none' stroke='%23B8860B' stroke-opacity='0.16' stroke-width='1'/%3E%3Cpath d='M10 38c8-8 20-8 30-4 6 2 14 1 20-4 6-5 14-6 22-3' fill='none' stroke='%23B8860B' stroke-opacity='0.10' stroke-width='1'/%3E%3C/svg%3E"),
+    conic-gradient(from var(--gold-angle) at 50% 50%, rgba(184,134,11,.08), rgba(246,211,101,.12), rgba(184,134,11,.04), rgba(246,211,101,.08), rgba(184,134,11,.08)),
+    linear-gradient(to bottom, var(--surface-1), var(--surface-0));
+  border-bottom: 1px solid color-mix(in srgb, var(--gold-deep) 22%, transparent);
+  animation: gold-rotate 12s linear infinite;
+  contain: layout paint;
+}
+
+.titlebar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: linear-gradient(to bottom, transparent, var(--gold-deep), transparent);
+  border-radius: 2px;
+}
+
+.seal-mark {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.titlebar-title {
+  font-family: 'Ma Shan Zheng', 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  background: var(--gold-foil);
+  background-size: 200% 100%;
+  background-position: var(--shimmer-x) 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-sweep 4s ease-in-out infinite alternate;
+  white-space: nowrap;
+}
+
+.titlebar-tabs {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+  align-items: center;
+}
+
+.tab {
+  padding: 6px 14px;
+  font-size: 12px;
+  color: var(--text-weak);
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  transition: color .2s, background .2s;
+  font-family: 'Noto Serif SC', 'Songti SC', serif;
+}
+.tab.active {
+  color: var(--gold-bright);
+  background: color-mix(in srgb, var(--gold-deep) 12%, transparent);
+  border-bottom: 2px solid var(--gold);
+}
+.tab:hover:not(.active) { color: var(--text-base); }
+
+.sidebar {
+  grid-area: sidebar;
+  background: linear-gradient(to bottom, var(--surface-1), var(--surface-0));
+  border-right: 1px solid color-mix(in srgb, var(--gold-deep) 18%, transparent);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: relative;
+}
+
+.sidebar::before, .sidebar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(to right, transparent, var(--gold-deep), var(--gold), var(--gold-deep), transparent);
+  opacity: .5;
+  z-index: 1;
+}
+.sidebar::before { top: 0; }
+.sidebar::after { bottom: 0; }
+
+.sidebar-header {
+  padding: 16px 16px 8px;
+  font-family: 'Ma Shan Zheng', 'Kaiti SC', serif;
+  font-size: 14px;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-section {
+  padding: 4px 8px;
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 0.08em;
+  margin-top: 8px;
+}
+
+.session-item {
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--text-base);
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: background .2s, border-color .2s, color .2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Noto Serif SC', serif;
+}
+.session-item:hover {
+  background: color-mix(in srgb, var(--gold-deep) 8%, transparent);
+  color: var(--text-strong);
+}
+.session-item.active {
+  background: color-mix(in srgb, var(--gold-deep) 14%, transparent);
+  border-left-color: var(--gold);
+  color: var(--gold-bright);
+}
+.session-item .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-faint);
+  flex-shrink: 0;
+}
+.session-item.active .dot { background: var(--gold); box-shadow: 0 0 6px var(--gold); }
+
+.new-session {
+  margin: 8px 12px;
+  padding: 8px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--gold);
+  border: 1px dashed color-mix(in srgb, var(--gold-deep) 40%, transparent);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+.new-session:hover {
+  background: color-mix(in srgb, var(--gold-deep) 8%, transparent);
+  border-color: var(--gold);
+}
+
+.main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: transparent;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.msg {
+  max-width: 760px;
+  animation: fade-up .5s ease both;
+}
+.msg-user { align-self: flex-end; }
+.msg-ai { align-self: flex-start; }
+
+.msg-user .bubble {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--surface-0) 92%, var(--gold-deep) 8%),
+    color-mix(in srgb, var(--surface-2) 95%, var(--gold-deep) 5%));
+  border: 1px solid color-mix(in srgb, var(--gold-deep) 42%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold-deep) 12%, transparent),
+              0 2px 8px color-mix(in srgb, var(--surface-0) 30%, transparent);
+  border-radius: 12px 12px 2px 12px;
+  padding: 12px 16px;
+  color: var(--gold-bright);
+  -webkit-text-fill-color: var(--gold-bright);
+  text-shadow: 0 0 4px color-mix(in srgb, var(--gold-bright) 22%, transparent);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.msg-ai .bubble {
+  background: linear-gradient(to right,
+    color-mix(in srgb, var(--surface-1) 92%, var(--gold-deep) 8%),
+    var(--surface-0) 60%);
+  border-left: 2px solid color-mix(in srgb, var(--gold-deep) 45%, transparent);
+  border-radius: 2px 12px 12px 2px;
+  padding: 12px 16px;
+  color: var(--text-base);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.msg-ai .bubble p { margin-bottom: 8px; }
+.msg-ai .bubble p:last-child { margin-bottom: 0; }
+
+.code-block {
+  margin: 8px 0;
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: ui-monospace, 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.code-header {
+  padding: 6px 12px;
+  font-size: 11px;
+  color: var(--text-faint);
+  background: color-mix(in srgb, var(--surface-2) 80%, transparent);
+  border-bottom: 1px solid var(--code-border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.code-header .lang { color: var(--gold); }
+.code-body {
+  padding: 12px 16px;
+  overflow-x: auto;
+  color: var(--text-base);
+}
+.code-body .kw { color: var(--kw); }
+.code-body .str { color: var(--str); }
+.code-body .fn { color: var(--fn); }
+.code-body .cmt { color: var(--cmt); font-style: italic; }
+.code-body .num { color: var(--num); }
+.code-body .typ { color: var(--gold-bright); }
+
+.busy-dots {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  margin-left: 4px;
+}
+.busy-dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  display: block;
+  animation: bpulse 1.2s ease-in-out infinite;
+}
+.busy-dots i:nth-child(2) { animation-delay: .2s; }
+.busy-dots i:nth-child(3) { animation-delay: .4s; }
+
+.files-panel {
+  grid-area: files;
+  background: linear-gradient(to bottom, var(--surface-1), var(--surface-0));
+  border-left: 1px solid color-mix(in srgb, var(--gold-deep) 18%, transparent);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.files-header {
+  padding: 16px 16px 8px;
+  font-family: 'Ma Shan Zheng', 'Kaiti SC', serif;
+  font-size: 14px;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.file-tree { padding: 4px 0; font-size: 13px; font-family: 'Noto Serif SC', serif; }
+.file-item {
+  padding: 4px 16px;
+  color: var(--text-base);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 4px;
+  transition: background .2s, color .2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.file-item:hover { background: color-mix(in srgb, var(--gold-deep) 8%, transparent); color: var(--text-strong); }
+.file-item.folder { color: var(--gold); font-weight: 500; }
+.file-item.indent { padding-left: 28px; }
+.file-item.indent2 { padding-left: 40px; }
+
+.input-area {
+  padding: 12px 24px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  border-top: 1px solid color-mix(in srgb, var(--gold-deep) 12%, transparent);
+}
+.input-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.input-toolbar { display: flex; gap: 8px; align-items: center; }
+.input-select {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: 'Noto Serif SC', serif;
+  color: var(--text-weak);
+  background: color-mix(in srgb, var(--surface-2) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gold-deep) 22%, transparent);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color .2s, border-color .2s;
+}
+.input-select:hover { color: var(--gold-bright); border-color: var(--gold); }
+.input-select .arrow { font-size: 10px; opacity: 0.6; }
+
+.input-box {
+  flex: 1;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--border-deco) 94%, var(--gold-deep) 6%),
+    var(--surface-2));
+  border: 1px solid color-mix(in srgb, var(--gold-deep) 32%, transparent);
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: inset 0 0 24px color-mix(in srgb, var(--gold-deep) 9%, transparent),
+              0 4px 24px color-mix(in srgb, var(--surface-0) 32%, transparent);
+  color: var(--gold-bright);
+  font-family: 'Noto Serif SC', serif;
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  text-shadow: 0 0 6px color-mix(in srgb, var(--gold-bright) 30%, transparent);
+  -webkit-text-fill-color: var(--gold-bright);
+}
+.input-box .placeholder { color: var(--text-faint); -webkit-text-fill-color: var(--text-faint); text-shadow: none; }
+
+.seal-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--seal);
+  border: 1px solid var(--seal-deep);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--seal) 40%, transparent),
+              inset 0 1px 0 color-mix(in srgb, var(--seal-ink) 22%, transparent);
+  color: var(--seal-ink);
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color .15s ease, transform .1s ease;
+  animation: seal-pulse 3s ease-in-out infinite;
+}
+.seal-btn:hover {
+  background-color: var(--seal-bright);
+  transform: translateY(-1px);
+}
+.seal-btn:active {
+  transform: translateY(0) scale(.96);
+}
+.seal-btn svg { width: 20px; height: 20px; }
+
+.statusbar {
+  grid-area: statusbar;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+  font-size: 11px;
+  color: var(--text-faint);
+  background: linear-gradient(to top, var(--surface-0), var(--surface-1));
+  border-top: 1px solid color-mix(in srgb, var(--gold-deep) 14%, transparent);
+}
+.statusbar .sep { color: color-mix(in srgb, var(--gold-deep) 50%, transparent); }
+.statusbar .gold-text { color: var(--gold); }
+
+.theme-toggle {
+  position: fixed;
+  top: 10px;
+  right: 16px;
+  z-index: 100;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--gold-deep) 40%, transparent);
+  background: var(--surface-2);
+  color: var(--gold);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s, transform .2s;
+  font-size: 16px;
+}
+.theme-toggle:hover { transform: rotate(20deg); background: var(--surface-3); }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--scroll-track); }
+::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border-radius: 4px;
+  border: 1px solid var(--scroll-track);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--gold-bright); }
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--gold) 40%, transparent);
+}
+
+.character-box {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+.character-stage {
+  position: relative;
+  width: 140px;
+  height: 249px;
+  border-radius: 12px;
+  overflow: hidden;
+  filter: drop-shadow(0 0 16px color-mix(in srgb, var(--gold) 28%, transparent));
+  transition: filter .3s;
+}
+.character-stage::before {
+  content: '';
+  position: absolute;
+  inset: -24px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--gold) 14%, transparent), transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+  animation: ink-breathe 6s ease-in-out infinite;
+}
+.character-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+.character-bubble {
+  max-width: 220px;
+  padding: 8px 14px;
+  background: color-mix(in srgb, var(--surface-2) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gold-deep) 38%, transparent);
+  border-radius: 12px 12px 2px 12px;
+  color: var(--gold-bright);
+  font-family: 'Ma Shan Zheng', 'Kaiti SC', 'STKaiti', serif;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: right;
+  letter-spacing: 0.04em;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--surface-0) 40%, transparent);
+  animation: fade-up .4s ease;
+}
+.character-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 220px;
+  justify-content: flex-end;
+}
+.char-btn {
+  padding: 3px 9px;
+  font-size: 11px;
+  font-family: 'Noto Serif SC', serif;
+  color: var(--text-weak);
+  background: color-mix(in srgb, var(--surface-2) 75%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gold-deep) 22%, transparent);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color .2s, background .2s, border-color .2s;
+}
+.char-btn:hover {
+  color: var(--gold-bright);
+  border-color: var(--gold);
+}
+.char-btn.active {
+  color: var(--gold-bright);
+  background: color-mix(in srgb, var(--gold-deep) 16%, transparent);
+  border-color: var(--gold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .deco-leaf { display: none; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="goldFoil" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F6D365"/>
+      <stop offset="0.5" stop-color="#FDA085"/>
+      <stop offset="1" stop-color="#B8860B"/>
+    </linearGradient>
+    <radialGradient id="iris" cx="0.35" cy="0.3" r="1.2">
+      <stop offset="0" stop-color="#c8b8ec"/>
+      <stop offset="0.5" stop-color="#997694"/>
+      <stop offset="1" stop-color="#5b4367"/>
+    </radialGradient>
+    <symbol id="sealMark" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10.9" stroke="url(#goldFoil)" stroke-width="1.6" fill="none"/>
+      <circle cx="12" cy="12" r="9.3" stroke="#d6b34a" stroke-width="0.5" opacity="0.7" fill="none"/>
+      <path d="M3.9 8.2 A10.9 10.9 0 0 1 8.2 3.9" stroke="#ffffff" stroke-width="0.5" fill="none" opacity="0.55"/>
+      <g fill="url(#goldFoil)">
+        <path d="M12 1.2 l0.55 1.25 1.25 0.55 -1.25 0.55 -0.55 1.25 -0.55 -1.25 -1.25 -0.55 1.25 -0.55 z"/>
+        <path d="M12 22.8 l0.55 -1.25 1.25 -0.55 -1.25 -0.55 -0.55 -1.25 -0.55 1.25 -1.25 0.55 1.25 0.55 z"/>
+        <path d="M1.2 12 l1.25 0.55 0.55 1.25 0.55 -1.25 1.25 -0.55 -1.25 -0.55 -0.55 -1.25 -0.55 1.25 z"/>
+        <path d="M22.8 12 l-1.25 0.55 -0.55 1.25 -0.55 -1.25 -1.25 -0.55 1.25 -0.55 0.55 -1.25 0.55 1.25 z"/>
+      </g>
+      <g fill="#F6D365">
+        <path d="M6.9 4.5 c0.2 -0.95 1.5 -1.4 2.4 -0.9 l-0.35 0.75 c-0.55 -0.42 -1.3 -0.32 -1.55 0.2 l-0.05 0.45 c0.9 0.45 1.55 1.2 1.75 2.1 l-0.85 0.2 c-0.22 -0.55 -0.65 -1.0 -1.2 -1.25 z"/>
+        <path d="M6.2 8.5 h3.2 v0.85 h-1.3 v4.6 h-0.95 v-4.6 h-0.95 z"/>
+      </g>
+      <g fill="#d6b34a">
+        <path d="M10.3 8.3 h5.9 v0.95 h-5.9 z"/>
+        <path d="M10.3 10.2 h5.9 v0.95 h-5.9 z"/>
+        <path d="M10.3 12.1 v5.1 c0 0.55 0.45 1.0 1.0 1.0 h3.9 c0.55 0 1.0 -0.45 1.0 -1.0 v-5.1 h0.95 v5.0 c0 1.1 -0.85 1.95 -1.95 1.95 h-3.9 c-1.1 0 -1.95 -0.85 -1.95 -1.95 v-5.0 z"/>
+      </g>
+      <g transform="translate(13.7 5.6)">
+        <ellipse cx="0" cy="0" rx="1.35" ry="1.75" fill="url(#iris)" stroke="#4a3456" stroke-width="0.25"/>
+        <path d="M-1.2 -0.5 q1.2 -1.4 2.4 -0.1" stroke="#F6D365" stroke-width="0.3" fill="none"/>
+        <circle cx="-0.45" cy="-0.6" r="0.4" fill="#ffffff" opacity="0.9"/>
+        <circle cx="0.45" cy="0.45" r="0.18" fill="#ffffff" opacity="0.6"/>
+        <circle cx="0.05" cy="0.35" r="0.42" fill="#3d2a47"/>
+      </g>
+    </symbol>
+    <symbol id="sendIcon" viewBox="0 0 24 24">
+      <path d="M3 11l18-8-8 18-2-8-8-2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="deco-layer">
+  <div class="deco-leaf"></div>
+  <div class="deco-leaf"></div>
+  <div class="deco-leaf"></div>
+  <div class="deco-leaf"></div>
+  <div class="deco-leaf"></div>
+  <div class="deco-leaf"></div>
+  <div class="deco-leaf"></div>
+  <div class="deco-leaf"></div>
+</div>
+
+<div class="poem-vertical">海上生明月<br>天涯共此时</div>
+
+<button class="theme-toggle" onclick="toggleTheme()" title="切换主题" aria-label="切换主题">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+    <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+  </svg>
+</button>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <path d="M12 22v-8.5M12 13.5C6.5 13 3.5 8.5 4.5 3.5 8 7 10.5 8 12 8.5c1.5-.5 4-1.5 7.5-5 1 5-2 9.5-7.5 10z"/>
+      </svg>
+      工作区
+    </div>
+    <div class="sidebar-section">今日</div>
+    <div class="session-item active"><span class="dot"></span>快速排序实现</div>
+    <div class="session-item"><span class="dot"></span>React 组件性能优化</div>
+    <div class="session-item"><span class="dot"></span>数据库迁移脚本</div>
+    <div class="sidebar-section">昨日</div>
+    <div class="session-item"><span class="dot"></span>API 接口设计</div>
+    <div class="session-item"><span class="dot"></span>单元测试覆盖</div>
+    <div class="session-item"><span class="dot"></span>部署流水线配置</div>
+    <div class="sidebar-section">更早</div>
+    <div class="session-item"><span class="dot"></span>用户认证模块</div>
+    <div class="session-item"><span class="dot"></span>日志系统重构</div>
+    <div class="new-session">+ 新建会话</div>
+  </aside>
+
+  <main class="main">
+    <div class="messages">
+      <div class="msg msg-user">
+        <div class="bubble">帮我用 TypeScript 写一个快速排序，要求支持泛型和自定义比较器</div>
+      </div>
+      <div class="msg msg-ai">
+        <div class="bubble">
+          <p>大人容禀。此乃支持泛型与自定义比较器之快速排序，以唐风楷书录之：</p>
+          <div class="code-block">
+            <div class="code-header"><span class="lang">typescript</span> quick-sort.ts</div>
+            <div class="code-body"><pre><span class="kw">function</span> <span class="fn">quickSort</span>&lt;<span class="typ">T</span>&gt;(
+  arr: <span class="typ">T</span>[],
+  compare: (a: <span class="typ">T</span>, b: <span class="typ">T</span>) =&gt; <span class="kw">number</span> = (a, b) =&gt; a &gt; b ? <span class="num">1</span> : <span class="num">-1</span>
+): <span class="typ">T</span>[] {
+  <span class="kw">if</span> (arr.length &lt;= <span class="num">1</span>) <span class="kw">return</span> arr;
+  <span class="kw">const</span> pivot = arr[<span class="fn">Math</span>.<span class="fn">floor</span>(arr.length / <span class="num">2</span>)];
+  <span class="kw">const</span> left  = arr.<span class="fn">filter</span>(x =&gt; <span class="fn">compare</span>(x, pivot) &lt; <span class="num">0</span>);
+  <span class="kw">const</span> mid   = arr.<span class="fn">filter</span>(x =&gt; <span class="fn">compare</span>(x, pivot) === <span class="num">0</span>);
+  <span class="kw">const</span> right = arr.<span class="fn">filter</span>(x =&gt; <span class="fn">compare</span>(x, pivot) &gt; <span class="num">0</span>);
+  <span class="kw">return</span> [...<span class="fn">quickSort</span>(left, compare), ...mid, ...<span class="fn">quickSort</span>(right, compare)];
+}</pre></div>
+          </div>
+          <p>用法示例：</p>
+          <div class="code-block">
+            <div class="code-header"><span class="lang">typescript</span> usage.ts</div>
+            <div class="code-body"><pre><span class="cmt">// 数字排序</span>
+<span class="kw">const</span> sorted = <span class="fn">quickSort</span>([<span class="num">3</span>, <span class="num">1</span>, <span class="num">4</span>, <span class="num">1</span>, <span class="num">5</span>, <span class="num">9</span>, <span class="num">2</span>, <span class="num">6</span>]);
+
+<span class="cmt">// 自定义比较器：按对象属性降序</span>
+<span class="kw">const</span> byAge = <span class="fn">quickSort</span>(users, (a, b) =&gt; b.age - a.age);</pre></div>
+          </div>
+        </div>
+      </div>
+      <div class="msg msg-user">
+        <div class="bubble">加上单元测试，用 vitest</div>
+      </div>
+      <div class="msg msg-ai">
+        <div class="bubble">
+          <p>已为大人备好 vitest 测试用例：</p>
+          <div class="code-block">
+            <div class="code-header"><span class="lang">typescript</span> quick-sort.spec.ts</div>
+            <div class="code-body"><pre><span class="kw">import</span> { <span class="fn">describe</span>, <span class="fn">it</span>, <span class="fn">expect</span> } <span class="kw">from</span> <span class="str">'vitest'</span>;
+<span class="kw">import</span> { <span class="fn">quickSort</span> } <span class="kw">from</span> <span class="str">'./quick-sort'</span>;
+
+<span class="fn">describe</span>(<span class="str">'quickSort'</span>, () =&gt; {
+  <span class="fn">it</span>(<span class="str">'排序数字数组'</span>, () =&gt; {
+    <span class="fn">expect</span>(<span class="fn">quickSort</span>([<span class="num">3</span>,<span class="num">1</span>,<span class="num">4</span>,<span class="num">1</span>,<span class="num">5</span>])).<span class="fn">toEqual</span>([<span class="num">1</span>,<span class="num">1</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>]);
+  });
+  <span class="fn">it</span>(<span class="str">'支持自定义比较器'</span>, () =&gt; {
+    <span class="kw">const</span> cmp = (a: <span class="kw">number</span>, b: <span class="kw">number</span>) =&gt; b - a;
+    <span class="fn">expect</span>(<span class="fn">quickSort</span>([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>], cmp)).<span class="fn">toEqual</span>([<span class="num">3</span>,<span class="num">2</span>,<span class="num">1</span>]);
+  });
+  <span class="fn">it</span>(<span class="str">'空数组与单元素'</span>, () =&gt; {
+    <span class="fn">expect</span>(<span class="fn">quickSort</span>([])).<span class="fn">toEqual</span>([]);
+    <span class="fn">expect</span>(<span class="fn">quickSort</span>([<span class="num">42</span>])).<span class="fn">toEqual</span>([<span class="num">42</span>]);
+  });
+});</pre></div>
+          </div>
+        </div>
+      </div>
+      <div class="msg msg-ai">
+        <div class="bubble">
+          <p>姜晓正在整理余下卷宗<span class="busy-dots"><i></i><i></i><i></i></span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-col">
+        <div class="input-box"><span class="placeholder">大人有何吩咐，姜晓在此候命...</span></div>
+        <div class="input-toolbar">
+          <span class="input-select">Workspace Write <span class="arrow">▼</span></span>
+          <span class="input-select">DeepSeek-V4-Flash Max <span class="arrow">▼</span></span>
+        </div>
+      </div>
+      <button class="seal-btn" aria-label="发送">
+        <svg><use href="#sendIcon"/></svg>
+      </button>
+    </div>
+  </main>
+
+  <aside class="files-panel">
+    <div class="files-header">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 7h18M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7l2-3h6l2 3"/>
+      </svg>
+      文件
+    </div>
+    <div class="file-tree">
+      <div class="file-item folder">.scratch/</div>
+      <div class="file-item folder indent">22-omos-jx-.../</div>
+      <div class="file-item folder">docs/</div>
+      <div class="file-item folder indent">adr/</div>
+      <div class="file-item folder">scripts/</div>
+      <div class="file-item folder">skills/</div>
+      <div class="file-item folder">packages/</div>
+      <div class="file-item folder indent">skins/</div>
+      <div class="file-item folder indent">dsh-task-board/</div>
+      <div class="file-item">AGENTS.md</div>
+      <div class="file-item">CODEBUDDY.md</div>
+      <div class="file-item">DESIGN.md</div>
+      <div class="file-item">package.json</div>
+      <div class="file-item">pnpm-workspace.yaml</div>
+    </div>
+  </aside>
+
+
+</div>
+
+<div class="character-box">
+  <div class="character-bubble" id="charBubble">大人，有何吩咐？</div>
+  <div class="character-stage">
+    <img class="character-img" id="charImg" src="file:///D:/work/space/open-code-mm/opencode/packages/app/public/character/idle.webp" alt="姜晓">
+  </div>
+  <div class="character-controls">
+    <button class="char-btn active" data-state="idle">待机</button>
+    <button class="char-btn" data-state="thinking">思考</button>
+    <button class="char-btn" data-state="reading">阅卷</button>
+    <button class="char-btn" data-state="replying">回复</button>
+    <button class="char-btn" data-state="working">工作</button>
+    <button class="char-btn" data-state="done">完成</button>
+    <button class="char-btn" data-state="error">报错</button>
+    <button class="char-btn" data-state="welcome">欢迎</button>
+    <button class="char-btn" data-state="permission">权限</button>
+    <button class="char-btn" data-state="listening">候命</button>
+  </div>
+</div>
+
+<script>
+function toggleTheme() {
+  const root = document.documentElement;
+  const cur = root.getAttribute('data-theme');
+  root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+}
+
+const CHAR_BASE = 'file:///D:/work/space/open-code-mm/opencode/packages/app/public/character/';
+const CHAR_TEXT = {
+  idle: '大人，有何吩咐？',
+  thinking: '容姜晓思量片刻……',
+  reading: '正在阅卷，稍候。',
+  replying: '为大人细细道来。',
+  working: '遵命，这就去办。',
+  error: '此事有蹊跷，容我再查。',
+  welcome: '大人来了，姜晓候久。',
+  done: '此事已毕，大人过目。',
+  permission: '此事需大人首肯。',
+  listening: '姜晓静候大人示下。',
+};
+const charImg = document.getElementById('charImg');
+const charBubble = document.getElementById('charBubble');
+document.querySelectorAll('.char-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var state = btn.dataset.state;
+    document.querySelectorAll('.char-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    charImg.src = CHAR_BASE + state + '.webp';
+    charBubble.textContent = CHAR_TEXT[state];
+    charBubble.style.animation = 'none';
+    void charBubble.offsetWidth;
+    charBubble.style.animation = 'fade-up .4s ease';
+  });
+});
+</script>
+</body>
+</html>

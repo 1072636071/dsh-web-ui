@@ -1,0 +1,188 @@
+/* ==========================================================================
+   姜晓 · 墨金卷轴 / 宣纸梅花 — 设计令牌
+   深色"墨金卷轴银杏" + 浅色"宣纸梅花" 双主题
+   事实源：.temp/skin-preview/index.html demo（已确认）
+   ========================================================================== */
+
+/* --- @property 可动画自定义属性 --------------------------------------------- */
+@property --gold-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@property --shimmer-x {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 100%;
+}
+@property --breathe {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1;
+}
+
+/* --- 深色：墨金卷轴银杏 ----------------------------------------------------- */
+:root[data-theme="dark"] {
+  /* Surface 表面色阶（0 最深/底，3 最浅/raised） */
+  --jx-surface-0: #0b090d;
+  --jx-surface-1: #121016;
+  --jx-surface-2: #1a1620;
+  --jx-surface-3: #2d242f;
+
+  /* Text 文字色阶（strong 最亮，faint 最暗） */
+  --jx-text-strong: #f2ead8;
+  --jx-text-base: #f2ead8;
+  --jx-text-weak: #a99c8a;
+  --jx-text-faint: #8a7e6e;
+
+  /* Gold 金族（品牌金色，装饰与强调） */
+  --jx-gold-bright: #f6d365;
+  --jx-gold: #d6b34a;
+  --jx-gold-deep: #b8860b;
+  --jx-gold-dim: #996515;
+  --jx-ginkgo: #dfb793;
+  --jx-gold-foil: linear-gradient(135deg, #f6d365 0%, #fda085 50%, #b8860b 100%);
+
+  /* Seal 印章族（朱红印章按钮） */
+  --jx-seal: #c7493a;
+  --jx-seal-deep: #a8382b;
+  --jx-seal-bright: #d85444;
+  --jx-seal-ink: #fff8ef;
+
+  /* Cinnabar 朱砂（印章/强调） */
+  --jx-cinnabar: #c3272b;
+
+  /* Atmosphere 氛围（渐变/特效层） */
+  --jx-border-deco: #3d3218;
+  --jx-ink-glow: rgba(184, 134, 11, 0.06);
+
+  /* Scrollbar 滚动条 */
+  --jx-scroll-track: #2a2210;
+  --jx-scroll-thumb: #b8860b;
+
+  /* Code syntax 代码语法高亮 */
+  --jx-code-bg: #0b090d;
+  --jx-code-border: rgba(184, 134, 11, 0.26);
+  --jx-kw: #d6b34a;
+  --jx-str: #86b08a;
+  --jx-fn: #7fd8e8;
+  --jx-cmt: #8a7e6e;
+  --jx-num: #f6d365;
+
+  /* Decorative 飘落装饰色 */
+  --jx-petal-1: #d6b34a;
+  --jx-petal-2: #dfb793;
+  --jx-petal-3: #b8860b;
+  --jx-poem-color: #dfb793;
+
+  /* Typography 字体 */
+  --jx-font-display: 'Ma Shan Zheng', 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
+  --jx-font-ui: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+  --jx-font-code: ui-monospace, 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+
+  /* Motion 动效时长 */
+  --jx-dur-fast: 0.15s;
+  --jx-dur: 0.35s;
+  --jx-breathe: 8s;
+  --jx-gold-rotate: 12s;
+  --jx-shimmer: 4s;
+  --jx-leaf-fall-min: 18s;
+  --jx-leaf-fall-max: 28s;
+  --jx-seal-pulse: 3s;
+  --jx-bpulse: 1.2s;
+
+  /* Radius 圆角 */
+  --jx-radius-sm: 4px;
+  --jx-radius-md: 6px;
+  --jx-radius-lg: 8px;
+  --jx-radius-xl: 12px;
+  --jx-radius-seal: 50%;
+
+  /* Shadow 深度 */
+  --jx-shadow-1: 0 2px 8px rgba(5, 3, 8, 0.5);
+  --jx-shadow-2: 0 8px 24px rgba(5, 3, 8, 0.55);
+  --jx-gold-rim: 0 0 0 1px #3d3218, 0 0 14px rgba(246, 211, 101, 0.12);
+
+  /* Layout 布局 */
+  --jx-sidebar-w: 220px;
+  --jx-files-w: 220px;
+}
+
+/* --- 浅色：宣纸梅花 ------------------------------------------------------- */
+:root[data-theme="light"] {
+  /* Surface */
+  --jx-surface-0: #faf5ee;
+  --jx-surface-1: #f5eddf;
+  --jx-surface-2: #efe3d0;
+  --jx-surface-3: #e8dcc8;
+
+  /* Text */
+  --jx-text-strong: #2a241a;
+  --jx-text-base: #5d4a42;
+  --jx-text-weak: #7d6a5e;
+  --jx-text-faint: #8a7765;
+
+  /* Gold */
+  --jx-gold-bright: #9c7a1e;
+  --jx-gold: #b8860b;
+  --jx-gold-deep: #8a6508;
+  --jx-gold-dim: #6f5306;
+  --jx-ginkgo: #b8860b;
+  --jx-gold-foil: linear-gradient(135deg, #b8860b 0%, #d97a8e 50%, #8a6508 100%);
+
+  /* Seal */
+  --jx-seal: #8e3a49;
+  --jx-seal-deep: #7a2a39;
+  --jx-seal-bright: #d97a8e;
+  --jx-seal-ink: #fff8f6;
+
+  /* Cinnabar */
+  --jx-cinnabar: #8e3a49;
+
+  /* Atmosphere */
+  --jx-border-deco: #d9c9b5;
+  --jx-ink-glow: rgba(178, 74, 92, 0.05);
+
+  /* Scrollbar */
+  --jx-scroll-track: #ece0d0;
+  --jx-scroll-thumb: #d97a8e;
+
+  /* Code syntax */
+  --jx-code-bg: #f5eddf;
+  --jx-code-border: rgba(138, 101, 8, 0.22);
+  --jx-kw: #8a6508;
+  --jx-str: #3d7a3d;
+  --jx-fn: #2c6a7a;
+  --jx-cmt: #8a7765;
+  --jx-num: #9c7a1e;
+
+  /* Plum 梅花装饰色 */
+  --jx-petal-1: #d97a8e;
+  --jx-petal-2: #e89aa8;
+  --jx-petal-3: #b24a5c;
+  --jx-poem-color: #8e3a49;
+
+  /* Typography / Motion / Radius / Shadow / Layout 同深色 */
+  --jx-font-display: 'Ma Shan Zheng', 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
+  --jx-font-ui: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+  --jx-font-code: ui-monospace, 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+  --jx-dur-fast: 0.15s;
+  --jx-dur: 0.35s;
+  --jx-breathe: 8s;
+  --jx-gold-rotate: 12s;
+  --jx-shimmer: 4s;
+  --jx-leaf-fall-min: 18s;
+  --jx-leaf-fall-max: 28s;
+  --jx-seal-pulse: 3s;
+  --jx-bpulse: 1.2s;
+  --jx-radius-sm: 4px;
+  --jx-radius-md: 6px;
+  --jx-radius-lg: 8px;
+  --jx-radius-xl: 12px;
+  --jx-radius-seal: 50%;
+  --jx-shadow-1: 0 2px 8px rgba(5, 3, 8, 0.25);
+  --jx-shadow-2: 0 8px 24px rgba(5, 3, 8, 0.3);
+  --jx-gold-rim: 0 0 0 1px #d9c9b5, 0 0 14px rgba(184, 134, 11, 0.12);
+  --jx-sidebar-w: 220px;
+  --jx-files-w: 220px;
+}
