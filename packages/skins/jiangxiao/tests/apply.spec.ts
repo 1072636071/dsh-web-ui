@@ -1,18 +1,35 @@
 // @vitest-environment jsdom
 /**
- * Jiangxiao skin apply spec — apply/dispose 契约 + CSS 炫技效果验证。
+ * Jiangxiao skin apply spec — apply/dispose 契约 + 浮层契约 + CSS 炫技效果验证。
  *
  * 契约：body 属性设置/移除，woff2 @font-face 注入/移除，不注入 DOM chrome。
+ * 浮层契约：未导入素材（fetch 404）→ 无浮层 DOM；导入后（fetch 200）→
+ *   浮层标记存在（data-jx-overlay="character"）。
  * CSS：侧边栏背景用 surface 色阶（非屎黄色），@property 注册，keyframes 存在，
  * 银杏叶/梅花飘落 SVG，朱砂印章发送钮。
+ *
+ * 注：jsdom 环境下 import.meta.url 非 file: scheme，fileURLToPath(new URL(...))
+ * 会抛 ERR_INVALID_URL_SCHEME。resolveAsset 用 try/catch 回退到 process.cwd()
+ * （vitest cwd 即包根）。
  */
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Context, type Fiber } from '@deepseek-ai/cordis'
 import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { apply } from '../src/client/index.ts'
 
-const cssPath = fileURLToPath(new URL('../src/client/jiangxiao.module.css', import.meta.url))
+/** 解析测试相对路径到绝对路径，兼容 node 与 jsdom 环境。 */
+function resolveAsset(relativePath: string): string {
+  try {
+    return fileURLToPath(new URL(relativePath, import.meta.url))
+  } catch {
+    // jsdom 下 import.meta.url 非 file: scheme；回退到包根（vitest cwd）。
+    return resolve(process.cwd(), relativePath.replace(/^(\.\.\/)+/, ''))
+  }
+}
+
+const cssPath = resolveAsset('../src/client/jiangxiao.module.css')
 const css = readFileSync(cssPath, 'utf8')
 
 let fiber: Fiber | undefined
@@ -23,12 +40,18 @@ async function mount(): Promise<Fiber> {
   return f
 }
 
+beforeEach(() => {
+  // 默认 mock fetch 404（素材未导入），避免真实 HTTP 请求挂起。
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 404 }))
+})
+
 afterEach(async () => {
   await fiber?.dispose()
   fiber = undefined
   document.body.innerHTML = ''
   document.body.removeAttribute('style')
   document.title = ''
+  vi.unstubAllGlobals()
 })
 
 describe('Jiangxiao skin apply', () => {
@@ -72,6 +95,34 @@ describe('Jiangxiao skin apply', () => {
     expect(document.head.querySelector('link[rel="icon"]')).toBeNull()
     await fiber.dispose()
     expect(document.head.querySelector('link[rel="icon"]')).toBeNull()
+  })
+})
+
+describe('Jiangxiao skin overlay contract — asset import gate', () => {
+  it('no overlay DOM when assets not imported (fetch 404)', async () => {
+    // fetch 已在 beforeEach mock 为 404
+    fiber = await mount()
+    // 等待浮层探测的 microtask/task 完成
+    await new Promise((r) => setTimeout(r, 20))
+    expect(document.querySelector('[data-jx-overlay="character"]')).toBeNull()
+  })
+
+  it('overlay present (data-jx-overlay) when assets imported (fetch 200)', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, status: 200 }))
+    fiber = await mount()
+    await vi.waitFor(() => {
+      expect(document.querySelector('[data-jx-overlay="character"]')).not.toBeNull()
+    })
+  })
+
+  it('overlay retracted on dispose when assets imported', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, status: 200 }))
+    fiber = await mount()
+    await vi.waitFor(() => {
+      expect(document.querySelector('[data-jx-overlay="character"]')).not.toBeNull()
+    })
+    await fiber.dispose()
+    expect(document.querySelector('[data-jx-overlay="character"]')).toBeNull()
   })
 })
 

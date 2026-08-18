@@ -57,8 +57,11 @@ body[data-dsh-jiangxiao] {
   --jx-hl-file: #7fd8e8;
   --jx-hl-agent: #e5c07b;
   --jx-success: #86b08a;
+  --jx-success-soft: #1c3d26;
   --jx-warn: #d9a05b;
+  --jx-warn-soft: #3a2e18;
   --jx-error: #d06552;
+  --jx-error-soft: #3a1c1c;
   --jx-border-deco: #3d3218;
   --jx-selection: rgba(184, 134, 11, 0.3);
   --jx-scroll-track: #2a2210;
@@ -101,7 +104,7 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
   --jx-gold-deep: #8a6508;
   --jx-gold-dim: #6f5306;
   --jx-ginkgo: #b8860b;
-  --jx-gold-foil: linear-gradient(135deg, #b8860b 0%, #d97a8e 50%, #6f5206 100%);
+  --jx-gold-foil: linear-gradient(135deg, #b8860b 0%, #d97a8e 50%, #8a6508 100%);
   --jx-seal: #8e3a49;
   --jx-seal-deep: #7a2a39;
   --jx-seal-bright: #d97a8e;
@@ -117,8 +120,11 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
   --jx-hl-file: #2c6a7a;
   --jx-hl-agent: #9c7a1e;
   --jx-success: #3d7a3d;
+  --jx-success-soft: #ddf3e3;
   --jx-warn: #9c6b1e;
+  --jx-warn-soft: #fdf3dd;
   --jx-error: #a83a3a;
+  --jx-error-soft: #f8dcdc;
   --jx-border-deco: #d9c9b5;
   --jx-selection: rgba(178, 74, 92, 0.14);
   --jx-scroll-track: #ece0d0;
@@ -394,11 +400,11 @@ body[data-dsh-jiangxiao] {
   --dsw-alias-state-error-secondary: var(--jx-seal-bright);
   --dsw-alias-state-success-primary: var(--jx-success);
   --dsw-alias-state-success-secondary: var(--jx-success);
-  --dsw-alias-state-success-tertiary: #1c3d26;
+  --dsw-alias-state-success-tertiary: var(--jx-success-soft);
   --dsw-alias-state-warn-label: var(--jx-warn);
   --dsw-alias-state-warn-primary: var(--jx-warn);
   --dsw-alias-state-warn-secondary: var(--jx-warn);
-  --dsw-alias-state-warn-tertiary: #3a2e18;
+  --dsw-alias-state-warn-tertiary: var(--jx-warn-soft);
   --dsw-alias-toast-bg: var(--jx-surface-2);
   --dsw-alias-tooltip-bg: var(--jx-surface-2);
   --dsw-alias-tooltip-fg: var(--jx-text-base);
@@ -487,11 +493,11 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
   --dsw-alias-state-error-secondary: var(--jx-seal);
   --dsw-alias-state-success-primary: var(--jx-success);
   --dsw-alias-state-success-secondary: var(--jx-success);
-  --dsw-alias-state-success-tertiary: #ddf3e3;
+  --dsw-alias-state-success-tertiary: var(--jx-success-soft);
   --dsw-alias-state-warn-label: var(--jx-warn);
   --dsw-alias-state-warn-primary: var(--jx-warn);
   --dsw-alias-state-warn-secondary: var(--jx-warn);
-  --dsw-alias-state-warn-tertiary: #fdf3dd;
+  --dsw-alias-state-warn-tertiary: var(--jx-warn-soft);
   --dsw-alias-toast-bg: var(--jx-surface-2);
   --dsw-alias-tooltip-bg: var(--jx-surface-2);
   --dsw-alias-tooltip-fg: var(--jx-text-strong);
@@ -525,11 +531,11 @@ body[data-dsh-jiangxiao] {
   --aion-primary: var(--jx-gold);
   --aion-primary-hover: var(--jx-gold-bright);
   --aion-success: var(--jx-success);
-  --aion-success-soft: #1c3d26;
+  --aion-success-soft: var(--jx-success-soft);
   --aion-warning: var(--jx-warn);
-  --aion-warning-soft: #3a2e18;
+  --aion-warning-soft: var(--jx-warn-soft);
   --aion-danger: var(--jx-error);
-  --aion-danger-soft: #3a1c1c;
+  --aion-danger-soft: var(--jx-error-soft);
   --aion-brand: var(--jx-gold);
   --aion-aou-1: var(--jx-surface-1);
   --aion-aou-2: var(--jx-surface-2);
@@ -562,11 +568,11 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
   --aion-primary: var(--jx-gold);
   --aion-primary-hover: var(--jx-gold-deep);
   --aion-success: var(--jx-success);
-  --aion-success-soft: #ddf3e3;
+  --aion-success-soft: var(--jx-success-soft);
   --aion-warning: var(--jx-warn);
-  --aion-warning-soft: #fdf3dd;
+  --aion-warning-soft: var(--jx-warn-soft);
   --aion-danger: var(--jx-error);
-  --aion-danger-soft: #f8dcdc;
+  --aion-danger-soft: var(--jx-error-soft);
   --aion-brand: var(--jx-gold);
   --aion-aou-1: var(--jx-surface-1);
   --aion-aou-2: var(--jx-surface-2);
@@ -659,8 +665,12 @@ body[data-dsh-jiangxiao] [data-slot='titlebar-v2'] {
     conic-gradient(from var(--jx-gold-angle) at 50% 50%, rgba(184,134,11,.08), rgba(246,211,101,.12), rgba(184,134,11,.04), rgba(246,211,101,.08), rgba(184,134,11,.08));
   border-bottom: 1px solid color-mix(in srgb, var(--jx-gold-deep) 22%, transparent);
   position: relative;
-  animation: jx-gold-rotate 12s linear infinite;
   contain: layout paint;
+}
+
+/* fx-shimmer: 鎏金流光顶线（titlebar gold-rotate 动画）。 */
+html.fx-shimmer body[data-dsh-jiangxiao] [data-slot='titlebar-v2'] {
+  animation: jx-gold-rotate 12s linear infinite;
 }
 
 body[data-dsh-jiangxiao] [data-slot='titlebar-v2']::after {
@@ -703,12 +713,22 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) [data-slot='titlebar-v2'] [da
    --jx-text-gold (still AA on surface-0). strong/b keep a flat bright-gold
    so small inline emphasis stays crisp. */
 
+/* Headings base: Kaiti display + solid AA gold (shimmer off 时静态金字)。 */
 body[data-dsh-jiangxiao] h1,
 body[data-dsh-jiangxiao] h2,
 body[data-dsh-jiangxiao] h3,
 body[data-dsh-jiangxiao] h4 {
   font-family: var(--jx-font-display);
   letter-spacing: 0.01em;
+  color: var(--jx-text-gold);
+  -webkit-text-fill-color: var(--jx-text-gold);
+}
+
+/* fx-shimmer: 标题烫金流动（gold-foil background-clip:text + sweep 动画）。 */
+html.fx-shimmer body[data-dsh-jiangxiao] h1,
+html.fx-shimmer body[data-dsh-jiangxiao] h2,
+html.fx-shimmer body[data-dsh-jiangxiao] h3,
+html.fx-shimmer body[data-dsh-jiangxiao] h4 {
   background: var(--jx-gold-foil);
   background-size: 200% 100%;
   background-position: var(--jx-shimmer-x) 0;
@@ -721,10 +741,10 @@ body[data-dsh-jiangxiao] h4 {
 
 /* @supports fallback: no background-clip: text -> solid AA gold. */
 @supports not ((-webkit-background-clip: text) or (background-clip: text)) {
-  body[data-dsh-jiangxiao] h1,
-  body[data-dsh-jiangxiao] h2,
-  body[data-dsh-jiangxiao] h3,
-  body[data-dsh-jiangxiao] h4 {
+  html.fx-shimmer body[data-dsh-jiangxiao] h1,
+  html.fx-shimmer body[data-dsh-jiangxiao] h2,
+  html.fx-shimmer body[data-dsh-jiangxiao] h3,
+  html.fx-shimmer body[data-dsh-jiangxiao] h4 {
     background: none;
     color: var(--jx-text-gold);
     -webkit-text-fill-color: var(--jx-text-gold);
@@ -767,7 +787,9 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) b {
   50% { box-shadow: 0 2px 6px rgba(199,73,58,.4), inset 0 1px 0 rgba(255,248,239,.22), 0 0 12px 2px rgba(199,73,58,.15); }
 }
 
-body[data-dsh-jiangxiao]::before {
+/* fx-fall: 银杏(暗)/梅花(浅)飘落。CSS body::before 是无 WAAPI 环境的降级
+   fallback；html.fx-fall-waapi 抑制此 fallback（WAAPI 12 片接管，见 fx-system.ts）。 */
+html.fx-fall:not(.fx-fall-waapi) body[data-dsh-jiangxiao]::before {
   content: '';
   position: fixed;
   inset: -40px 0 0 0;
@@ -785,7 +807,7 @@ body[data-dsh-jiangxiao]::before {
   mask-image: linear-gradient(to bottom, black, transparent 88%);
 }
 
-body[data-dsh-jiangxiao]:not([data-ds-dark-theme])::before {
+html.fx-fall:not(.fx-fall-waapi) body[data-dsh-jiangxiao]:not([data-ds-dark-theme])::before {
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23d97a8e'%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(72 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(144 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(216 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(288 50 50)'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='5' fill='%23b24a5c'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23e89aa8' transform='rotate(36 50 50)'%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(72 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(144 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(216 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(288 50 50)'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='5' fill='%23b24a5c'/%3E%3C/svg%3E"),
@@ -797,7 +819,8 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme])::before {
   mask-image: none;
 }
 
-body[data-dsh-jiangxiao]::after {
+/* fx-breathe: 墨光呼吸背景（body::after opacity 呼吸）。 */
+html.fx-breathe body[data-dsh-jiangxiao]::after {
   content: '';
   position: fixed;
   inset: 0;
@@ -819,15 +842,19 @@ body[data-dsh-jiangxiao] [data-action='prompt-submit'] {
   box-shadow: 0 2px 6px color-mix(in srgb, var(--jx-seal) 40%, transparent), inset 0 1px 0 color-mix(in srgb, var(--jx-seal-ink) 22%, transparent) !important;
   color: var(--jx-seal-ink) !important;
   transition: background-color var(--jx-dur-fast) ease, transform 0.1s ease;
+}
+
+/* fx-micro: 印章脉冲 + hover/active 微交互。 */
+html.fx-micro body[data-dsh-jiangxiao] [data-action='prompt-submit'] {
   animation: jx-seal-pulse 3s ease-in-out infinite;
 }
 
-body[data-dsh-jiangxiao] [data-action='prompt-submit']:hover:not(:disabled) {
+html.fx-micro body[data-dsh-jiangxiao] [data-action='prompt-submit']:hover:not(:disabled) {
   background-color: var(--jx-seal-bright) !important;
   transform: translateY(-1px);
 }
 
-body[data-dsh-jiangxiao] [data-action='prompt-submit']:active:not(:disabled) {
+html.fx-micro body[data-dsh-jiangxiao] [data-action='prompt-submit']:active:not(:disabled) {
   transform: translateY(0) scale(0.96);
 }
 

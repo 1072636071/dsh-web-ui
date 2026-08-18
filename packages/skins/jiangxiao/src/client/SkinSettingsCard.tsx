@@ -11,34 +11,111 @@ import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-cli
 // Type-only: pulls the settings-surface SlotMap merge.
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
 import css from './skin-card.module.css'
+import {
+  FX_KEYS,
+  loadFxState,
+  getFxSystem,
+  type FxKey,
+  type FxState,
+} from './fx-system.ts'
+import { probeAssetReady } from './character-overlay.ts'
+import type { JiangxiaoKey } from './locales.ts'
 
 /** The face the card's slot entry injects (currently none — purely static). */
 export interface SkinJiangxiaoCardFace {
   /** No injected services. */
 }
 
-/** The pet registry entry served by /api/pet/pets. */
-interface PetChoice {
-  id: string
-  displayName: string
+/** FX 开关的 locale key 映射。 */
+const FX_LABEL_KEYS: Record<FxKey, 'fx.shimmer' | 'fx.fall' | 'fx.grain' | 'fx.breathe' | 'fx.micro'> = {
+  shimmer: 'fx.shimmer',
+  fall: 'fx.fall',
+  grain: 'fx.grain',
+  breathe: 'fx.breathe',
+  micro: 'fx.micro',
 }
 
-/** Check if the Jiangxiao pet is registered (imported). */
-async function hasJiangxiaoPet(): Promise<boolean> {
-  try {
-    const response = await fetch('/api/pet/pets')
-    if (!response.ok) return false
-    const list: PetChoice[] = await response.json()
-    return list.some(pet => pet.id === 'jiangxiao')
-  } catch {
-    return false
+/** FX 特效开关区块：五效独立 toggle + 全开/全关。消费语义别名，无颜色字面量。 */
+function FxToggles(props: { t: (key: JiangxiaoKey) => string }) {
+  const { t } = props
+  const [state, setState] = useState<FxState>(() => loadFxState())
+
+  /** 无全局系统时的降级：仅持久化 + 同步 html 类，下次 init 读取。 */
+  const applyFxLocal = (next: FxState): void => {
+    setState(next)
+    try {
+      localStorage.setItem('jx-fx', JSON.stringify(next))
+    } catch {
+      // 隐私模式
+    }
+    for (const k of FX_KEYS) document.documentElement.classList.toggle(`fx-${k}`, next[k])
   }
+
+  const toggle = (key: FxKey, enabled: boolean): void => {
+    const sys = getFxSystem()
+    if (sys !== undefined) {
+      sys.setFx(key, enabled)
+      setState(sys.getAll())
+    } else {
+      applyFxLocal({ ...state, [key]: enabled })
+    }
+  }
+
+  const toggleAll = (enabled: boolean): void => {
+    const sys = getFxSystem()
+    if (sys !== undefined) {
+      sys.setAll(enabled)
+      setState(sys.getAll())
+    } else {
+      applyFxLocal({ shimmer: enabled, fall: enabled, grain: enabled, breathe: enabled, micro: enabled })
+    }
+  }
+
+  return (
+    <div className={css.fxBlock}>
+      <span className={css.fxTitle}>{t('fx.title')}</span>
+      <span className={css.fxDescription}>{t('fx.description')}</span>
+      <div className={css.fxList}>
+        {FX_KEYS.map((key) => (
+          <label key={key} className={css.fxRow}>
+            <input
+              type="checkbox"
+              className={css.fxCheckbox}
+              checked={state[key]}
+              onChange={(e) => toggle(key, e.target.checked)}
+            />
+            <span className={css.fxLabel}>{t(FX_LABEL_KEYS[key])}</span>
+          </label>
+        ))}
+      </div>
+      <div className={css.fxActions}>
+        <button type="button" className={css.fxButton} onClick={() => toggleAll(true)}>
+          {t('fx.allOn')}
+        </button>
+        <button type="button" className={css.fxButton} onClick={() => toggleAll(false)}>
+          {t('fx.allOff')}
+        </button>
+      </div>
+    </div>
+  )
 }
 
 /** Props the renderer binds for the Jiangxiao skin settings card. */
 export type SkinJiangxiaoCardProps =
   PropsLocale<'skinJiangxiao'>
   & InjectFace<SkinJiangxiaoCardFace>
+
+/** 设置卡视图态：探测中 / 就绪 / 未就绪（导入引导）。 */
+export type SkinCardView = 'checking' | 'ready' | 'not-ready'
+
+/**
+ * 设置卡视图分支判定（纯函数，可单测）。
+ * checking=true -> checking；否则 petImported===true -> ready，否则 not-ready。
+ */
+export function resolveSkinCardView(checking: boolean, petImported: boolean | null): SkinCardView {
+  if (checking) return 'checking'
+  return petImported === true ? 'ready' : 'not-ready'
+}
 
 /**
  * Render the Jiangxiao skin settings card.
@@ -49,11 +126,12 @@ export function SkinJiangxiaoCard(props: SkinJiangxiaoCardProps) {
   const { t } = props
   const [petImported, setPetImported] = useState<boolean | null>(null)
   const [checking, setChecking] = useState(true)
+  const view = resolveSkinCardView(checking, petImported)
 
   useEffect(() => {
     let cancelled = false
     setChecking(true)
-    hasJiangxiaoPet().then(result => {
+    probeAssetReady().then(result => {
       if (cancelled) return
       setPetImported(result)
       setChecking(false)
@@ -87,11 +165,11 @@ export function SkinJiangxiaoCard(props: SkinJiangxiaoCardProps) {
       </div>
 
       <div className={css.body}>
-        {checking
+        {view === 'checking'
           ? (
             <p className={css.statusChecking}>{t('pet.guidance')}</p>
           )
-          : petImported === true
+          : view === 'ready'
             ? (
               <div className={css.activated}>
                 <span className={css.activatedBadge}>{t('pet.activated')}</span>
@@ -118,6 +196,8 @@ export function SkinJiangxiaoCard(props: SkinJiangxiaoCardProps) {
                 </button>
               </div>
             )}
+
+        <FxToggles t={t} />
       </div>
     </div>
   )

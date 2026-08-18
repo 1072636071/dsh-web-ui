@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-为 DeepSeek Harness（DSH）Web GUI 打造的唐风二次元主题皮肤，源自 openCodeMM「姜晓·墨染」设计系统。
+为 DeepSeek Harness（DSH）Web GUI 打造的唐风二次元主题皮肤，源自 openCodeMM「姜晓·墨染」设计系统。除纯呈现层的 token 重映射外，本皮肤另带运行时层：FX 开关系统、角色浮层、DSH 会话状态跟随，以及设置卡内的素材导入引导。
 
 - **配色**：墨黑底、暗金文、雾紫氛、朱砂点睛（深色默认「月夜墨染」）；米白底、粉梅、金（浅色变体「梅花」）
 - **双主题**：深色为默认，浅色跟随 DSH 深浅信号自动切换（`body[data-ds-dark-theme]`）
@@ -15,24 +15,29 @@
 
 ## 特性
 
-- 纯呈现层：不注入服务、不发事件、不触模型请求
-- `apply()` 只写自己会收回的东西，disposer 完整回收（body 属性、@font-face 样式）
+- 纯呈现层 + 受守卫的运行时层：皮肤不注入自有服务，仅在 `slots` / `locale` / `sessions` 可用时消费它们
+- `apply()` 只写自己会收回的东西，disposer 完整回收（body 属性、@font-face 样式、FX 类、浮层 DOM、会话订阅）
 - 样式全部挂在 `body[data-dsh-jiangxiao]` 下（浅色变体 `:not([data-ds-dark-theme])`）
-- 无静态资源文件：字体以 base64 data URL 内嵌进 JS bundle
-- `prefers-reduced-motion` 下动效全关
+- 字体无静态资源文件：以 base64 data URL 内嵌进 JS bundle
+- `prefers-reduced-motion` 下动效全关，并强制 FX 系统全关
+- **FX 开关系统**：五效独立开关（shimmer 鎏金流光 / fall 银杏梅花飘落 / grain 墨韵暗纹 / breathe 墨光呼吸 / micro 微交互），经 `html.fx-*` 类控制并持久化到 `localStorage('jx-fx')`。默认全开；可独立关；全关 = 与原版皮肤零视觉差异。设置卡暴露开关。
+- **角色浮层**：右下角常驻的透明无底角色精灵，素材按需从 `/pet/jiangxiao/<state>.webp` 加载（10 循环态 + 36 过渡段）。素材包缺失时浮层不渲染，无破图闪烁。
+- **DSH 会话状态跟随**：当 `sessions` 服务可用时，浮层订阅当前会话快照，自动驱动角色在 idle / thinking / replying / working / error / permission / done / welcome 间切换。快照差分驱动状态转移；皮肤拆卸时释放全部订阅。
+- **素材导入引导**：设置卡打开时探测 `HEAD /pet/jiangxiao/idle.webp`。探测失败（404 / 网络异常 / fetch 不可用）时展示导入引导；成功时展示 FX 开关。
 
 ## 环境要求
 
 - Node.js ≥ 20
 - pnpm ≥ 9
 - 已运行 `dsh web` 的 DSH 环境（默认 `http://127.0.0.1:3080`）
+- 可选：`dsh-pet` 插件提供 `/pet/jiangxiao/*.webp`，以启用角色浮层与状态跟随
 
 ## 构建与测试
 
 ```bash
 pnpm install     # 安装依赖（自动执行 prepare 构建）
 pnpm build       # 构建 lib/index.js + lib/client.js
-pnpm test        # apply/dispose 契约测试
+pnpm test        # apply/dispose + 浮层 + FX + 状态 + 跟随 + 设置卡契约测试
 ```
 
 构建产物 `lib/` 已随仓库提交，克隆后即使跳过构建也可安装；但建议完整构建一次。
@@ -53,6 +58,31 @@ dsh plugin --profile web add "link:<本仓库绝对路径>"
   然后把 `@linxin666/dsh-client-ui-skin-jiangxiao` 追加到 `~/.dsh/profiles/web/package.json` 的 `dsh.profile.bundles` 数组。
 
 - 安装后重启 `dsh web`，强制刷新页面（Ctrl+Shift+R）。
+
+## 配置
+
+### FX 开关
+
+五效持久化在 `localStorage` 的 `jx-fx` 键下，JSON 对象：
+
+```json
+{ "shimmer": true, "fall": true, "grain": true, "breathe": true, "micro": true }
+```
+
+将任一键置 `false` 即关闭该效，或用设置卡开关。全部置 `false` 时皮肤与原版视觉完全一致（`<html>` 无任何 `fx-*` 类）。`prefers-reduced-motion: reduce` 强制五效全 `false`，无视存储值。
+
+### 角色浮层素材
+
+浮层从 `/pet/jiangxiao/` 加载精灵，预期布局（46 文件）：
+
+- 10 循环态：`idle.webp`、`thinking.webp`、`reading.webp`、`replying.webp`、`working.webp`、`error.webp`、`welcome.webp`、`done.webp`、`permission.webp`、`listening.webp`
+- 36 过渡段：`transition-<from>-<to>.webp`（idle 枢纽到 9 个非 idle 核心态的正反向，加 thinking <-> replying 直连）
+
+当探测 `HEAD /pet/jiangxiao/idle.webp` 返回 404 或失败时，浮层不渲染，设置卡展示导入引导而非 FX 开关。
+
+### 设置卡
+
+当 `slots` 服务可用时注册一级设置区（`skin-jiangxiao`，order 125）。素材就绪时展示 FX 开关，素材缺失时展示导入引导。
 
 ## 切换皮肤
 
@@ -79,6 +109,8 @@ dsh-skin list            # 查看皮肤与当前激活项
 
 - 内置 woff2 字体使 `lib/client.js` 增加约 4 MB（base64 较二进制放大 1.33×）；代价换来离线可用、无需外部字体 CDN。
 - 本皮肤重映射 dsh 三层 token 体系；绕过 token 硬编码颜色的组件不会进入唐风调。
+- 角色浮层与状态跟随需 `dsh-pet` 插件提供 `/pet/jiangxiao/*.webp`。缺失时皮肤优雅降级为纯呈现外观（无浮层、无状态跟随，设置卡展示导入引导）。
+- 浮层精灵集（46 个 webp）不随皮肤包分发，须由 `dsh-pet` 或等价静态服务器提供。源码树中的 `assets/character/` 目录是规范参考集。
 - 预览 PNG 为占位色板；有截图采集条件时请用真实截图替换 `preview/light.png` 与 `preview/dark.png`。
 
 ## License

@@ -29,9 +29,17 @@ import './jiangxiao.module.css'
 import { JIANGXIAO_FONT_MASHANZHENG, JIANGXIAO_FONT_NOTOSERIFSC } from './art.ts'
 import { NS, en, zh, type JiangxiaoKey } from './locales.ts'
 import { SkinJiangxiaoSection } from './SkinSettingsCard.tsx'
+import { initFxSystem } from './fx-system.ts'
+import { initCharacterOverlay } from './character-overlay.ts'
+import { attachSessionFollow } from './character-follow.ts'
+import { WELCOME_HOLD_MS } from './character-state.ts'
+import type { ISessions } from '@deepseek-ai/dsh-client-runtime/client'
 
-/** Required services: slots (settings section), locale (i18n). */
-export const inject = ['slots', 'locale']
+/** Required services: slots (settings section), locale (i18n), sessions (state follow). */
+export const inject = ['slots', 'locale', 'sessions']
+
+/** 模块级 flag：welcome 态每次启用至多触发一次（页面刷新后重置）。 */
+let welcomeTriggered = false
 
 /** @font-face CSS text for the two inlined woff2 fonts. Each rule carries a
  *  local() fallback chain so a host with the font installed uses the local
@@ -65,9 +73,52 @@ export function apply(ctx: ClientContext): void {
   fontStyle.textContent = fontFaceCss()
   document.head.append(fontStyle)
 
+  // FX 特效系统（DESIGN.md §5）：html fx-* 类 + localStorage('jx-fx') 控制，
+  // 默认全开、可独立关、全关 = 与原版皮肤零差异。prefers-reduced-motion 全关。
+  const fxSystem = initFxSystem()
+
+  // 角色浮层（DESIGN.md §4）：右下角常驻，透明无底，按需加载 webp。
+  // 启动探测 /pet/jiangxiao/idle.webp，404 -> 浮层不渲染。
+  // 素材就绪时：触发一次 welcome（每次启用至多一次）+ attach session follow
+  // 自动跟随 DSH current 会话状态。
+  let overlayDispose: (() => void) | undefined
+  // 探测 /pet/jiangxiao/idle.webp 是异步的；若皮肤在解析前已被销毁，
+  // 解析后立即释放浮层，避免在 dispose 之后挂载造成泄漏。
+  let overlayDisposed = false
+  void initCharacterOverlay().then((overlay) => {
+    if (overlay === null) return
+    if (overlayDisposed) {
+      overlay.dispose()
+      return
+    }
+    const shouldWelcome = !welcomeTriggered
+    welcomeTriggered = true
+    const sessions = ctx.get('sessions') as ISessions | undefined
+    let followDispose: (() => void) | undefined
+    if (sessions !== undefined) {
+      followDispose = attachSessionFollow(sessions, overlay, {
+        initialWelcome: shouldWelcome,
+      })
+    } else if (shouldWelcome) {
+      // 无 sessions 服务（测试环境/降级）：直接 setState welcome + 定时回 idle。
+      overlay.setState('welcome')
+      const t = setTimeout(() => overlay.setState('idle'), WELCOME_HOLD_MS)
+      followDispose = () => clearTimeout(t)
+    }
+    overlayDispose = () => {
+      followDispose?.()
+      overlay.dispose()
+    }
+  })
+
   ctx.effect(() => () => {
+    overlayDisposed = true
     delete body.dataset.dshJiangxiao
     fontStyle.remove()
+    fxSystem.dispose()
+    overlayDispose?.()
+    // 重置 welcome flag，使下次启用皮肤可再次触发一次 welcome。
+    welcomeTriggered = false
   }, 'ui-skin-jiangxiao: Jiangxiao chrome')
 
   // Register locale dictionaries for the skin settings card.
@@ -87,7 +138,7 @@ export function apply(ctx: ClientContext): void {
       name: 'settings.section',
       id: 'skin-jiangxiao',
       order: 125,
-      label: () => locale!.bind('skinJiangxiao')('settings.title'),
+      label: () => locale?.bind('skinJiangxiao')('settings.title') ?? 'Jiangxiao Skin',
       locale: 'skinJiangxiao',
       inject: () => ({}),
     }, SkinJiangxiaoSection))

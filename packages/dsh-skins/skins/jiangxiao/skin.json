@@ -1,10 +1,10 @@
 {
   "id": "jiangxiao",
-  "name": "姜晓 · 墨染",
-  "nameEn": "Jiangxiao · Ink-Dyed",
+  "name": "姜晓 · 墨金卷轴",
+  "nameEn": "Jiangxiao · Ink-Gold Scroll",
   "author": "dsh-web-ui",
-  "tagline": "唐风二次元 · 月夜墨染深色 + 梅花浅色双主题 · 朱砂印章 · 暗金正文 · 楷宋字体",
-  "description": "源自 openCodeMM 姜晓·墨染设计系统的唐风二次元皮肤：深色默认「月夜墨染」（墨黑底、暗金文、雾紫氛、朱砂点睛），浅色变体「梅花」（米白底、粉梅、金）跟随 DSH 深浅信号自动切换。朱砂印章发送钮、标题栏唐风纹样、金线滚动条与分隔，内置 Ma Shan Zheng 楷体 + Noto Serif SC 宋体两个 woff2 字体离线可用，代码块语法高亮保持上游专业配色。",
+  "tagline": "唐风二次元 · 墨金卷轴银杏深色 + 宣纸梅花浅色 · 鎏金流光 · 银杏飘落 · 朱砂印章 · FX 五效可关 · 角色浮层 · 状态跟随",
+  "description": "唐风二次元皮肤重设计：深色「墨金卷轴银杏」（墨黑底、鎏金流光顶栏、银杏叶飘落、卷轴质感侧边栏、金箔文字、朱砂印章发送钮），浅色「宣纸梅花」（宣纸底、水墨晕染、梅花飘落、墨色楷书）。侧边栏改用 surface 色阶（非屎黄色），对比度达 WCAG AA。@property 驱动鎏金流光/金箔流光/墨晕呼吸，全走 GPU 合成，prefers-reduced-motion 支持。内置 Ma Shan Zheng 楷体 + Noto Serif SC 宋体@woff2 离线可用。运行时层：FX 五效独立开关（localStorage 持久化）、右下角角色浮层（按需加载 webp，素材缺失不渲染）、DSH 会话状态自动跟随、设置卡素材导入引导。",
   "tags": [
     "jiangxiao",
     "tang",
@@ -13,7 +13,10 @@
     "cinnabar",
     "dual-theme",
     "chinese",
-    "kaiti"
+    "kaiti",
+    "fx-toggles",
+    "character-overlay",
+    "state-follow"
   ],
   "accent": "#b8860b",
   "bodyAttr": "data-dsh-jiangxiao",

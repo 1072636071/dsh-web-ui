@@ -7,7 +7,7 @@ window.__ModuleLoader__.load({
 		let react = require("react");
 		let react_jsx_runtime = require("react/jsx-runtime");
 		//#region \0dsh-css:packages/skins/jiangxiao/src/client/jiangxiao.module.css.mjs
-		const css$1 = "body[data-dsh-jiangxiao]{--jx-surface-0:#0b090d;--jx-surface-1:#121016;--jx-surface-2:#1a1620;--jx-surface-3:#2d242f;--jx-text-strong:#f2ead8;--jx-text-base:#f2ead8;--jx-text-weak:#a99c8a;--jx-text-faint:#8a7e6e;--jx-gold-bright:#f6d365;--jx-gold:#d6b34a;--jx-text-gold:#d6b34a;--jx-gold-deep:#b8860b;--jx-gold-dim:#996515;--jx-ginkgo:#dfb793;--jx-gold-foil:linear-gradient(135deg, #f6d365 0%, #fda085 50%, #b8860b 100%);--jx-seal:#c7493a;--jx-seal-deep:#a8382b;--jx-seal-bright:#d85444;--jx-seal-ink:#fff8ef;--jx-mist:#b5a8b2;--jx-mountain:#827686;--jx-water:#767687;--jx-cloud:#e7d3d2;--jx-moon:#ecd8d8;--jx-hair:#d1beca;--jx-wisteria:#b89aac;--jx-cinnabar:#c3272b;--jx-hl-file:#7fd8e8;--jx-hl-agent:#e5c07b;--jx-success:#86b08a;--jx-warn:#d9a05b;--jx-error:#d06552;--jx-border-deco:#3d3218;--jx-selection:#b8860b4d;--jx-scroll-track:#2a2210;--jx-scroll-thumb:#b8860b;--jx-font-display:\"Ma Shan Zheng\", \"Kaiti SC\", \"STKaiti\", \"KaiTi\", serif;--jx-font-ui:\"Noto Serif SC\", \"Songti SC\", \"SimSun\", serif;--jx-font-code:ui-monospace, \"JetBrains Mono\", \"Cascadia Code\", Consolas, monospace;--jx-radius-sm:4px;--jx-radius-md:6px;--jx-radius-lg:8px;--jx-radius-xl:12px;--jx-shadow-1:0 2px 8px #05030880;--jx-shadow-2:0 8px 24px #0503088c;--jx-gold-rim:0 0 0 1px #3d3218, 0 0 14px #f6d3651f;--jx-dur-fast:.15s;--jx-dur:.35s}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]){--jx-surface-0:#faf5ee;--jx-surface-1:#f5eddf;--jx-surface-2:#efe3d0;--jx-surface-3:#e8dcc8;--jx-text-strong:#2a241a;--jx-text-base:#5d4a42;--jx-text-weak:#7d6a5e;--jx-text-faint:#8a7765;--jx-gold-bright:#9c7a1e;--jx-gold:#b8860b;--jx-text-gold:#6f5206;--jx-gold-deep:#8a6508;--jx-gold-dim:#6f5306;--jx-ginkgo:#b8860b;--jx-gold-foil:linear-gradient(135deg, #b8860b 0%, #d97a8e 50%, #6f5206 100%);--jx-seal:#8e3a49;--jx-seal-deep:#7a2a39;--jx-seal-bright:#d97a8e;--jx-seal-ink:#fff8f6;--jx-mist:#c9b8b4;--jx-mountain:#b3a49a;--jx-water:#a9a9b4;--jx-cloud:#f0e4e2;--jx-moon:#f3e2e2;--jx-hair:#dcc4ca;--jx-wisteria:#9c3a54;--jx-cinnabar:#8e3a49;--jx-hl-file:#2c6a7a;--jx-hl-agent:#9c7a1e;--jx-success:#3d7a3d;--jx-warn:#9c6b1e;--jx-error:#a83a3a;--jx-border-deco:#d9c9b5;--jx-selection:#b24a5c24;--jx-scroll-track:#ece0d0;--jx-scroll-thumb:#d97a8e;--jx-shadow-1:0 2px 8px #05030840;--jx-shadow-2:0 8px 24px #0503084d;--jx-gold-rim:0 0 0 1px #d9c9b5, 0 0 14px #b8860b1f}body[data-dsh-jiangxiao]{--dsw-font-family:var(--jx-font-ui);--ds-font-family-code:var(--jx-font-code);color:var(--jx-text-base);background-color:var(--jx-surface-0);background-image:radial-gradient(circle at 18% 12%, #b8860b0f, transparent 42%), radial-gradient(circle at 82% 28%, #9976940d, transparent 38%), radial-gradient(circle at 50% 92%, #b8860b0a, transparent 45%), linear-gradient(168deg, var(--jx-surface-0) 0%, var(--jx-surface-1) 60%, var(--jx-surface-2) 100%);box-sizing:border-box}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]){background-image:radial-gradient(circle at 18% 12%, #b8860b14, transparent 42%), radial-gradient(circle at 82% 28%, #b24a5c0f, transparent 38%), radial-gradient(circle at 50% 92%, #b8860b0d, transparent 45%), linear-gradient(168deg, var(--jx-surface-0) 0%, var(--jx-surface-1) 60%, var(--jx-surface-2) 100%)}body[data-dsh-jiangxiao] [id=root]{box-sizing:border-box;background:0 0}body[data-dsh-jiangxiao]{--dsw-static-amber-100:#3a2e18;--dsw-static-amber-400:#d9a05b;--dsw-static-amber-500:#c99a2e;--dsw-static-amber-600:#a87c1e;--dsw-static-amber-900:#4a3a12;--dsw-static-blue-100:#2a2210;--dsw-static-blue-300:#3d3218;--dsw-static-blue-400:#6f5306;--dsw-static-blue-450:#8a6508;--dsw-static-blue-500:#b8860b;--dsw-static-blue-50:#1a1620;--dsw-static-blue-50p:#121016;--dsw-static-blue-600:#d6b34a;--dsw-static-blue-75:#2d242f;--dsw-static-blue-800:#f6d365;--dsw-static-blue-950:#fdf3dd;--dsw-static-deepseek-100:#2a2210;--dsw-static-deepseek-200:#3d3218;--dsw-static-deepseek-300:#6f5306;--dsw-static-deepseek-400:#8a6508;--dsw-static-deepseek-450:#996515;--dsw-static-deepseek-500:#b8860b;--dsw-static-deepseek-50:#1a1620;--dsw-static-deepseek-600:#d6b34a;--dsw-static-deepseek-700-delete:#996515;--dsw-static-deepseek-800:#f6d365;--dsw-static-deepseek-900:#dfb793;--dsw-static-green-100:#1c3d26;--dsw-static-green-400:#86b08a;--dsw-static-green-500:#5a8a5e;--dsw-static-green-900:#1b4027;--dsw-static-neutral-00:#0b090d;--dsw-static-neutral-1000:#f2ead8;--dsw-static-neutral-100:#121016;--dsw-static-neutral-150:#1a1620;--dsw-static-neutral-200:#1a1620;--dsw-static-neutral-250:#2d242f;--dsw-static-neutral-300:#2d242f;--dsw-static-neutral-400:#3d343c;--dsw-static-neutral-500:#4d4350;--dsw-static-neutral-50:#0b090d;--dsw-static-neutral-550:#5d5360;--dsw-static-neutral-600:#6d6370;--dsw-static-neutral-700:#8d8390;--dsw-static-neutral-800:#a99c8a;--dsw-static-neutral-850:#b9ac9a;--dsw-static-neutral-900:#c9bca8;--dsw-static-neutral-bluish-00:#0b090d;--dsw-static-neutral-bluish-1000:#f2ead8;--dsw-static-neutral-bluish-100:#121016;--dsw-static-neutral-bluish-150:#1a1620;--dsw-static-neutral-bluish-200:#1a1620;--dsw-static-neutral-bluish-250:#2d242f;--dsw-static-neutral-bluish-300:#2d242f;--dsw-static-neutral-bluish-400:#3d343c;--dsw-static-neutral-bluish-500:#4d4350;--dsw-static-neutral-bluish-50:#0b090d;--dsw-static-neutral-bluish-600:#6d6370;--dsw-static-neutral-bluish-60:#1a1620;--dsw-static-neutral-bluish-700:#8d8390;--dsw-static-neutral-bluish-750:#9d9398;--dsw-static-neutral-bluish-75:#2d242f;--dsw-static-neutral-bluish-800:#a99c8a;--dsw-static-neutral-bluish-850:#b9ac9a;--dsw-static-neutral-bluish-875:#c9bca8;--dsw-static-neutral-bluish-900:#d9cca8;--dsw-static-neutral-bluish-950:#e9dcb8;--dsw-static-red-100:#4a2222;--dsw-static-red-400:#d06552;--dsw-static-red-500:#c3272b;--dsw-static-red-50:#3a1c1c;--dsw-static-red-600:#d85444;--dsw-static-red-900:#5c1414}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]){--dsw-static-amber-100:#fdf3dd;--dsw-static-amber-400:#d9a05b;--dsw-static-amber-500:#c99a2e;--dsw-static-amber-600:#a87c1e;--dsw-static-amber-900:#4a3a12;--dsw-static-blue-100:#f5eddf;--dsw-static-blue-300:#efe3d0;--dsw-static-blue-400:#d9c9b5;--dsw-static-blue-450:#c9b89a;--dsw-static-blue-500:#b8860b;--dsw-static-blue-50:#faf5ee;--dsw-static-blue-50p:#f5eddf;--dsw-static-blue-600:#9c7a1e;--dsw-static-blue-75:#efe3d0;--dsw-static-blue-800:#8a6508;--dsw-static-blue-950:#6f5306;--dsw-static-deepseek-100:#f5eddf;--dsw-static-deepseek-200:#efe3d0;--dsw-static-deepseek-300:#d9c9b5;--dsw-static-deepseek-400:#c9b89a;--dsw-static-deepseek-450:#b8860b;--dsw-static-deepseek-500:#b8860b;--dsw-static-deepseek-50:#faf5ee;--dsw-static-deepseek-600:#9c7a1e;--dsw-static-deepseek-700-delete:#8a6508;--dsw-static-deepseek-800:#8a6508;--dsw-static-deepseek-900:#6f5306;--dsw-static-green-100:#ddf3e3;--dsw-static-green-400:#3d7a3d;--dsw-static-green-500:#2c6a2c;--dsw-static-green-900:#1b4027;--dsw-static-neutral-00:#faf5ee;--dsw-static-neutral-1000:#2a241a;--dsw-static-neutral-100:#f5eddf;--dsw-static-neutral-150:#efe3d0;--dsw-static-neutral-200:#efe3d0;--dsw-static-neutral-250:#e8dcc8;--dsw-static-neutral-300:#e8dcc8;--dsw-static-neutral-400:#d9c9b5;--dsw-static-neutral-500:#c9b89a;--dsw-static-neutral-50:#faf5ee;--dsw-static-neutral-550:#b3a296;--dsw-static-neutral-600:#a39286;--dsw-static-neutral-700:#8d7a70;--dsw-static-neutral-800:#6d5a50;--dsw-static-neutral-850:#5d4a42;--dsw-static-neutral-900:#4d3a32;--dsw-static-neutral-bluish-00:#faf5ee;--dsw-static-neutral-bluish-1000:#2a241a;--dsw-static-neutral-bluish-100:#f5eddf;--dsw-static-neutral-bluish-150:#efe3d0;--dsw-static-neutral-bluish-200:#efe3d0;--dsw-static-neutral-bluish-250:#e8dcc8;--dsw-static-neutral-bluish-300:#e8dcc8;--dsw-static-neutral-bluish-400:#d9c9b5;--dsw-static-neutral-bluish-500:#c9b89a;--dsw-static-neutral-bluish-50:#faf5ee;--dsw-static-neutral-bluish-600:#a39286;--dsw-static-neutral-bluish-60:#efe3d0;--dsw-static-neutral-bluish-700:#8d7a70;--dsw-static-neutral-bluish-750:#7d6a60;--dsw-static-neutral-bluish-75:#e8dcc8;--dsw-static-neutral-bluish-800:#6d5a50;--dsw-static-neutral-bluish-850:#5d4a42;--dsw-static-neutral-bluish-875:#4d3a32;--dsw-static-neutral-bluish-900:#3d2a22;--dsw-static-neutral-bluish-950:#2d1a12;--dsw-static-red-100:#f8dcdc;--dsw-static-red-400:#d06552;--dsw-static-red-500:#a83a3a;--dsw-static-red-50:#fceeee;--dsw-static-red-600:#8e3a49;--dsw-static-red-900:#5c1414}body[data-dsh-jiangxiao]{--dsw-alias-bg-base:var(--jx-surface-1);--dsw-alias-bg-layer-1:var(--jx-surface-1);--dsw-alias-bg-layer-2:var(--jx-surface-2);--dsw-alias-bg-layer-3:var(--jx-surface-3);--dsw-alias-bg-mask-1:#0503088c;--dsw-alias-bg-mask-2:#0503084d;--dsw-alias-bg-mask-3:#05030899;--dsw-alias-bg-mask-photo:#050308e0;--dsw-alias-bg-module-platform:var(--jx-surface-2);--dsw-alias-bg-multi-select:var(--jx-surface-2);--dsw-alias-bg-overlay:var(--jx-surface-2);--dsw-alias-bg-skeleton:#f6d3650f;--dsw-alias-border-inverted2:#f2ead899;--dsw-alias-border-inverted:#f2ead866;--dsw-alias-border-l1:#b8860b2e;--dsw-alias-border-l2-darkmode-thin:#b8860b38;--dsw-alias-border-l2:#b8860b42;--dsw-alias-border-l3:#b8860b57;--dsw-alias-border-l4:#b8860b6b;--dsw-alias-brand-primary-invert:var(--jx-surface-0);--dsw-alias-brand-primary-new-colorprimary-new-color:var(--jx-gold);--dsw-alias-brand-primary:var(--jx-gold);--dsw-alias-brand-text:var(--jx-text-gold);--dsw-alias-button-contrast-fill:var(--jx-gold-deep);--dsw-alias-button-elevated-fill:var(--jx-surface-2);--dsw-alias-button-floating-fill:var(--jx-surface-2);--dsw-alias-button-floating-hover:var(--jx-surface-3);--dsw-alias-button-ghost-active-border:var(--jx-gold-deep);--dsw-alias-button-ghost-active-fill:var(--jx-surface-3);--dsw-alias-button-ghost-active-hover:var(--jx-surface-3);--dsw-alias-button-info-fill:var(--jx-gold-deep);--dsw-alias-button-info-hover:var(--jx-gold);--dsw-alias-button-primary-dimmed:var(--jx-surface-3);--dsw-alias-button-primary-fill:var(--jx-gold-deep);--dsw-alias-button-primary-hover:var(--jx-gold);--dsw-alias-button-tool-bar-fill-invisible:#b8860b5c;--dsw-alias-button-tool-bar-fill:#b8860b80;--dsw-alias-button-tool-bar-hover:#b8860b99;--dsw-alias-interactive-bg-active:#b8860b29;--dsw-alias-interactive-bg-hover-accent:#b8860b38;--dsw-alias-interactive-bg-hover-danger:#d065521f;--dsw-alias-interactive-bg-hover-solid:var(--jx-surface-3);--dsw-alias-interactive-bg-hover:#f6d36514;--dsw-alias-label-caption:var(--jx-text-weak);--dsw-alias-label-dimmed:var(--jx-text-faint);--dsw-alias-label-primary-dimmed:var(--jx-text-weak);--dsw-alias-label-primary-foreground:var(--jx-surface-0);--dsw-alias-label-primary-inverted:var(--jx-surface-0);--dsw-alias-label-primary:var(--jx-text-base);--dsw-alias-label-secondary:var(--jx-text-base);--dsw-alias-label-tertiary:var(--jx-text-weak);--dsw-alias-markdown-citation:var(--jx-surface-2);--dsw-alias-markdown-code-block-banner:var(--jx-surface-0);--dsw-alias-markdown-code-block:var(--jx-surface-0);--dsw-alias-markdown-code-segment-selected:var(--jx-surface-2);--dsw-alias-markdown-code-segment-unselected:var(--jx-surface-1);--dsw-alias-markdown-inline-code:var(--jx-surface-2);--dsw-alias-markdown-placeholder:var(--jx-surface-1);--dsw-alias-markdown-tag:var(--jx-surface-2);--dsw-alias-scrollbar-bg-l1:var(--jx-scroll-track);--dsw-alias-scrollbar-bg-l2:var(--jx-scroll-track);--dsw-alias-scrollbar-hover-l1:var(--jx-scroll-thumb);--dsw-alias-scrollbar-hover-l2:var(--jx-scroll-thumb);--dsw-alias-state-business-primary:var(--jx-gold);--dsw-alias-state-business-tertiary:var(--jx-surface-3);--dsw-alias-state-error-primary:var(--jx-error);--dsw-alias-state-error-secondary:var(--jx-seal-bright);--dsw-alias-state-success-primary:var(--jx-success);--dsw-alias-state-success-secondary:var(--jx-success);--dsw-alias-state-success-tertiary:#1c3d26;--dsw-alias-state-warn-label:var(--jx-warn);--dsw-alias-state-warn-primary:var(--jx-warn);--dsw-alias-state-warn-secondary:var(--jx-warn);--dsw-alias-state-warn-tertiary:#3a2e18;--dsw-alias-toast-bg:var(--jx-surface-2);--dsw-alias-tooltip-bg:var(--jx-surface-2);--dsw-alias-tooltip-fg:var(--jx-text-base);--dsw-specific-bubble-highlight:var(--jx-surface-3);--dsw-specific-bubble:var(--jx-surface-2);--dsw-specific-input-major:var(--jx-surface-1);--dsw-specific-login-input:var(--jx-surface-1);--dsw-specific-menu:var(--jx-surface-2);--dsw-specific-selector:var(--jx-surface-2);--dsw-specific-sidebar-fill:var(--jx-gold-deep);--dsw-specific-sidebar-nav-item-active-accent:var(--jx-gold);--dsw-specific-sidebar-nav-item-active:var(--jx-surface-3);--dsw-specific-sidebar-nav-item-hover:var(--jx-surface-3);--dsw-specific-tip:var(--jx-surface-2)}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]){--dsw-alias-bg-base:var(--jx-surface-1);--dsw-alias-bg-layer-1:var(--jx-surface-1);--dsw-alias-bg-layer-2:var(--jx-surface-2);--dsw-alias-bg-layer-3:var(--jx-surface-3);--dsw-alias-bg-mask-1:#2a241a1f;--dsw-alias-bg-mask-2:#2a241a0f;--dsw-alias-bg-mask-3:#2a241a2e;--dsw-alias-bg-mask-photo:#2a241ae0;--dsw-alias-bg-module-platform:var(--jx-surface-2);--dsw-alias-bg-multi-select:var(--jx-surface-2);--dsw-alias-bg-overlay:var(--jx-surface-2);--dsw-alias-bg-skeleton:#b8860b14;--dsw-alias-border-inverted2:#2a241a99;--dsw-alias-border-inverted:#2a241a66;--dsw-alias-border-l1:#b8860b38;--dsw-alias-border-l2-darkmode-thin:#b8860b42;--dsw-alias-border-l2:#b8860b4d;--dsw-alias-border-l3:#b8860b61;--dsw-alias-border-l4:#b8860b75;--dsw-alias-brand-primary-invert:var(--jx-surface-0);--dsw-alias-brand-primary-new-colorprimary-new-color:var(--jx-gold);--dsw-alias-brand-primary:var(--jx-gold);--dsw-alias-brand-text:var(--jx-text-gold);--dsw-alias-button-contrast-fill:var(--jx-gold-deep);--dsw-alias-button-elevated-fill:var(--jx-surface-2);--dsw-alias-button-floating-fill:var(--jx-surface-2);--dsw-alias-button-floating-hover:var(--jx-surface-3);--dsw-alias-button-ghost-active-border:var(--jx-gold-deep);--dsw-alias-button-ghost-active-fill:var(--jx-surface-3);--dsw-alias-button-ghost-active-hover:var(--jx-surface-3);--dsw-alias-button-info-fill:var(--jx-gold-deep);--dsw-alias-button-info-hover:var(--jx-gold);--dsw-alias-button-primary-dimmed:var(--jx-surface-3);--dsw-alias-button-primary-fill:var(--jx-gold-deep);--dsw-alias-button-primary-hover:var(--jx-gold);--dsw-alias-button-tool-bar-fill-invisible:#b8860b38;--dsw-alias-button-tool-bar-fill:#b8860b52;--dsw-alias-button-tool-bar-hover:#b8860b6b;--dsw-alias-interactive-bg-active:#b8860b24;--dsw-alias-interactive-bg-hover-accent:#b8860b2e;--dsw-alias-interactive-bg-hover-danger:#a83a3a14;--dsw-alias-interactive-bg-hover-solid:var(--jx-surface-3);--dsw-alias-interactive-bg-hover:#b8860b14;--dsw-alias-label-caption:var(--jx-text-weak);--dsw-alias-label-dimmed:var(--jx-text-faint);--dsw-alias-label-primary-dimmed:var(--jx-text-weak);--dsw-alias-label-primary-foreground:var(--jx-surface-0);--dsw-alias-label-primary-inverted:var(--jx-surface-0);--dsw-alias-label-primary:var(--jx-text-strong);--dsw-alias-label-secondary:var(--jx-text-base);--dsw-alias-label-tertiary:var(--jx-text-weak);--dsw-alias-markdown-citation:var(--jx-surface-2);--dsw-alias-markdown-code-block-banner:var(--jx-surface-1);--dsw-alias-markdown-code-block:var(--jx-surface-1);--dsw-alias-markdown-code-segment-selected:var(--jx-surface-2);--dsw-alias-markdown-code-segment-unselected:var(--jx-surface-1);--dsw-alias-markdown-inline-code:var(--jx-surface-2);--dsw-alias-markdown-placeholder:var(--jx-surface-1);--dsw-alias-markdown-tag:var(--jx-surface-2);--dsw-alias-scrollbar-bg-l1:var(--jx-scroll-track);--dsw-alias-scrollbar-bg-l2:var(--jx-scroll-track);--dsw-alias-scrollbar-hover-l1:var(--jx-scroll-thumb);--dsw-alias-scrollbar-hover-l2:var(--jx-scroll-thumb);--dsw-alias-state-business-primary:var(--jx-gold);--dsw-alias-state-business-tertiary:var(--jx-surface-3);--dsw-alias-state-error-primary:var(--jx-error);--dsw-alias-state-error-secondary:var(--jx-seal);--dsw-alias-state-success-primary:var(--jx-success);--dsw-alias-state-success-secondary:var(--jx-success);--dsw-alias-state-success-tertiary:#ddf3e3;--dsw-alias-state-warn-label:var(--jx-warn);--dsw-alias-state-warn-primary:var(--jx-warn);--dsw-alias-state-warn-secondary:var(--jx-warn);--dsw-alias-state-warn-tertiary:#fdf3dd;--dsw-alias-toast-bg:var(--jx-surface-2);--dsw-alias-tooltip-bg:var(--jx-surface-2);--dsw-alias-tooltip-fg:var(--jx-text-strong);--dsw-specific-bubble-highlight:var(--jx-surface-3);--dsw-specific-bubble:var(--jx-surface-2);--dsw-specific-input-major:var(--jx-surface-1);--dsw-specific-login-input:var(--jx-surface-1);--dsw-specific-menu:var(--jx-surface-2);--dsw-specific-selector:var(--jx-surface-2);--dsw-specific-sidebar-fill:var(--jx-gold);--dsw-specific-sidebar-nav-item-active-accent:var(--jx-gold-deep);--dsw-specific-sidebar-nav-item-active:var(--jx-surface-3);--dsw-specific-sidebar-nav-item-hover:var(--jx-surface-3);--dsw-specific-tip:var(--jx-surface-2)}body[data-dsh-jiangxiao]{--aion-bg-base:var(--jx-surface-1);--aion-bg-1:var(--jx-surface-1);--aion-bg-2:var(--jx-surface-2);--aion-bg-3:var(--jx-surface-2);--aion-bg-4:var(--jx-surface-3);--aion-bg-hover:#b8860b1f;--aion-bg-active:#b8860b2e;--aion-text-primary:var(--jx-text-base);--aion-text-secondary:var(--jx-text-base);--aion-text-tertiary:var(--jx-text-weak);--aion-text-disabled:var(--jx-text-faint);--aion-primary:var(--jx-gold);--aion-primary-hover:var(--jx-gold-bright);--aion-success:var(--jx-success);--aion-success-soft:#1c3d26;--aion-warning:var(--jx-warn);--aion-warning-soft:#3a2e18;--aion-danger:var(--jx-error);--aion-danger-soft:#3a1c1c;--aion-brand:var(--jx-gold);--aion-aou-1:var(--jx-surface-1);--aion-aou-2:var(--jx-surface-2);--aion-aou-3:var(--jx-surface-2);--aion-aou-4:var(--jx-surface-3);--aion-aou-5:var(--jx-gold);--aion-aou-6:var(--jx-gold-deep);--aion-fill-2:#b8860b1f;--aion-fill-3:#b8860b2e;--aion-border-base:#b8860b4d;--aion-overlay-shadow:var(--jx-shadow-2);--aion-font-sans:var(--jx-font-ui);--aion-font-mono:var(--jx-font-code)}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]){--aion-bg-base:var(--jx-surface-1);--aion-bg-1:var(--jx-surface-1);--aion-bg-2:var(--jx-surface-2);--aion-bg-3:var(--jx-surface-2);--aion-bg-4:var(--jx-surface-3);--aion-bg-hover:#b8860b1a;--aion-bg-active:#b8860b29;--aion-text-primary:var(--jx-text-strong);--aion-text-secondary:var(--jx-text-base);--aion-text-tertiary:var(--jx-text-weak);--aion-text-disabled:var(--jx-text-faint);--aion-primary:var(--jx-gold);--aion-primary-hover:var(--jx-gold-deep);--aion-success:var(--jx-success);--aion-success-soft:#ddf3e3;--aion-warning:var(--jx-warn);--aion-warning-soft:#fdf3dd;--aion-danger:var(--jx-error);--aion-danger-soft:#f8dcdc;--aion-brand:var(--jx-gold);--aion-aou-1:var(--jx-surface-1);--aion-aou-2:var(--jx-surface-2);--aion-aou-3:var(--jx-surface-2);--aion-aou-4:var(--jx-surface-3);--aion-aou-5:var(--jx-gold);--aion-aou-6:var(--jx-gold-deep);--aion-fill-2:#b8860b1a;--aion-fill-3:#b8860b29;--aion-border-base:#b8860b47;--aion-overlay-shadow:var(--jx-shadow-2);--aion-font-sans:var(--jx-font-ui);--aion-font-mono:var(--jx-font-code)}body[data-dsh-jiangxiao] :focus-visible{outline:2px solid var(--jx-gold);outline-offset:2px}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) :focus-visible{outline-color:var(--jx-gold-deep)}body[data-dsh-jiangxiao]{--dsh-scrollbar-thumb:var(--jx-scroll-thumb);--dsh-scrollbar-thumb-hover:var(--jx-gold-bright)}body[data-dsh-jiangxiao] ::-webkit-scrollbar{width:10px;height:10px}body[data-dsh-jiangxiao] ::-webkit-scrollbar-track{background:var(--jx-scroll-track)}body[data-dsh-jiangxiao] ::-webkit-scrollbar-thumb{background:var(--jx-scroll-thumb);border:2px solid var(--jx-scroll-track);border-radius:5px}body[data-dsh-jiangxiao] ::-webkit-scrollbar-thumb:hover{background:var(--jx-gold-bright)}body[data-dsh-jiangxiao] ::-webkit-scrollbar-corner{background:var(--jx-scroll-track)}body[data-dsh-jiangxiao] ::selection{background:var(--jx-selection);color:var(--jx-text-strong)}body[data-dsh-jiangxiao] a{color:var(--jx-gold)}body[data-dsh-jiangxiao] a:visited{color:var(--jx-wisteria)}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) a{color:var(--jx-gold-deep)}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) a:visited{color:var(--jx-wisteria)}body[data-dsh-jiangxiao] [data-slot=titlebar-v2]{background:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='48' viewBox='0 0 180 48'%3E%3Cpath d='M20 24c6-10 18-12 26-6 6 4 14 4 20-2 4-4 10-6 16-4' fill='none' stroke='%23B8860B' stroke-opacity='0.16' stroke-width='1'/%3E%3Cpath d='M10 38c8-8 20-8 30-4 6 2 14 1 20-4 6-5 14-6 22-3' fill='none' stroke='%23B8860B' stroke-opacity='0.10' stroke-width='1'/%3E%3C/svg%3E\"), linear-gradient(to bottom, var(--jx-surface-1), var(--jx-surface-0));border-bottom:1px solid color-mix(in srgb, var(--jx-gold-deep) 22%, transparent);position:relative}body[data-dsh-jiangxiao] [data-slot=titlebar-v2]:after{content:\"\";background:linear-gradient(to bottom, transparent, var(--jx-gold-deep), transparent);pointer-events:none;border-radius:2px;width:3px;height:60%;position:absolute;inset-block-start:50%;inset-inline-start:0;transform:translateY(-50%)}body[data-dsh-jiangxiao] [data-slot=titlebar-v2] [data-slot=tab-title],body[data-dsh-jiangxiao] [data-slot=titlebar-v2] [data-titlebar-tab-title]{color:var(--jx-gold-bright);letter-spacing:.08em;font-weight:600}body[data-dsh-jiangxiao] [data-slot=titlebar-v2] [data-slot=tab-link],body[data-dsh-jiangxiao] [data-slot=titlebar-v2] [data-titlebar-tab-link]{color:var(--jx-text-base);-webkit-text-fill-color:var(--jx-text-base)}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) [data-slot=titlebar-v2] [data-slot=tab-link],body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) [data-slot=titlebar-v2] [data-titlebar-tab-link]{color:var(--jx-text-strong);-webkit-text-fill-color:var(--jx-text-strong)}body[data-dsh-jiangxiao] h1,body[data-dsh-jiangxiao] h2,body[data-dsh-jiangxiao] h3,body[data-dsh-jiangxiao] h4{font-family:var(--jx-font-display);letter-spacing:.01em;background:var(--jx-gold-foil);color:#0000;-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text}@supports not ((-webkit-background-clip:text) or (background-clip:text)){body[data-dsh-jiangxiao] h1,body[data-dsh-jiangxiao] h2,body[data-dsh-jiangxiao] h3,body[data-dsh-jiangxiao] h4{color:var(--jx-text-gold);-webkit-text-fill-color:var(--jx-text-gold);background:0 0}}body[data-dsh-jiangxiao] strong,body[data-dsh-jiangxiao] b{color:var(--jx-gold-bright)}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) strong,body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) b{color:var(--jx-gold-deep)}@media (prefers-reduced-motion:reduce){body[data-dsh-jiangxiao] *,body[data-dsh-jiangxiao] :before,body[data-dsh-jiangxiao] :after{scroll-behavior:auto!important;transition-duration:.001ms!important;animation-duration:.001ms!important;animation-iteration-count:1!important}}";
+		const css$1 = "body[data-dsh-jiangxiao]{--jx-surface-0:#0b090d;--jx-surface-1:#121016;--jx-surface-2:#1a1620;--jx-surface-3:#2d242f;--jx-text-strong:#f2ead8;--jx-text-base:#f2ead8;--jx-text-weak:#a99c8a;--jx-text-faint:#8a7e6e;--jx-gold-bright:#f6d365;--jx-gold:#d6b34a;--jx-text-gold:#d6b34a;--jx-gold-deep:#b8860b;--jx-gold-dim:#996515;--jx-ginkgo:#dfb793;--jx-gold-foil:linear-gradient(135deg, #f6d365 0%, #fda085 50%, #b8860b 100%);--jx-seal:#c7493a;--jx-seal-deep:#a8382b;--jx-seal-bright:#d85444;--jx-seal-ink:#fff8ef;--jx-mist:#b5a8b2;--jx-mountain:#827686;--jx-water:#767687;--jx-cloud:#e7d3d2;--jx-moon:#ecd8d8;--jx-hair:#d1beca;--jx-wisteria:#b89aac;--jx-cinnabar:#c3272b;--jx-hl-file:#7fd8e8;--jx-hl-agent:#e5c07b;--jx-success:#86b08a;--jx-success-soft:#1c3d26;--jx-warn:#d9a05b;--jx-warn-soft:#3a2e18;--jx-error:#d06552;--jx-error-soft:#3a1c1c;--jx-border-deco:#3d3218;--jx-selection:#b8860b4d;--jx-scroll-track:#2a2210;--jx-scroll-thumb:#b8860b;--jx-font-display:\"Ma Shan Zheng\", \"Kaiti SC\", \"STKaiti\", \"KaiTi\", serif;--jx-font-ui:\"Noto Serif SC\", \"Songti SC\", \"SimSun\", serif;--jx-font-code:ui-monospace, \"JetBrains Mono\", \"Cascadia Code\", Consolas, monospace;--jx-radius-sm:4px;--jx-radius-md:6px;--jx-radius-lg:8px;--jx-radius-xl:12px;--jx-shadow-1:0 2px 8px #05030880;--jx-shadow-2:0 8px 24px #0503088c;--jx-gold-rim:0 0 0 1px #3d3218, 0 0 14px #f6d3651f;--jx-dur-fast:.15s;--jx-dur:.35s}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]){--jx-surface-0:#faf5ee;--jx-surface-1:#f5eddf;--jx-surface-2:#efe3d0;--jx-surface-3:#e8dcc8;--jx-text-strong:#2a241a;--jx-text-base:#5d4a42;--jx-text-weak:#7d6a5e;--jx-text-faint:#8a7765;--jx-gold-bright:#9c7a1e;--jx-gold:#b8860b;--jx-text-gold:#6f5206;--jx-gold-deep:#8a6508;--jx-gold-dim:#6f5306;--jx-ginkgo:#b8860b;--jx-gold-foil:linear-gradient(135deg, #b8860b 0%, #d97a8e 50%, #8a6508 100%);--jx-seal:#8e3a49;--jx-seal-deep:#7a2a39;--jx-seal-bright:#d97a8e;--jx-seal-ink:#fff8f6;--jx-mist:#c9b8b4;--jx-mountain:#b3a49a;--jx-water:#a9a9b4;--jx-cloud:#f0e4e2;--jx-moon:#f3e2e2;--jx-hair:#dcc4ca;--jx-wisteria:#9c3a54;--jx-cinnabar:#8e3a49;--jx-hl-file:#2c6a7a;--jx-hl-agent:#9c7a1e;--jx-success:#3d7a3d;--jx-success-soft:#ddf3e3;--jx-warn:#9c6b1e;--jx-warn-soft:#fdf3dd;--jx-error:#a83a3a;--jx-error-soft:#f8dcdc;--jx-border-deco:#d9c9b5;--jx-selection:#b24a5c24;--jx-scroll-track:#ece0d0;--jx-scroll-thumb:#d97a8e;--jx-shadow-1:0 2px 8px #05030840;--jx-shadow-2:0 8px 24px #0503084d;--jx-gold-rim:0 0 0 1px #d9c9b5, 0 0 14px #b8860b1f}body[data-dsh-jiangxiao]{--dsw-font-family:var(--jx-font-ui);--ds-font-family-code:var(--jx-font-code);color:var(--jx-text-base);background-color:var(--jx-surface-0);background-image:radial-gradient(circle at 18% 12%, #b8860b0f, transparent 42%), radial-gradient(circle at 82% 28%, #9976940d, transparent 38%), radial-gradient(circle at 50% 92%, #b8860b0a, transparent 45%), linear-gradient(168deg, var(--jx-surface-0) 0%, var(--jx-surface-1) 60%, var(--jx-surface-2) 100%);box-sizing:border-box}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]){background-image:radial-gradient(circle at 18% 12%, #b8860b14, transparent 42%), radial-gradient(circle at 82% 28%, #b24a5c0f, transparent 38%), radial-gradient(circle at 50% 92%, #b8860b0d, transparent 45%), linear-gradient(168deg, var(--jx-surface-0) 0%, var(--jx-surface-1) 60%, var(--jx-surface-2) 100%)}body[data-dsh-jiangxiao] [id=root]{box-sizing:border-box;background:0 0}body[data-dsh-jiangxiao]{--dsw-static-amber-100:#3a2e18;--dsw-static-amber-400:#d9a05b;--dsw-static-amber-500:#c99a2e;--dsw-static-amber-600:#a87c1e;--dsw-static-amber-900:#4a3a12;--dsw-static-blue-100:#2a2210;--dsw-static-blue-300:#3d3218;--dsw-static-blue-400:#6f5306;--dsw-static-blue-450:#8a6508;--dsw-static-blue-500:#b8860b;--dsw-static-blue-50:#1a1620;--dsw-static-blue-50p:#121016;--dsw-static-blue-600:#d6b34a;--dsw-static-blue-75:#2d242f;--dsw-static-blue-800:#f6d365;--dsw-static-blue-950:#fdf3dd;--dsw-static-deepseek-100:#2a2210;--dsw-static-deepseek-200:#3d3218;--dsw-static-deepseek-300:#6f5306;--dsw-static-deepseek-400:#8a6508;--dsw-static-deepseek-450:#996515;--dsw-static-deepseek-500:#b8860b;--dsw-static-deepseek-50:#1a1620;--dsw-static-deepseek-600:#d6b34a;--dsw-static-deepseek-700-delete:#996515;--dsw-static-deepseek-800:#f6d365;--dsw-static-deepseek-900:#dfb793;--dsw-static-green-100:#1c3d26;--dsw-static-green-400:#86b08a;--dsw-static-green-500:#5a8a5e;--dsw-static-green-900:#1b4027;--dsw-static-neutral-00:#0b090d;--dsw-static-neutral-1000:#f2ead8;--dsw-static-neutral-100:#121016;--dsw-static-neutral-150:#1a1620;--dsw-static-neutral-200:#1a1620;--dsw-static-neutral-250:#2d242f;--dsw-static-neutral-300:#2d242f;--dsw-static-neutral-400:#3d343c;--dsw-static-neutral-500:#4d4350;--dsw-static-neutral-50:#0b090d;--dsw-static-neutral-550:#5d5360;--dsw-static-neutral-600:#6d6370;--dsw-static-neutral-700:#8d8390;--dsw-static-neutral-800:#a99c8a;--dsw-static-neutral-850:#b9ac9a;--dsw-static-neutral-900:#c9bca8;--dsw-static-neutral-bluish-00:#0b090d;--dsw-static-neutral-bluish-1000:#f2ead8;--dsw-static-neutral-bluish-100:#121016;--dsw-static-neutral-bluish-150:#1a1620;--dsw-static-neutral-bluish-200:#1a1620;--dsw-static-neutral-bluish-250:#2d242f;--dsw-static-neutral-bluish-300:#2d242f;--dsw-static-neutral-bluish-400:#3d343c;--dsw-static-neutral-bluish-500:#4d4350;--dsw-static-neutral-bluish-50:#0b090d;--dsw-static-neutral-bluish-600:#6d6370;--dsw-static-neutral-bluish-60:#1a1620;--dsw-static-neutral-bluish-700:#8d8390;--dsw-static-neutral-bluish-750:#9d9398;--dsw-static-neutral-bluish-75:#2d242f;--dsw-static-neutral-bluish-800:#a99c8a;--dsw-static-neutral-bluish-850:#b9ac9a;--dsw-static-neutral-bluish-875:#c9bca8;--dsw-static-neutral-bluish-900:#d9cca8;--dsw-static-neutral-bluish-950:#e9dcb8;--dsw-static-red-100:#4a2222;--dsw-static-red-400:#d06552;--dsw-static-red-500:#c3272b;--dsw-static-red-50:#3a1c1c;--dsw-static-red-600:#d85444;--dsw-static-red-900:#5c1414}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]){--dsw-static-amber-100:#fdf3dd;--dsw-static-amber-400:#d9a05b;--dsw-static-amber-500:#c99a2e;--dsw-static-amber-600:#a87c1e;--dsw-static-amber-900:#4a3a12;--dsw-static-blue-100:#f5eddf;--dsw-static-blue-300:#efe3d0;--dsw-static-blue-400:#d9c9b5;--dsw-static-blue-450:#c9b89a;--dsw-static-blue-500:#b8860b;--dsw-static-blue-50:#faf5ee;--dsw-static-blue-50p:#f5eddf;--dsw-static-blue-600:#9c7a1e;--dsw-static-blue-75:#efe3d0;--dsw-static-blue-800:#8a6508;--dsw-static-blue-950:#6f5306;--dsw-static-deepseek-100:#f5eddf;--dsw-static-deepseek-200:#efe3d0;--dsw-static-deepseek-300:#d9c9b5;--dsw-static-deepseek-400:#c9b89a;--dsw-static-deepseek-450:#b8860b;--dsw-static-deepseek-500:#b8860b;--dsw-static-deepseek-50:#faf5ee;--dsw-static-deepseek-600:#9c7a1e;--dsw-static-deepseek-700-delete:#8a6508;--dsw-static-deepseek-800:#8a6508;--dsw-static-deepseek-900:#6f5306;--dsw-static-green-100:#ddf3e3;--dsw-static-green-400:#3d7a3d;--dsw-static-green-500:#2c6a2c;--dsw-static-green-900:#1b4027;--dsw-static-neutral-00:#faf5ee;--dsw-static-neutral-1000:#2a241a;--dsw-static-neutral-100:#f5eddf;--dsw-static-neutral-150:#efe3d0;--dsw-static-neutral-200:#efe3d0;--dsw-static-neutral-250:#e8dcc8;--dsw-static-neutral-300:#e8dcc8;--dsw-static-neutral-400:#d9c9b5;--dsw-static-neutral-500:#c9b89a;--dsw-static-neutral-50:#faf5ee;--dsw-static-neutral-550:#b3a296;--dsw-static-neutral-600:#a39286;--dsw-static-neutral-700:#8d7a70;--dsw-static-neutral-800:#6d5a50;--dsw-static-neutral-850:#5d4a42;--dsw-static-neutral-900:#4d3a32;--dsw-static-neutral-bluish-00:#faf5ee;--dsw-static-neutral-bluish-1000:#2a241a;--dsw-static-neutral-bluish-100:#f5eddf;--dsw-static-neutral-bluish-150:#efe3d0;--dsw-static-neutral-bluish-200:#efe3d0;--dsw-static-neutral-bluish-250:#e8dcc8;--dsw-static-neutral-bluish-300:#e8dcc8;--dsw-static-neutral-bluish-400:#d9c9b5;--dsw-static-neutral-bluish-500:#c9b89a;--dsw-static-neutral-bluish-50:#faf5ee;--dsw-static-neutral-bluish-600:#a39286;--dsw-static-neutral-bluish-60:#efe3d0;--dsw-static-neutral-bluish-700:#8d7a70;--dsw-static-neutral-bluish-750:#7d6a60;--dsw-static-neutral-bluish-75:#e8dcc8;--dsw-static-neutral-bluish-800:#6d5a50;--dsw-static-neutral-bluish-850:#5d4a42;--dsw-static-neutral-bluish-875:#4d3a32;--dsw-static-neutral-bluish-900:#3d2a22;--dsw-static-neutral-bluish-950:#2d1a12;--dsw-static-red-100:#f8dcdc;--dsw-static-red-400:#d06552;--dsw-static-red-500:#a83a3a;--dsw-static-red-50:#fceeee;--dsw-static-red-600:#8e3a49;--dsw-static-red-900:#5c1414}body[data-dsh-jiangxiao]{--dsw-alias-bg-base:var(--jx-surface-1);--dsw-alias-bg-layer-1:var(--jx-surface-1);--dsw-alias-bg-layer-2:var(--jx-surface-2);--dsw-alias-bg-layer-3:var(--jx-surface-3);--dsw-alias-bg-mask-1:#0503088c;--dsw-alias-bg-mask-2:#0503084d;--dsw-alias-bg-mask-3:#05030899;--dsw-alias-bg-mask-photo:#050308e0;--dsw-alias-bg-module-platform:var(--jx-surface-2);--dsw-alias-bg-multi-select:var(--jx-surface-2);--dsw-alias-bg-overlay:var(--jx-surface-2);--dsw-alias-bg-skeleton:#f6d3650f;--dsw-alias-border-inverted2:#f2ead899;--dsw-alias-border-inverted:#f2ead866;--dsw-alias-border-l1:#b8860b2e;--dsw-alias-border-l2-darkmode-thin:#b8860b38;--dsw-alias-border-l2:#b8860b42;--dsw-alias-border-l3:#b8860b57;--dsw-alias-border-l4:#b8860b6b;--dsw-alias-brand-primary-invert:var(--jx-surface-0);--dsw-alias-brand-primary-new-colorprimary-new-color:var(--jx-gold);--dsw-alias-brand-primary:var(--jx-gold);--dsw-alias-brand-text:var(--jx-text-gold);--dsw-alias-button-contrast-fill:var(--jx-gold-deep);--dsw-alias-button-elevated-fill:var(--jx-surface-2);--dsw-alias-button-floating-fill:var(--jx-surface-2);--dsw-alias-button-floating-hover:var(--jx-surface-3);--dsw-alias-button-ghost-active-border:var(--jx-gold-deep);--dsw-alias-button-ghost-active-fill:var(--jx-surface-3);--dsw-alias-button-ghost-active-hover:var(--jx-surface-3);--dsw-alias-button-info-fill:var(--jx-gold-deep);--dsw-alias-button-info-hover:var(--jx-gold);--dsw-alias-button-primary-dimmed:var(--jx-surface-3);--dsw-alias-button-primary-fill:var(--jx-gold-deep);--dsw-alias-button-primary-hover:var(--jx-gold);--dsw-alias-button-tool-bar-fill-invisible:#b8860b5c;--dsw-alias-button-tool-bar-fill:#b8860b80;--dsw-alias-button-tool-bar-hover:#b8860b99;--dsw-alias-interactive-bg-active:#b8860b29;--dsw-alias-interactive-bg-hover-accent:#b8860b38;--dsw-alias-interactive-bg-hover-danger:#d065521f;--dsw-alias-interactive-bg-hover-solid:var(--jx-surface-3);--dsw-alias-interactive-bg-hover:#f6d36514;--dsw-alias-label-caption:var(--jx-text-weak);--dsw-alias-label-dimmed:var(--jx-text-faint);--dsw-alias-label-primary-dimmed:var(--jx-text-weak);--dsw-alias-label-primary-foreground:var(--jx-surface-0);--dsw-alias-label-primary-inverted:var(--jx-surface-0);--dsw-alias-label-primary:var(--jx-text-base);--dsw-alias-label-secondary:var(--jx-text-base);--dsw-alias-label-tertiary:var(--jx-text-weak);--dsw-alias-markdown-citation:var(--jx-surface-2);--dsw-alias-markdown-code-block-banner:var(--jx-surface-0);--dsw-alias-markdown-code-block:var(--jx-surface-0);--dsw-alias-markdown-code-segment-selected:var(--jx-surface-2);--dsw-alias-markdown-code-segment-unselected:var(--jx-surface-1);--dsw-alias-markdown-inline-code:var(--jx-surface-2);--dsw-alias-markdown-placeholder:var(--jx-surface-1);--dsw-alias-markdown-tag:var(--jx-surface-2);--dsw-alias-scrollbar-bg-l1:var(--jx-scroll-track);--dsw-alias-scrollbar-bg-l2:var(--jx-scroll-track);--dsw-alias-scrollbar-hover-l1:var(--jx-scroll-thumb);--dsw-alias-scrollbar-hover-l2:var(--jx-scroll-thumb);--dsw-alias-state-business-primary:var(--jx-gold);--dsw-alias-state-business-tertiary:var(--jx-surface-3);--dsw-alias-state-error-primary:var(--jx-error);--dsw-alias-state-error-secondary:var(--jx-seal-bright);--dsw-alias-state-success-primary:var(--jx-success);--dsw-alias-state-success-secondary:var(--jx-success);--dsw-alias-state-success-tertiary:var(--jx-success-soft);--dsw-alias-state-warn-label:var(--jx-warn);--dsw-alias-state-warn-primary:var(--jx-warn);--dsw-alias-state-warn-secondary:var(--jx-warn);--dsw-alias-state-warn-tertiary:var(--jx-warn-soft);--dsw-alias-toast-bg:var(--jx-surface-2);--dsw-alias-tooltip-bg:var(--jx-surface-2);--dsw-alias-tooltip-fg:var(--jx-text-base);--dsw-specific-bubble-highlight:var(--jx-surface-3);--dsw-specific-bubble:var(--jx-surface-2);--dsw-specific-input-major:var(--jx-surface-1);--dsw-specific-login-input:var(--jx-surface-1);--dsw-specific-menu:var(--jx-surface-2);--dsw-specific-selector:var(--jx-surface-2);--dsw-specific-sidebar-fill:var(--jx-surface-1);--dsw-specific-sidebar-nav-item-active-accent:var(--jx-gold);--dsw-specific-sidebar-nav-item-active:var(--jx-surface-3);--dsw-specific-sidebar-nav-item-hover:var(--jx-surface-3);--dsw-specific-tip:var(--jx-surface-2)}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]){--dsw-alias-bg-base:var(--jx-surface-1);--dsw-alias-bg-layer-1:var(--jx-surface-1);--dsw-alias-bg-layer-2:var(--jx-surface-2);--dsw-alias-bg-layer-3:var(--jx-surface-3);--dsw-alias-bg-mask-1:#2a241a1f;--dsw-alias-bg-mask-2:#2a241a0f;--dsw-alias-bg-mask-3:#2a241a2e;--dsw-alias-bg-mask-photo:#2a241ae0;--dsw-alias-bg-module-platform:var(--jx-surface-2);--dsw-alias-bg-multi-select:var(--jx-surface-2);--dsw-alias-bg-overlay:var(--jx-surface-2);--dsw-alias-bg-skeleton:#b8860b14;--dsw-alias-border-inverted2:#2a241a99;--dsw-alias-border-inverted:#2a241a66;--dsw-alias-border-l1:#b8860b38;--dsw-alias-border-l2-darkmode-thin:#b8860b42;--dsw-alias-border-l2:#b8860b4d;--dsw-alias-border-l3:#b8860b61;--dsw-alias-border-l4:#b8860b75;--dsw-alias-brand-primary-invert:var(--jx-surface-0);--dsw-alias-brand-primary-new-colorprimary-new-color:var(--jx-gold);--dsw-alias-brand-primary:var(--jx-gold);--dsw-alias-brand-text:var(--jx-text-gold);--dsw-alias-button-contrast-fill:var(--jx-gold-deep);--dsw-alias-button-elevated-fill:var(--jx-surface-2);--dsw-alias-button-floating-fill:var(--jx-surface-2);--dsw-alias-button-floating-hover:var(--jx-surface-3);--dsw-alias-button-ghost-active-border:var(--jx-gold-deep);--dsw-alias-button-ghost-active-fill:var(--jx-surface-3);--dsw-alias-button-ghost-active-hover:var(--jx-surface-3);--dsw-alias-button-info-fill:var(--jx-gold-deep);--dsw-alias-button-info-hover:var(--jx-gold);--dsw-alias-button-primary-dimmed:var(--jx-surface-3);--dsw-alias-button-primary-fill:var(--jx-gold-deep);--dsw-alias-button-primary-hover:var(--jx-gold);--dsw-alias-button-tool-bar-fill-invisible:#b8860b38;--dsw-alias-button-tool-bar-fill:#b8860b52;--dsw-alias-button-tool-bar-hover:#b8860b6b;--dsw-alias-interactive-bg-active:#b8860b24;--dsw-alias-interactive-bg-hover-accent:#b8860b2e;--dsw-alias-interactive-bg-hover-danger:#a83a3a14;--dsw-alias-interactive-bg-hover-solid:var(--jx-surface-3);--dsw-alias-interactive-bg-hover:#b8860b14;--dsw-alias-label-caption:var(--jx-text-weak);--dsw-alias-label-dimmed:var(--jx-text-faint);--dsw-alias-label-primary-dimmed:var(--jx-text-weak);--dsw-alias-label-primary-foreground:var(--jx-surface-0);--dsw-alias-label-primary-inverted:var(--jx-surface-0);--dsw-alias-label-primary:var(--jx-text-strong);--dsw-alias-label-secondary:var(--jx-text-base);--dsw-alias-label-tertiary:var(--jx-text-weak);--dsw-alias-markdown-citation:var(--jx-surface-2);--dsw-alias-markdown-code-block-banner:var(--jx-surface-1);--dsw-alias-markdown-code-block:var(--jx-surface-1);--dsw-alias-markdown-code-segment-selected:var(--jx-surface-2);--dsw-alias-markdown-code-segment-unselected:var(--jx-surface-1);--dsw-alias-markdown-inline-code:var(--jx-surface-2);--dsw-alias-markdown-placeholder:var(--jx-surface-1);--dsw-alias-markdown-tag:var(--jx-surface-2);--dsw-alias-scrollbar-bg-l1:var(--jx-scroll-track);--dsw-alias-scrollbar-bg-l2:var(--jx-scroll-track);--dsw-alias-scrollbar-hover-l1:var(--jx-scroll-thumb);--dsw-alias-scrollbar-hover-l2:var(--jx-scroll-thumb);--dsw-alias-state-business-primary:var(--jx-gold);--dsw-alias-state-business-tertiary:var(--jx-surface-3);--dsw-alias-state-error-primary:var(--jx-error);--dsw-alias-state-error-secondary:var(--jx-seal);--dsw-alias-state-success-primary:var(--jx-success);--dsw-alias-state-success-secondary:var(--jx-success);--dsw-alias-state-success-tertiary:var(--jx-success-soft);--dsw-alias-state-warn-label:var(--jx-warn);--dsw-alias-state-warn-primary:var(--jx-warn);--dsw-alias-state-warn-secondary:var(--jx-warn);--dsw-alias-state-warn-tertiary:var(--jx-warn-soft);--dsw-alias-toast-bg:var(--jx-surface-2);--dsw-alias-tooltip-bg:var(--jx-surface-2);--dsw-alias-tooltip-fg:var(--jx-text-strong);--dsw-specific-bubble-highlight:var(--jx-surface-3);--dsw-specific-bubble:var(--jx-surface-2);--dsw-specific-input-major:var(--jx-surface-1);--dsw-specific-login-input:var(--jx-surface-1);--dsw-specific-menu:var(--jx-surface-2);--dsw-specific-selector:var(--jx-surface-2);--dsw-specific-sidebar-fill:var(--jx-surface-1);--dsw-specific-sidebar-nav-item-active-accent:var(--jx-gold-deep);--dsw-specific-sidebar-nav-item-active:var(--jx-surface-3);--dsw-specific-sidebar-nav-item-hover:var(--jx-surface-3);--dsw-specific-tip:var(--jx-surface-2)}body[data-dsh-jiangxiao]{--aion-bg-base:var(--jx-surface-1);--aion-bg-1:var(--jx-surface-1);--aion-bg-2:var(--jx-surface-2);--aion-bg-3:var(--jx-surface-2);--aion-bg-4:var(--jx-surface-3);--aion-bg-hover:#b8860b1f;--aion-bg-active:#b8860b2e;--aion-text-primary:var(--jx-text-base);--aion-text-secondary:var(--jx-text-base);--aion-text-tertiary:var(--jx-text-weak);--aion-text-disabled:var(--jx-text-faint);--aion-primary:var(--jx-gold);--aion-primary-hover:var(--jx-gold-bright);--aion-success:var(--jx-success);--aion-success-soft:var(--jx-success-soft);--aion-warning:var(--jx-warn);--aion-warning-soft:var(--jx-warn-soft);--aion-danger:var(--jx-error);--aion-danger-soft:var(--jx-error-soft);--aion-brand:var(--jx-gold);--aion-aou-1:var(--jx-surface-1);--aion-aou-2:var(--jx-surface-2);--aion-aou-3:var(--jx-surface-2);--aion-aou-4:var(--jx-surface-3);--aion-aou-5:var(--jx-gold);--aion-aou-6:var(--jx-gold-deep);--aion-fill-2:#b8860b1f;--aion-fill-3:#b8860b2e;--aion-border-base:#b8860b4d;--aion-overlay-shadow:var(--jx-shadow-2);--aion-font-sans:var(--jx-font-ui);--aion-font-mono:var(--jx-font-code)}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]){--aion-bg-base:var(--jx-surface-1);--aion-bg-1:var(--jx-surface-1);--aion-bg-2:var(--jx-surface-2);--aion-bg-3:var(--jx-surface-2);--aion-bg-4:var(--jx-surface-3);--aion-bg-hover:#b8860b1a;--aion-bg-active:#b8860b29;--aion-text-primary:var(--jx-text-strong);--aion-text-secondary:var(--jx-text-base);--aion-text-tertiary:var(--jx-text-weak);--aion-text-disabled:var(--jx-text-faint);--aion-primary:var(--jx-gold);--aion-primary-hover:var(--jx-gold-deep);--aion-success:var(--jx-success);--aion-success-soft:var(--jx-success-soft);--aion-warning:var(--jx-warn);--aion-warning-soft:var(--jx-warn-soft);--aion-danger:var(--jx-error);--aion-danger-soft:var(--jx-error-soft);--aion-brand:var(--jx-gold);--aion-aou-1:var(--jx-surface-1);--aion-aou-2:var(--jx-surface-2);--aion-aou-3:var(--jx-surface-2);--aion-aou-4:var(--jx-surface-3);--aion-aou-5:var(--jx-gold);--aion-aou-6:var(--jx-gold-deep);--aion-fill-2:#b8860b1a;--aion-fill-3:#b8860b29;--aion-border-base:#b8860b47;--aion-overlay-shadow:var(--jx-shadow-2);--aion-font-sans:var(--jx-font-ui);--aion-font-mono:var(--jx-font-code)}body[data-dsh-jiangxiao] :focus-visible{outline:2px solid var(--jx-gold);outline-offset:2px}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) :focus-visible{outline-color:var(--jx-gold-deep)}body[data-dsh-jiangxiao]{--dsh-scrollbar-thumb:var(--jx-scroll-thumb);--dsh-scrollbar-thumb-hover:var(--jx-gold-bright)}body[data-dsh-jiangxiao] ::-webkit-scrollbar{width:10px;height:10px}body[data-dsh-jiangxiao] ::-webkit-scrollbar-track{background:var(--jx-scroll-track)}body[data-dsh-jiangxiao] ::-webkit-scrollbar-thumb{background:var(--jx-scroll-thumb);border:2px solid var(--jx-scroll-track);border-radius:5px}body[data-dsh-jiangxiao] ::-webkit-scrollbar-thumb:hover{background:var(--jx-gold-bright)}body[data-dsh-jiangxiao] ::-webkit-scrollbar-corner{background:var(--jx-scroll-track)}body[data-dsh-jiangxiao] ::selection{background:var(--jx-selection);color:var(--jx-text-strong)}body[data-dsh-jiangxiao] a{color:var(--jx-gold)}body[data-dsh-jiangxiao] a:visited{color:var(--jx-wisteria)}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) a{color:var(--jx-gold-deep)}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) a:visited{color:var(--jx-wisteria)}body[data-dsh-jiangxiao] [data-slot=titlebar-v2]{background:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='48' viewBox='0 0 180 48'%3E%3Cpath d='M20 24c6-10 18-12 26-6 6 4 14 4 20-2 4-4 10-6 16-4' fill='none' stroke='%23B8860B' stroke-opacity='0.16' stroke-width='1'/%3E%3Cpath d='M10 38c8-8 20-8 30-4 6 2 14 1 20-4 6-5 14-6 22-3' fill='none' stroke='%23B8860B' stroke-opacity='0.10' stroke-width='1'/%3E%3C/svg%3E\"), linear-gradient(to bottom, var(--jx-surface-1), var(--jx-surface-0)), conic-gradient(from var(--jx-gold-angle) at 50% 50%, #b8860b14, #f6d3651f, #b8860b0a, #f6d36514, #b8860b14);border-bottom:1px solid color-mix(in srgb, var(--jx-gold-deep) 22%, transparent);contain:layout paint;position:relative}html._9fd6na_fx-shimmer body[data-dsh-jiangxiao] [data-slot=titlebar-v2]{animation:12s linear infinite _9fd6na_jx-gold-rotate}body[data-dsh-jiangxiao] [data-slot=titlebar-v2]:after{content:\"\";background:linear-gradient(to bottom, transparent, var(--jx-gold-deep), transparent);pointer-events:none;border-radius:2px;width:3px;height:60%;position:absolute;inset-block-start:50%;inset-inline-start:0;transform:translateY(-50%)}body[data-dsh-jiangxiao] [data-slot=titlebar-v2] [data-slot=tab-title],body[data-dsh-jiangxiao] [data-slot=titlebar-v2] [data-titlebar-tab-title]{color:var(--jx-gold-bright);letter-spacing:.08em;font-weight:600}body[data-dsh-jiangxiao] [data-slot=titlebar-v2] [data-slot=tab-link],body[data-dsh-jiangxiao] [data-slot=titlebar-v2] [data-titlebar-tab-link]{color:var(--jx-text-base);-webkit-text-fill-color:var(--jx-text-base)}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) [data-slot=titlebar-v2] [data-slot=tab-link],body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) [data-slot=titlebar-v2] [data-titlebar-tab-link]{color:var(--jx-text-strong);-webkit-text-fill-color:var(--jx-text-strong)}body[data-dsh-jiangxiao] h1,body[data-dsh-jiangxiao] h2,body[data-dsh-jiangxiao] h3,body[data-dsh-jiangxiao] h4{font-family:var(--jx-font-display);letter-spacing:.01em;color:var(--jx-text-gold);-webkit-text-fill-color:var(--jx-text-gold)}html._9fd6na_fx-shimmer body[data-dsh-jiangxiao] h1,html._9fd6na_fx-shimmer body[data-dsh-jiangxiao] h2,html._9fd6na_fx-shimmer body[data-dsh-jiangxiao] h3,html._9fd6na_fx-shimmer body[data-dsh-jiangxiao] h4{background:var(--jx-gold-foil);background-size:200% 100%;background-position:var(--jx-shimmer-x) 0;color:#0000;-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;animation:4s ease-in-out infinite alternate _9fd6na_jx-shimmer-sweep}@supports not ((-webkit-background-clip:text) or (background-clip:text)){html._9fd6na_fx-shimmer body[data-dsh-jiangxiao] h1,html._9fd6na_fx-shimmer body[data-dsh-jiangxiao] h2,html._9fd6na_fx-shimmer body[data-dsh-jiangxiao] h3,html._9fd6na_fx-shimmer body[data-dsh-jiangxiao] h4{color:var(--jx-text-gold);-webkit-text-fill-color:var(--jx-text-gold);background:0 0}}body[data-dsh-jiangxiao] strong,body[data-dsh-jiangxiao] b{color:var(--jx-gold-bright)}body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) strong,body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) b{color:var(--jx-gold-deep)}@property --jx-gold-angle{syntax:\"<angle>\";inherits:false;initial-value:0deg}@property --jx-shimmer-x{syntax:\"<percentage>\";inherits:false;initial-value:100%}@property --jx-breathe{syntax:\"<number>\";inherits:false;initial-value:1}@keyframes _9fd6na_jx-gold-rotate{to{--jx-gold-angle:360deg}}@keyframes _9fd6na_jx-shimmer-sweep{to{--jx-shimmer-x:0%}}@keyframes _9fd6na_jx-ink-breathe{0%,to{--jx-breathe:1}50%{--jx-breathe:1.15}}@keyframes _9fd6na_jx-leaf-fall{0%{background-position:200px -120px,260px -150px,160px -95px}to{background-position:-200px 100vh,-260px 100vh,-160px 100vh}}@keyframes _9fd6na_jx-petal-fall{0%{background-position:170px -100px,220px -130px,135px -80px}to{background-position:-170px 100vh,-220px 100vh,-135px 100vh}}@keyframes _9fd6na_jx-seal-pulse{0%,to{box-shadow:0 2px 6px #c7493a66,inset 0 1px #fff8ef38,0 0 #c7493a4d}50%{box-shadow:0 2px 6px #c7493a66,inset 0 1px #fff8ef38,0 0 12px 2px #c7493a26}}html._9fd6na_fx-fall:not(._9fd6na_fx-fall-waapi) body[data-dsh-jiangxiao]:before{content:\"\";z-index:0;pointer-events:none;opacity:.42;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 96L50 72C40 70 24 64 18 50C14 38 20 22 34 16C42 13 47 20 50 20C53 20 58 13 66 16C80 22 86 38 82 50C76 64 60 70 50 72Z' fill='%23d6b34a'/%3E%3Cpath d='M50 72L18 50M50 72L34 16M50 72L50 20M50 72L66 16M50 72L82 50' fill='none' stroke='%23996515' stroke-width='1.2' stroke-opacity='0.6'/%3E%3C/svg%3E\"),url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg transform='rotate(-12 50 50)'%3E%3Cpath d='M50 96L50 72C40 70 24 64 18 50C14 38 20 22 34 16C42 13 47 20 50 20C53 20 58 13 66 16C80 22 86 38 82 50C76 64 60 70 50 72Z' fill='%23dfb793'/%3E%3Cpath d='M50 72L18 50M50 72L34 16M50 72L50 20M50 72L66 16M50 72L82 50' fill='none' stroke='%23996515' stroke-width='1.2' stroke-opacity='0.6'/%3E%3C/g%3E%3C/svg%3E\"),url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg transform='rotate(20 50 50)'%3E%3Cpath d='M50 92L50 70C40 68 24 62 18 48C14 36 20 20 34 14C42 11 47 18 50 18C53 18 58 11 66 14C80 20 86 36 82 48C76 62 60 68 50 70Z' fill='%23b8860b'/%3E%3Cpath d='M50 70L18 48M50 70L34 14M50 70L50 18M50 70L66 14M50 70L82 48' fill='none' stroke='%23996515' stroke-width='1.2' stroke-opacity='0.6'/%3E%3C/g%3E%3C/svg%3E\");background-repeat:repeat;background-size:80px 120px,110px 150px,65px 95px;animation:28s linear infinite _9fd6na_jx-leaf-fall;position:fixed;inset:-40px 0 0;-webkit-mask-image:linear-gradient(#000,#0000 88%);mask-image:linear-gradient(#000,#0000 88%)}html._9fd6na_fx-fall:not(._9fd6na_fx-fall-waapi) body[data-dsh-jiangxiao]:not([data-ds-dark-theme]):before{opacity:.5;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23d97a8e'%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(72 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(144 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(216 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(288 50 50)'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='5' fill='%23b24a5c'/%3E%3C/svg%3E\"),url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23e89aa8' transform='rotate(36 50 50)'%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(72 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(144 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(216 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(288 50 50)'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='5' fill='%23b24a5c'/%3E%3C/svg%3E\"),url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23b24a5c'%3E%3Cpath d='M50 50C42 42 42 28 50 25C58 28 58 42 50 50Z'/%3E%3Cpath d='M50 50C42 42 42 28 50 25C58 28 58 42 50 50Z' transform='rotate(72 50 50)'/%3E%3Cpath d='M50 50C42 42 42 28 50 25C58 28 58 42 50 50Z' transform='rotate(144 50 50)'/%3E%3Cpath d='M50 50C42 42 42 28 50 25C58 28 58 42 50 50Z' transform='rotate(216 50 50)'/%3E%3Cpath d='M50 50C42 42 42 28 50 25C58 28 58 42 50 50Z' transform='rotate(288 50 50)'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='4' fill='%238e3a49'/%3E%3C/svg%3E\");background-size:70px 100px,95px 130px,55px 80px;animation:28s linear infinite _9fd6na_jx-petal-fall;-webkit-mask-image:none;mask-image:none}html._9fd6na_fx-breathe body[data-dsh-jiangxiao]:after{content:\"\";z-index:0;pointer-events:none;opacity:var(--jx-breathe);will-change:opacity;background:radial-gradient(60% 50% at 30% 40%,#b8860b0f,#0000 70%),radial-gradient(50% 40% at 70% 60%,#b8860b0f,#0000 70%);animation:8s ease-in-out infinite _9fd6na_jx-ink-breathe;position:fixed;inset:0}body[data-dsh-jiangxiao] [data-action=prompt-submit]{transition:background-color var(--jx-dur-fast) ease, transform .1s ease;background-image:none!important;background-color:var(--jx-seal)!important;border:1px solid var(--jx-seal-deep)!important;box-shadow:0 2px 6px color-mix(in srgb, var(--jx-seal) 40%, transparent), inset 0 1px 0 color-mix(in srgb, var(--jx-seal-ink) 22%, transparent)!important;color:var(--jx-seal-ink)!important;border-radius:9999px!important}html._9fd6na_fx-micro body[data-dsh-jiangxiao] [data-action=prompt-submit]{animation:3s ease-in-out infinite _9fd6na_jx-seal-pulse}html._9fd6na_fx-micro body[data-dsh-jiangxiao] [data-action=prompt-submit]:hover:not(:disabled){transform:translateY(-1px);background-color:var(--jx-seal-bright)!important}html._9fd6na_fx-micro body[data-dsh-jiangxiao] [data-action=prompt-submit]:active:not(:disabled){transform:translateY(0)scale(.96)}@media (prefers-reduced-motion:reduce){body[data-dsh-jiangxiao] *,body[data-dsh-jiangxiao] :before,body[data-dsh-jiangxiao] :after{scroll-behavior:auto!important;transition-duration:.001ms!important;animation-duration:.001ms!important;animation-iteration-count:1!important}}";
 		const tagId$1 = "@linxin666/dsh-client-ui-skin-jiangxiao/jiangxiao.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$1) + "]") === null) {
 			const tag = document.createElement("style");
@@ -51,7 +51,16 @@ window.__ModuleLoader__.load({
 			"pet.guidanceHint": "进入「宠物」设置页，点击「导入资产包」选择已下载的 ZIP 文件即可导入。",
 			"pet.activated": "姜晓动画包已激活",
 			"pet.activatedHint": "宠物动画已就绪，可在「宠物」设置页中选择姜晓宠物。",
-			"pet.importLink": "前往宠物设置"
+			"pet.importLink": "前往宠物设置",
+			"fx.title": "特效开关",
+			"fx.description": "独立开关五类唐风特效，全关即与原版皮肤一致。",
+			"fx.shimmer": "鎏金流光",
+			"fx.fall": "银杏梅花飘落",
+			"fx.grain": "墨韵暗纹",
+			"fx.breathe": "墨光呼吸",
+			"fx.micro": "微交互",
+			"fx.allOn": "全部开启",
+			"fx.allOff": "全部关闭"
 		};
 		/** English copy. */
 		const en = {
@@ -61,11 +70,20 @@ window.__ModuleLoader__.load({
 			"pet.guidanceHint": "Go to the Pet settings page and click \"Import asset pack\" to select the downloaded ZIP file.",
 			"pet.activated": "Jiangxiao animation pack is active",
 			"pet.activatedHint": "Pet animations are ready — select the Jiangxiao pet in the Pet settings page.",
-			"pet.importLink": "Go to Pet settings"
+			"pet.importLink": "Go to Pet settings",
+			"fx.title": "Effects",
+			"fx.description": "Toggle the five Tang-style effects independently. All off matches the original skin.",
+			"fx.shimmer": "Gold shimmer",
+			"fx.fall": "Ginkgo/plum fall",
+			"fx.grain": "Ink grain",
+			"fx.breathe": "Ink breathe",
+			"fx.micro": "Micro interactions",
+			"fx.allOn": "Enable all",
+			"fx.allOff": "Disable all"
 		};
 		//#endregion
 		//#region \0dsh-css:packages/skins/jiangxiao/src/client/skin-card.module.css.mjs
-		const css = ".h2ipbG_sectionList{margin:0;padding:0;list-style:none}.h2ipbG_card{background:var(--jx-surface-1,#121016);border:1px solid var(--jx-border-deco,#3d3218);border-radius:var(--jx-radius-md,6px);color:var(--jx-text-base,#f2ead8);font-family:var(--jx-font-ui,\"Noto Serif SC\", serif);padding:16px 20px}.h2ipbG_head{margin-bottom:14px}.h2ipbG_title{font-family:var(--jx-font-display,\"Ma Shan Zheng\", serif);color:var(--jx-gold-bright,#f6d365);letter-spacing:.06em;margin-bottom:4px;font-size:16px;display:block}.h2ipbG_description{color:var(--jx-text-weak,#a99c8a);font-size:12px;line-height:1.5;display:block}.h2ipbG_body{font-size:13px;line-height:1.6}.h2ipbG_guidance{background:color-mix(in srgb, var(--jx-gold-deep,#b8860b) 8%, transparent);border:1px solid color-mix(in srgb, var(--jx-gold-deep,#b8860b) 20%, transparent);border-radius:var(--jx-radius-sm,4px);padding:12px 14px}.h2ipbG_guidanceText{color:var(--jx-text-base,#f2ead8);margin:0 0 8px;font-weight:500}.h2ipbG_activated{background:color-mix(in srgb, var(--jx-success,#86b08a) 10%, transparent);border:1px solid color-mix(in srgb, var(--jx-success,#86b08a) 25%, transparent);border-radius:var(--jx-radius-sm,4px);padding:12px 14px}.h2ipbG_activatedBadge{background:var(--jx-success,#86b08a);color:var(--jx-surface-0,#0b090d);letter-spacing:.04em;border-radius:9999px;margin-bottom:8px;padding:2px 10px;font-size:11px;font-weight:600;display:inline-block}.h2ipbG_hint{color:var(--jx-text-weak,#a99c8a);margin:0 0 10px;font-size:12px}.h2ipbG_statusChecking{color:var(--jx-text-weak,#a99c8a);font-size:12px;font-style:italic}.h2ipbG_linkButton{border:1px solid var(--jx-gold,#d6b34a);color:var(--jx-gold-bright,#f6d365);border-radius:var(--jx-radius-sm,4px);cursor:pointer;background:0 0;padding:5px 14px;font-family:inherit;font-size:12px;transition:background .12s,color .12s;display:inline-block}.h2ipbG_linkButton:hover{background:color-mix(in srgb, var(--jx-gold-deep,#b8860b) 20%, transparent);color:var(--jx-gold-bright,#f6d365)}.h2ipbG_linkButton:active{background:color-mix(in srgb, var(--jx-gold-deep,#b8860b) 30%, transparent)}";
+		const css = ".h2ipbG_sectionList{margin:0;padding:0;list-style:none}.h2ipbG_card{background:var(--jx-surface-1,#121016);border:1px solid var(--jx-border-deco,#3d3218);border-radius:var(--jx-radius-md,6px);color:var(--jx-text-base,#f2ead8);font-family:var(--jx-font-ui,\"Noto Serif SC\", serif);padding:16px 20px}.h2ipbG_head{margin-bottom:14px}.h2ipbG_title{font-family:var(--jx-font-display,\"Ma Shan Zheng\", serif);color:var(--jx-gold-bright,#f6d365);letter-spacing:.06em;margin-bottom:4px;font-size:16px;display:block}.h2ipbG_description{color:var(--jx-text-weak,#a99c8a);font-size:12px;line-height:1.5;display:block}.h2ipbG_body{font-size:13px;line-height:1.6}.h2ipbG_guidance{background:color-mix(in srgb, var(--jx-gold-deep,#b8860b) 8%, transparent);border:1px solid color-mix(in srgb, var(--jx-gold-deep,#b8860b) 20%, transparent);border-radius:var(--jx-radius-sm,4px);padding:12px 14px}.h2ipbG_guidanceText{color:var(--jx-text-base,#f2ead8);margin:0 0 8px;font-weight:500}.h2ipbG_activated{background:color-mix(in srgb, var(--jx-success,#86b08a) 10%, transparent);border:1px solid color-mix(in srgb, var(--jx-success,#86b08a) 25%, transparent);border-radius:var(--jx-radius-sm,4px);padding:12px 14px}.h2ipbG_activatedBadge{background:var(--jx-success,#86b08a);color:var(--jx-surface-0,#0b090d);letter-spacing:.04em;border-radius:9999px;margin-bottom:8px;padding:2px 10px;font-size:11px;font-weight:600;display:inline-block}.h2ipbG_hint{color:var(--jx-text-weak,#a99c8a);margin:0 0 10px;font-size:12px}.h2ipbG_statusChecking{color:var(--jx-text-weak,#a99c8a);font-size:12px;font-style:italic}.h2ipbG_linkButton{border:1px solid var(--jx-gold,#d6b34a);color:var(--jx-gold-bright,#f6d365);border-radius:var(--jx-radius-sm,4px);cursor:pointer;background:0 0;padding:5px 14px;font-family:inherit;font-size:12px;transition:background .12s,color .12s;display:inline-block}.h2ipbG_linkButton:hover{background:color-mix(in srgb, var(--jx-gold-deep,#b8860b) 20%, transparent);color:var(--jx-gold-bright,#f6d365)}.h2ipbG_linkButton:active{background:color-mix(in srgb, var(--jx-gold-deep,#b8860b) 30%, transparent)}.h2ipbG_fxBlock{border:1px solid var(--jx-border-deco,#3d3218);border-radius:var(--jx-radius-sm,4px);background:color-mix(in srgb, var(--jx-surface-2,#1a1620) 60%, transparent);margin-top:16px;padding:12px 14px}.h2ipbG_fxTitle{font-family:var(--jx-font-display,\"Ma Shan Zheng\", serif);color:var(--jx-gold-bright,#f6d365);letter-spacing:.06em;margin-bottom:2px;font-size:14px;display:block}.h2ipbG_fxDescription{color:var(--jx-text-weak,#a99c8a);margin-bottom:10px;font-size:11px;line-height:1.5;display:block}.h2ipbG_fxList{grid-template-columns:1fr 1fr;gap:6px 12px;display:grid}.h2ipbG_fxRow{cursor:pointer;user-select:none;align-items:center;gap:8px;display:flex}.h2ipbG_fxCheckbox{-webkit-appearance:none;appearance:none;border:1px solid var(--jx-gold,#d6b34a);cursor:pointer;background:0 0;border-radius:3px;flex-shrink:0;width:16px;height:16px;transition:background .12s,border-color .12s;position:relative}.h2ipbG_fxCheckbox:checked{background:var(--jx-gold-deep,#b8860b);border-color:var(--jx-gold-deep,#b8860b)}.h2ipbG_fxCheckbox:checked:after{content:\"\";border:solid var(--jx-seal-ink,#fff8ef);border-width:0 1.5px 1.5px 0;width:5px;height:9px;position:absolute;top:1px;left:4px;transform:rotate(45deg)}.h2ipbG_fxLabel{color:var(--jx-text-base,#f2ead8);font-size:12px}.h2ipbG_fxActions{gap:8px;margin-top:10px;display:flex}.h2ipbG_fxButton{border:1px solid var(--jx-gold,#d6b34a);color:var(--jx-gold-bright,#f6d365);border-radius:var(--jx-radius-sm,4px);cursor:pointer;background:0 0;padding:4px 12px;font-family:inherit;font-size:11px;transition:background .12s,color .12s;display:inline-block}.h2ipbG_fxButton:hover{background:color-mix(in srgb, var(--jx-gold-deep,#b8860b) 20%, transparent)}";
 		const tagId = "@linxin666/dsh-client-ui-skin-jiangxiao/skin-card.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId) + "]") === null) {
 			const tag = document.createElement("style");
@@ -80,6 +98,15 @@ window.__ModuleLoader__.load({
 			"body": "h2ipbG_body",
 			"card": "h2ipbG_card",
 			"description": "h2ipbG_description",
+			"fxActions": "h2ipbG_fxActions",
+			"fxBlock": "h2ipbG_fxBlock",
+			"fxButton": "h2ipbG_fxButton",
+			"fxCheckbox": "h2ipbG_fxCheckbox",
+			"fxDescription": "h2ipbG_fxDescription",
+			"fxLabel": "h2ipbG_fxLabel",
+			"fxList": "h2ipbG_fxList",
+			"fxRow": "h2ipbG_fxRow",
+			"fxTitle": "h2ipbG_fxTitle",
 			"guidance": "h2ipbG_guidance",
 			"guidanceText": "h2ipbG_guidanceText",
 			"head": "h2ipbG_head",
@@ -90,6 +117,601 @@ window.__ModuleLoader__.load({
 			"title": "h2ipbG_title"
 		};
 		//#endregion
+		//#region src/client/fx-system.ts
+		/** 全部 fx key（有序，用于遍历）。 */
+		const FX_KEYS = [
+			"shimmer",
+			"fall",
+			"grain",
+			"breathe",
+			"micro"
+		];
+		/** localStorage key。 */
+		const FX_STORAGE_KEY = "jx-fx";
+		/** 默认状态：全开。 */
+		const DEFAULT_FX_STATE = {
+			shimmer: true,
+			fall: true,
+			grain: true,
+			breathe: true,
+			micro: true
+		};
+		/** fx-* 类名：fx-shimmer / fx-fall / ... */
+		function fxClass(key) {
+			return `fx-${key}`;
+		}
+		/**
+		* 从 localStorage 读取 fx 状态，与默认值合并。
+		* 无效 JSON / 缺失 key / 非 boolean 值一律回落默认，绝不抛错。
+		*/
+		function loadFxState() {
+			const merged = { ...DEFAULT_FX_STATE };
+			try {
+				const raw = localStorage.getItem(FX_STORAGE_KEY);
+				if (raw !== null) {
+					const parsed = JSON.parse(raw);
+					for (const k of FX_KEYS) if (typeof parsed[k] === "boolean") merged[k] = parsed[k];
+				}
+			} catch {}
+			return merged;
+		}
+		/** 将 fx 状态写入 localStorage（JSON）。 */
+		function saveFxState(state) {
+			try {
+				localStorage.setItem(FX_STORAGE_KEY, JSON.stringify(state));
+			} catch {}
+		}
+		/** 检测 prefers-reduced-motion。无 matchMedia 时视为不减少。 */
+		function prefersReducedMotion() {
+			if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
+			return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+		}
+		/**
+		* 计算生效状态：prefers-reduced-motion 下全部强制关闭，否则用传入状态。
+		*/
+		function effectiveFxState(state) {
+			if (prefersReducedMotion()) return {
+				shimmer: false,
+				fall: false,
+				grain: false,
+				breathe: false,
+				micro: false
+			};
+			return state;
+		}
+		/**
+		* 将 fx 状态同步到 html 元素的 fx-* 类。
+		* html 无任何 fx-* 类 = 全关 = 与原版皮肤零差异。
+		*/
+		function applyFxState(state) {
+			const html = document.documentElement;
+			for (const k of FX_KEYS) html.classList.toggle(fxClass(k), state[k]);
+		}
+		const GINKGO_SVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M50 96L50 72C40 70 24 64 18 50C14 38 20 22 34 16C42 13 47 20 50 20C53 20 58 13 66 16C80 22 86 38 82 50C76 64 60 70 50 72Z' fill='%23d6b34a'/><path d='M50 72L18 50M50 72L34 16M50 72L50 20M50 72L66 16M50 72L82 50' fill='none' stroke='%23996515' stroke-width='1.2' stroke-opacity='0.6'/></svg>";
+		const PETAL_SVG = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><g fill='%23d97a8e'><path d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z'/><path d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(72 50 50)'/><path d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(144 50 50)'/><path d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(216 50 50)'/><path d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(288 50 50)'/></g><circle cx='50' cy='50' r='5' fill='%23b24a5c'/></svg>";
+		/** fall 飘落片数（DESIGN.md §5：12 片）。 */
+		const FALL_PIECES = 12;
+		/**
+		* 启动 WAAPI 飘落（12 片，GPU transform）。
+		* 无 Element.animate（如 jsdom）时 no-op，CSS body::before fallback 接管。
+		* 返回 dispose 函数：取消动画、移除容器、释放 fx-fall-waapi 标记。
+		*/
+		function startFall() {
+			if (typeof document === "undefined" || typeof Element.prototype.animate !== "function") return () => {};
+			document.documentElement.classList.add("fx-fall-waapi");
+			const container = document.createElement("div");
+			container.dataset.jxFx = "fall";
+			container.setAttribute("aria-hidden", "true");
+			container.style.cssText = "position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden";
+			const svg = !document.body.hasAttribute("data-ds-dark-theme") ? PETAL_SVG : GINKGO_SVG;
+			const animations = [];
+			const vh = typeof window !== "undefined" ? window.innerHeight : 800;
+			for (let i = 0; i < FALL_PIECES; i++) {
+				const el = document.createElement("div");
+				const size = 24 + Math.random() * 20;
+				el.style.cssText = `position:absolute;width:${size}px;height:${size * 1.3}px;left:${Math.random() * 100}%;top:-60px;will-change:transform,opacity;opacity:0`;
+				el.innerHTML = svg;
+				container.appendChild(el);
+				const dx = (Math.random() - .5) * 240;
+				const duration = 9e3 + Math.random() * 7e3;
+				const delay = Math.random() * 9e3;
+				const rotate = 360 + Math.random() * 540;
+				const peakOpacity = .32 + Math.random() * .22;
+				const anim = el.animate([
+					{
+						transform: "translate(0, 0) rotate(0deg)",
+						opacity: 0
+					},
+					{
+						transform: `translate(${dx * .3}px, ${vh * .15}px) rotate(${rotate * .2}deg)`,
+						opacity: peakOpacity,
+						offset: .12
+					},
+					{
+						transform: `translate(${dx}px, ${vh + 80}px) rotate(${rotate}deg)`,
+						opacity: 0
+					}
+				], {
+					duration,
+					delay,
+					iterations: Infinity,
+					easing: "linear"
+				});
+				animations.push(anim);
+			}
+			document.body.appendChild(container);
+			return () => {
+				for (const a of animations) a.cancel();
+				container.remove();
+				document.documentElement.classList.remove("fx-fall-waapi");
+			};
+		}
+		/**
+		* 启动 grain 墨韵暗纹：静态 SVG turbulence filter，零热循环（无 animation）。
+		* mix-blend-mode: overlay + 低 opacity，不干扰内容。
+		*/
+		function startGrain() {
+			if (typeof document === "undefined") return () => {};
+			const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+			svg.dataset.jxFx = "grain";
+			svg.setAttribute("aria-hidden", "true");
+			svg.style.cssText = "position:fixed;inset:0;z-index:0;pointer-events:none;width:100%;height:100%;opacity:0.035;mix-blend-mode:overlay";
+			svg.innerHTML = "<filter id='jx-grain-filter' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(#jx-grain-filter)'/>";
+			document.body.appendChild(svg);
+			return () => svg.remove();
+		}
+		let globalSystem;
+		/**
+		* 初始化 FX 系统：读取持久化状态（reduced-motion 强制全关），同步到 html，
+		* 启动 JS 驱动的 fall/grain。返回控制器。同一时刻仅一个全局实例。
+		*/
+		function initFxSystem() {
+			let state = { ...effectiveFxState(loadFxState()) };
+			applyFxState(state);
+			let fallDispose;
+			let grainDispose;
+			if (state.fall) fallDispose = startFall();
+			if (state.grain) grainDispose = startGrain();
+			function sync(key) {
+				document.documentElement.classList.toggle(fxClass(key), state[key]);
+				if (key === "fall") {
+					if (state.fall && fallDispose === void 0) fallDispose = startFall();
+					else if (!state.fall && fallDispose !== void 0) {
+						fallDispose();
+						fallDispose = void 0;
+					}
+				}
+				if (key === "grain") {
+					if (state.grain && grainDispose === void 0) grainDispose = startGrain();
+					else if (!state.grain && grainDispose !== void 0) {
+						grainDispose();
+						grainDispose = void 0;
+					}
+				}
+			}
+			const sys = {
+				getAll() {
+					return { ...state };
+				},
+				setFx(key, enabled) {
+					state = {
+						...state,
+						[key]: enabled
+					};
+					saveFxState(state);
+					sync(key);
+				},
+				setAll(enabled) {
+					state = {
+						shimmer: enabled,
+						fall: enabled,
+						grain: enabled,
+						breathe: enabled,
+						micro: enabled
+					};
+					saveFxState(state);
+					for (const k of FX_KEYS) sync(k);
+				},
+				dispose() {
+					for (const k of FX_KEYS) document.documentElement.classList.remove(fxClass(k));
+					document.documentElement.classList.remove("fx-fall-waapi");
+					fallDispose?.();
+					grainDispose?.();
+					fallDispose = void 0;
+					grainDispose = void 0;
+					globalSystem = void 0;
+				}
+			};
+			globalSystem = sys;
+			return sys;
+		}
+		/** 取全局 FX 系统实例（由 initFxSystem 注册）。设置卡消费此实例同步开关。 */
+		function getFxSystem() {
+			return globalSystem;
+		}
+		//#endregion
+		//#region src/client/character-transition.ts
+		/** 过渡段定义：(from, to, 帧数)。帧数取自素材侧（含 hold-tail）。 */
+		const SEGMENTS = [
+			[
+				"idle",
+				"done",
+				52
+			],
+			[
+				"idle",
+				"error",
+				82
+			],
+			[
+				"idle",
+				"listening",
+				82
+			],
+			[
+				"idle",
+				"permission",
+				52
+			],
+			[
+				"idle",
+				"reading",
+				82
+			],
+			[
+				"idle",
+				"replying",
+				52
+			],
+			[
+				"idle",
+				"thinking",
+				52
+			],
+			[
+				"idle",
+				"welcome",
+				52
+			],
+			[
+				"idle",
+				"working",
+				52
+			],
+			[
+				"done",
+				"idle",
+				52
+			],
+			[
+				"error",
+				"idle",
+				82
+			],
+			[
+				"listening",
+				"idle",
+				82
+			],
+			[
+				"permission",
+				"idle",
+				52
+			],
+			[
+				"reading",
+				"idle",
+				82
+			],
+			[
+				"replying",
+				"idle",
+				52
+			],
+			[
+				"thinking",
+				"idle",
+				52
+			],
+			[
+				"welcome",
+				"idle",
+				52
+			],
+			[
+				"working",
+				"idle",
+				52
+			],
+			[
+				"thinking",
+				"replying",
+				82
+			],
+			[
+				"replying",
+				"thinking",
+				82
+			]
+		];
+		/**
+		* 情绪子态过渡段（素材侧 6 个子态，不在 CharacterState 联合）。
+		* from/to 用 string 以接纳子态名；帧数取与核心态段相同的 52 帧默认
+		* （素材侧 hold-tail 已计入；精确帧数需 webp 元数据，此处用合理默认）。
+		*/
+		const SUBSTATE_SEGMENTS = [
+			[
+				"idle",
+				"cheek-rest",
+				52
+			],
+			[
+				"cheek-rest",
+				"idle",
+				52
+			],
+			[
+				"idle",
+				"chin-rest",
+				52
+			],
+			[
+				"chin-rest",
+				"idle",
+				52
+			],
+			[
+				"idle",
+				"frown-wave",
+				52
+			],
+			[
+				"frown-wave",
+				"idle",
+				52
+			],
+			[
+				"idle",
+				"nod-smile",
+				52
+			],
+			[
+				"nod-smile",
+				"idle",
+				52
+			],
+			[
+				"idle",
+				"shush",
+				52
+			],
+			[
+				"shush",
+				"idle",
+				52
+			],
+			[
+				"idle",
+				"shy-smile",
+				52
+			],
+			[
+				"shy-smile",
+				"idle",
+				52
+			],
+			[
+				"frown-wave",
+				"permission",
+				52
+			],
+			[
+				"permission",
+				"frown-wave",
+				52
+			],
+			[
+				"nod-smile",
+				"permission",
+				52
+			],
+			[
+				"permission",
+				"nod-smile",
+				52
+			]
+		];
+		/** 全部过渡段（核心态 20 + 子态 16 = 36），与 assets/character/transition-*.webp 一一对应。 */
+		const ALL_SEGMENTS = [...SEGMENTS, ...SUBSTATE_SEGMENTS];
+		/**
+		* TRANSITIONS 常量表：key "<from>→<to>" → { webp, durationMs }。
+		* 覆盖 assets/character/ 下全部 36 个 transition-*.webp 素材。
+		*/
+		const TRANSITIONS = Object.freeze(Object.fromEntries(ALL_SEGMENTS.map(([from, to, frames]) => [`${from}→${to}`, {
+			webp: `transition-${from}-${to}.webp`,
+			durationMs: Math.round(frames * 1e3 / 15),
+			key: `${from}→${to}`
+		}])));
+		/** 过渡段在表中的查找。 */
+		function lookup(from, to) {
+			return TRANSITIONS[`${from}→${to}`];
+		}
+		/**
+		* 解析状态切换过渡段序列：
+		* - from === to → 空序列（无过渡）；
+		* - 有直达段（from→to 在表）→ 1 段；
+		* - 否则经枢纽 → 2 段（from→idle + idle→to，两段都需在表；任一缺失则落空）；
+		* - 无素材 → 空序列（调用方走 crossfade 兜底）。
+		*/
+		function getTransitionPath(from, to) {
+			if (from === to) return [];
+			const direct = lookup(from, to);
+			if (direct) return [direct];
+			const a = lookup(from, "idle");
+			const b = lookup("idle", to);
+			if (a && b) return [a, b];
+			return [];
+		}
+		//#endregion
+		//#region src/client/character-overlay.ts
+		/** 浮层 DOM 标记属性名。 */
+		const OVERLAY_ATTR = "data-jx-overlay";
+		/** 浮层 DOM 标记属性值。 */
+		const OVERLAY_VALUE = "character";
+		/** 素材 URL 前缀（dsh-pet 服务）。 */
+		const PET_BASE = "/pet/jiangxiao";
+		/**
+		* 探测素材是否就绪（HEAD /pet/jiangxiao/idle.webp）。
+		*
+		* 200 -> true（就绪）；404/网络异常/fetch 不可用 -> false（未导入）。
+		* 保守降级：检测失败不报错，调用方视为未导入。
+		*/
+		async function probeAssetReady() {
+			if (typeof fetch !== "function") return false;
+			try {
+				return (await fetch(`${PET_BASE}/idle.webp`, { method: "HEAD" })).ok;
+			} catch {
+				return false;
+			}
+		}
+		/** 台词气泡自动隐去延时（ms）。 */
+		const LINE_AUTO_HIDE_MS = 4e3;
+		/** crossfade 时长（ms）。 */
+		const CROSSFADE_MS = 300;
+		/** 浮层容器固定定位（右下角）。 */
+		const OVERLAY_POSITION_CSS = "position:fixed;right:18px;bottom:18px;width:160px;height:200px;z-index:2147483646;pointer-events:none";
+		/** img 透明无底样式。 */
+		const IMG_CSS = "position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none";
+		/** 台词气泡样式（淡入淡出用 opacity + translateY）。 */
+		const BUBBLE_CSS = "position:absolute;left:50%;bottom:100%;transform:translate(-50%, 8px);max-width:220px;padding:6px 12px;border-radius:8px;background:var(--jx-surface-2, #1a1620);color:var(--jx-text-base, #f2ead8);font-size:12px;line-height:1.5;text-align:center;pointer-events:none;opacity:0;transition:opacity 200ms ease, transform 200ms ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis";
+		/**
+		* 初始化角色浮层。
+		*
+		* 启动探测 /pet/jiangxiao/idle.webp：404 或 fetch 不可用 → 返回 null（浮层不渲染）。
+		* 探测成功 → 创建浮层 DOM 直挂 document.body，返回控制器。
+		*
+		* 按需加载：只加载当前态 webp + 预取过渡段下一段；不预载全部 46 个素材。
+		* 状态切换播放过渡段，过渡段播完释放（src 置空）；缺段自动 crossfade。
+		*/
+		async function initCharacterOverlay(opts) {
+			const resolvePath = opts?.getTransitionPath ?? getTransitionPath;
+			if (!await probeAssetReady()) return null;
+			const reduced = typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+			const container = document.createElement("div");
+			container.setAttribute(OVERLAY_ATTR, OVERLAY_VALUE);
+			container.setAttribute("aria-hidden", "true");
+			container.style.cssText = OVERLAY_POSITION_CSS;
+			const img = document.createElement("img");
+			img.alt = "";
+			img.style.cssText = IMG_CSS;
+			img.src = `${PET_BASE}/idle.webp`;
+			container.appendChild(img);
+			const bubble = document.createElement("div");
+			bubble.style.cssText = BUBBLE_CSS;
+			container.appendChild(bubble);
+			document.body.appendChild(container);
+			let current = "idle";
+			let transitioning = false;
+			let lineTimer;
+			const timers = /* @__PURE__ */ new Set();
+			function setTimer(fn, ms) {
+				const t = setTimeout(() => {
+					timers.delete(t);
+					fn();
+				}, ms);
+				timers.add(t);
+				return t;
+			}
+			/** 预取一个 webp（低优先级，不阻塞）。 */
+			function prefetch(url) {
+				if (typeof fetch !== "function") return;
+				try {
+					fetch(url, { method: "GET" }).catch(() => {});
+				} catch {}
+			}
+			/** 加载并播放一个过渡段，播完释放（src 置空）。 */
+			function playSegment(seg) {
+				return new Promise((resolve) => {
+					const url = `${PET_BASE}/${seg.webp}`;
+					img.src = url;
+					setTimer(() => {
+						resolve();
+					}, reduced ? 1 : seg.durationMs);
+				});
+			}
+			/** crossfade 兜底：旧图淡出 + 新图淡入。 */
+			function crossfadeTo(target) {
+				const targetUrl = `${PET_BASE}/${target}.webp`;
+				if (reduced) {
+					img.src = targetUrl;
+					return;
+				}
+				const fadeImg = document.createElement("img");
+				fadeImg.alt = "";
+				fadeImg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;opacity:0;transition:opacity 300ms ease";
+				fadeImg.src = targetUrl;
+				container.insertBefore(fadeImg, img);
+				requestAnimationFrame(() => {
+					fadeImg.style.opacity = "1";
+					img.style.opacity = "0";
+				});
+				setTimer(() => {
+					img.src = targetUrl;
+					img.style.opacity = "1";
+					fadeImg.remove();
+				}, CROSSFADE_MS);
+			}
+			/** 显示台词气泡（淡入，自动淡出隐去）。 */
+			function showLine(text) {
+				if (lineTimer !== void 0) {
+					clearTimeout(lineTimer);
+					timers.delete(lineTimer);
+				}
+				bubble.textContent = text;
+				bubble.style.opacity = "1";
+				bubble.style.transform = "translate(-50%, 0)";
+				lineTimer = setTimer(() => {
+					bubble.style.opacity = "0";
+					bubble.style.transform = "translate(-50%, 8px)";
+					lineTimer = void 0;
+				}, LINE_AUTO_HIDE_MS);
+			}
+			/** 切换状态：播过渡段序列，缺段 crossfade。 */
+			function setState(state, line) {
+				if (line !== void 0) showLine(line);
+				if (state === current || transitioning) {
+					if (state !== current) crossfadeTo(state);
+					current = state;
+					return;
+				}
+				const path = resolvePath(current, state);
+				if (path.length === 0) {
+					crossfadeTo(state);
+					current = state;
+					return;
+				}
+				transitioning = true;
+				if (path.length > 1) prefetch(`${PET_BASE}/${path[1].webp}`);
+				(async () => {
+					for (const seg of path) await playSegment(seg);
+					img.src = `${PET_BASE}/${state}.webp`;
+					current = state;
+					transitioning = false;
+				})();
+			}
+			function dispose() {
+				for (const t of timers) clearTimeout(t);
+				timers.clear();
+				if (lineTimer !== void 0) clearTimeout(lineTimer);
+				container.remove();
+			}
+			img.addEventListener("error", () => setState("idle"));
+			return {
+				setState,
+				dispose
+			};
+		}
+		//#endregion
 		//#region src/client/SkinSettingsCard.tsx
 		/**
 		* Jiangxiao skin settings card — shows the animation-pack import guidance
@@ -98,15 +720,99 @@ window.__ModuleLoader__.load({
 		* The component is a first-level settings section (settings.section).
 		* @module @linxin666/dsh-client-ui-skin-jiangxiao/client/SkinSettingsCard
 		*/
-		/** Check if the Jiangxiao pet is registered (imported). */
-		async function hasJiangxiaoPet() {
-			try {
-				const response = await fetch("/api/pet/pets");
-				if (!response.ok) return false;
-				return (await response.json()).some((pet) => pet.id === "jiangxiao");
-			} catch {
-				return false;
-			}
+		/** FX 开关的 locale key 映射。 */
+		const FX_LABEL_KEYS = {
+			shimmer: "fx.shimmer",
+			fall: "fx.fall",
+			grain: "fx.grain",
+			breathe: "fx.breathe",
+			micro: "fx.micro"
+		};
+		/** FX 特效开关区块：五效独立 toggle + 全开/全关。消费语义别名，无颜色字面量。 */
+		function FxToggles(props) {
+			const { t } = props;
+			const [state, setState] = (0, react.useState)(() => loadFxState());
+			/** 无全局系统时的降级：仅持久化 + 同步 html 类，下次 init 读取。 */
+			const applyFxLocal = (next) => {
+				setState(next);
+				try {
+					localStorage.setItem("jx-fx", JSON.stringify(next));
+				} catch {}
+				for (const k of FX_KEYS) document.documentElement.classList.toggle(`fx-${k}`, next[k]);
+			};
+			const toggle = (key, enabled) => {
+				const sys = getFxSystem();
+				if (sys !== void 0) {
+					sys.setFx(key, enabled);
+					setState(sys.getAll());
+				} else applyFxLocal({
+					...state,
+					[key]: enabled
+				});
+			};
+			const toggleAll = (enabled) => {
+				const sys = getFxSystem();
+				if (sys !== void 0) {
+					sys.setAll(enabled);
+					setState(sys.getAll());
+				} else applyFxLocal({
+					shimmer: enabled,
+					fall: enabled,
+					grain: enabled,
+					breathe: enabled,
+					micro: enabled
+				});
+			};
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: skin_card_module_css_default.fxBlock,
+				children: [
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						className: skin_card_module_css_default.fxTitle,
+						children: t("fx.title")
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						className: skin_card_module_css_default.fxDescription,
+						children: t("fx.description")
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						className: skin_card_module_css_default.fxList,
+						children: FX_KEYS.map((key) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("label", {
+							className: skin_card_module_css_default.fxRow,
+							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+								type: "checkbox",
+								className: skin_card_module_css_default.fxCheckbox,
+								checked: state[key],
+								onChange: (e) => toggle(key, e.target.checked)
+							}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+								className: skin_card_module_css_default.fxLabel,
+								children: t(FX_LABEL_KEYS[key])
+							})]
+						}, key))
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: skin_card_module_css_default.fxActions,
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+							type: "button",
+							className: skin_card_module_css_default.fxButton,
+							onClick: () => toggleAll(true),
+							children: t("fx.allOn")
+						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+							type: "button",
+							className: skin_card_module_css_default.fxButton,
+							onClick: () => toggleAll(false),
+							children: t("fx.allOff")
+						})]
+					})
+				]
+			});
+		}
+		/**
+		* 设置卡视图分支判定（纯函数，可单测）。
+		* checking=true -> checking；否则 petImported===true -> ready，否则 not-ready。
+		*/
+		function resolveSkinCardView(checking, petImported) {
+			if (checking) return "checking";
+			return petImported === true ? "ready" : "not-ready";
 		}
 		/**
 		* Render the Jiangxiao skin settings card.
@@ -117,10 +823,11 @@ window.__ModuleLoader__.load({
 			const { t } = props;
 			const [petImported, setPetImported] = (0, react.useState)(null);
 			const [checking, setChecking] = (0, react.useState)(true);
+			const view = resolveSkinCardView(checking, petImported);
 			(0, react.useEffect)(() => {
 				let cancelled = false;
 				setChecking(true);
-				hasJiangxiaoPet().then((result) => {
+				probeAssetReady().then((result) => {
 					if (cancelled) return;
 					setPetImported(result);
 					setChecking(false);
@@ -152,12 +859,12 @@ window.__ModuleLoader__.load({
 						className: skin_card_module_css_default.description,
 						children: t("settings.description")
 					})]
-				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 					className: skin_card_module_css_default.body,
-					children: checking ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+					children: [view === "checking" ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
 						className: skin_card_module_css_default.statusChecking,
 						children: t("pet.guidance")
-					}) : petImported === true ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					}) : view === "ready" ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 						className: skin_card_module_css_default.activated,
 						children: [
 							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
@@ -193,7 +900,7 @@ window.__ModuleLoader__.load({
 								children: t("pet.importLink")
 							})
 						]
-					})
+					}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(FxToggles, { t })]
 				})]
 			});
 		}
@@ -205,10 +912,336 @@ window.__ModuleLoader__.load({
 				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(SkinJiangxiaoCard, { t })
 			});
 		}
+		const DONE_HOLD_MIN_MS = 3e3;
+		const DONE_HOLD_MAX_MS = 5e3;
+		const WELCOME_HOLD_MS = 3e3;
+		const PRIORITY = {
+			error: 5,
+			working: 4,
+			permission: 3,
+			thinking: 2,
+			replying: 2,
+			done: 2,
+			reading: 2,
+			listening: 1,
+			welcome: 1,
+			idle: 1
+		};
+		/** 初始状态。 */
+		function initialCharacterStatus(now) {
+			return {
+				state: "idle",
+				seq: 0
+			};
+		}
+		/**
+		* 角色状态 reducer：输入 = 当前状态 + 归一化事件 + 当前时间，输出 = 新状态。
+		* 纯函数，无副作用。未知事件忽略（不改变状态）。
+		*/
+		function reduceCharacter(state, event, now) {
+			if (event.type === "tick") return applyTick(state, now);
+			return applyEvent(state, event, now);
+		}
+		function applyTick(state, now) {
+			if (state.state === "thinking" && state.thinkingSince !== void 0 && now - state.thinkingSince >= 8e3) return {
+				...state,
+				state: "reading",
+				seq: state.seq + 1
+			};
+			if (state.state === "done" && state.doneSince !== void 0 && state.doneHoldMs !== void 0 && now - state.doneSince >= state.doneHoldMs) return {
+				...state,
+				state: "idle",
+				doneSince: void 0,
+				doneHoldMs: void 0,
+				seq: state.seq + 1
+			};
+			if (state.state === "welcome" && state.welcomeSince !== void 0 && now - state.welcomeSince >= 3e3) return {
+				...state,
+				state: "idle",
+				welcomeSince: void 0,
+				seq: state.seq + 1
+			};
+			return state;
+		}
+		function applyEvent(state, event, now) {
+			const base = state.state === "reading" ? {
+				...state,
+				state: "thinking"
+			} : state;
+			switch (event.type) {
+				case "session_error": return {
+					...base,
+					state: "error",
+					seq: base.seq + 1
+				};
+				case "tool_called": return enterWorking(base);
+				case "tool_finished": return exitWorking(base);
+				case "permission_asked": return enterPermission(base);
+				case "permission_replied": return exitPermission(base);
+				case "prompt_admitted": return enterThinking(base, now);
+				case "text_delta": return preempt(base, "replying", 2, /* @__PURE__ */ new Set(["thinking", "replying"]));
+				case "text_ended": return preempt(base, "listening", 2, /* @__PURE__ */ new Set(["replying"]));
+				case "server_connected": return {
+					...base,
+					state: "welcome",
+					welcomeSince: now,
+					seq: base.seq + 1
+				};
+				case "execution_finished": return handleExecutionFinished(base, event, now);
+				case "session_idle":
+					if (base.state === "welcome") return base;
+					return preempt(base, "idle", 3, /* @__PURE__ */ new Set());
+				default: return state;
+			}
+		}
+		function preempt(state, target, gate, flowFrom) {
+			if (!flowFrom.has(state.state) && PRIORITY[state.state] >= gate) return state;
+			if (state.state === target) return state;
+			return {
+				...state,
+				state: target,
+				seq: state.seq + 1
+			};
+		}
+		function enterThinking(state, now) {
+			if (state.state === "thinking" || state.state === "error") return {
+				...state,
+				state: "thinking",
+				thinkingSince: now,
+				seq: state.seq + 1
+			};
+			if (PRIORITY[state.state] < 2) return {
+				...state,
+				state: "thinking",
+				thinkingSince: now,
+				seq: state.seq + 1
+			};
+			return state;
+		}
+		function enterWorking(state) {
+			if (state.state === "working") return state;
+			if (PRIORITY[state.state] >= 5) return state;
+			return {
+				...state,
+				state: "working",
+				preWorking: state.state,
+				seq: state.seq + 1
+			};
+		}
+		function exitWorking(state) {
+			if (state.state !== "working") return state;
+			return {
+				...state,
+				state: state.preWorking ?? "replying",
+				preWorking: void 0,
+				seq: state.seq + 1
+			};
+		}
+		function enterPermission(state) {
+			if (PRIORITY[state.state] >= 3) return state;
+			return {
+				...state,
+				state: "permission",
+				prePermission: state.state,
+				seq: state.seq + 1
+			};
+		}
+		function exitPermission(state) {
+			if (state.state !== "permission") return state;
+			return {
+				...state,
+				state: state.prePermission ?? "idle",
+				prePermission: void 0,
+				seq: state.seq + 1
+			};
+		}
+		function handleExecutionFinished(state, event, now) {
+			if (event.pendingTools) return state;
+			if (PRIORITY[state.state] >= 3) return state;
+			if (state.state === "idle" || state.state === "welcome" || state.state === "listening") return state;
+			return {
+				...state,
+				state: "done",
+				doneSince: now,
+				doneHoldMs: DONE_HOLD_MIN_MS + Math.random() * (DONE_HOLD_MAX_MS - DONE_HOLD_MIN_MS),
+				seq: state.seq + 1
+			};
+		}
+		//#endregion
+		//#region src/client/character-follow.ts
+		/** 判定 partial 是否含可见 chunk（text/reasoning block 非空）。 */
+		function hasVisiblePartialChunk(partial) {
+			for (const block of partial.blocks) {
+				if (block.kind === "text" && block.text.length > 0) return true;
+				if (block.kind === "reasoning" && block.text.length > 0) return true;
+			}
+			return false;
+		}
+		/** 从 ConversationSnapshot 提取核心字段（差分输入）。 */
+		function extractCore(snapshot) {
+			const pendingKinds = /* @__PURE__ */ new Set();
+			for (const p of snapshot.pending) if (p.kind === "approval" || p.kind === "question") pendingKinds.add(p.kind);
+			return {
+				running: snapshot.running,
+				hasVisibleChunk: snapshot.partial !== null && hasVisiblePartialChunk(snapshot.partial),
+				runningCallsCount: snapshot.runningCalls.length,
+				pendingKinds,
+				hasError: snapshot.promptError !== null || snapshot.lastAgentError !== null || snapshot.openError !== null
+			};
+		}
+		/** 判定核心快照是否为 idle（兜底）。 */
+		function isIdleCore(c) {
+			return !c.running && !c.hasVisibleChunk && c.runningCallsCount === 0 && c.pendingKinds.size === 0 && !c.hasError;
+		}
+		/** 判定核心快照是否有 pending。 */
+		function hasPendingCore(c) {
+			return c.pendingKinds.size > 0;
+		}
+		/**
+		* 快照差分 -> 归一化事件序列。
+		*
+		* 纯函数：无 DOM、无副作用、无 SDK 依赖。输入 prev/curr 核心快照，输出
+		* reduceCharacter 接受的归一化事件数组（按优先级排序，reducer 顺序处理）。
+		*
+		* 映射判定式（优先级从高到低）：
+		*   - error 出现 -> [session_error]（立即返回，最高优先级）
+		*   - permission 退出 -> [permission_replied]
+		*   - working 退出 -> [tool_finished]
+		*   - permission 进入 -> [permission_asked]
+		*   - working 进入 -> [tool_called]
+		*   - replying（可见 chunk 出现）-> [text_delta]
+		*   - thinking（running && !chunk，新轮次）-> [prompt_admitted]
+		*   - done 边沿（running true->false，无 error/pending）-> [execution_finished]
+		*   - idle 兜底 -> [session_idle]
+		*
+		* @param prev - 上一次核心快照（null 表示初次/切换会话）。
+		* @param curr - 当前核心快照。
+		* @returns 归一化事件数组（可能为空）。
+		*/
+		function diffEvents(prev, curr) {
+			const events = [];
+			const currError = curr.hasError;
+			const prevError = prev !== null && prev.hasError;
+			if (currError && !prevError) return [{ type: "session_error" }];
+			if (prev !== null && hasPendingCore(prev) && !hasPendingCore(curr)) events.push({ type: "permission_replied" });
+			if (prev !== null && prev.runningCallsCount > 0 && curr.runningCallsCount === 0) events.push({ type: "tool_finished" });
+			if (hasPendingCore(curr) && (prev === null || !hasPendingCore(prev))) events.push({ type: "permission_asked" });
+			if (curr.runningCallsCount > 0 && (prev === null || prev.runningCallsCount === 0)) events.push({ type: "tool_called" });
+			if (curr.hasVisibleChunk && (prev === null || !prev.hasVisibleChunk)) events.push({ type: "text_delta" });
+			if (curr.running && !curr.hasVisibleChunk && (prev === null || !prev.running || prev.hasVisibleChunk)) events.push({ type: "prompt_admitted" });
+			if (prev !== null && prev.running && !curr.running && !currError && !hasPendingCore(curr)) events.push({
+				type: "execution_finished",
+				pendingTools: curr.runningCallsCount > 0
+			});
+			if (events.length === 0 && isIdleCore(curr) && (prev === null || !isIdleCore(prev))) events.push({ type: "session_idle" });
+			return events;
+		}
+		/**
+		* 附加会话状态跟随：订阅 sessions.list 跟踪 current，对 current 会话
+		* binding(id).session.subscribe 读 ConversationSnapshot，差分归一化为事件，
+		* 喂给 reduceCharacter，状态变化时调 controller.setState。
+		*
+		* 订阅在返回的 dispose 函数中全部释放，无泄漏。
+		*
+		* @param sessions - ctx.sessions 服务。
+		* @param controller - 浮层控制器。
+		* @param opts - 选项（now/tickMs/initialWelcome）。
+		* @returns dispose 函数，释放所有订阅。
+		*/
+		function attachSessionFollow(sessions, controller, opts) {
+			const now = opts?.now ?? (() => Date.now());
+			const tickMs = opts?.tickMs ?? 1e3;
+			let status;
+			let lastState;
+			if (opts?.initialWelcome === true) {
+				status = {
+					state: "welcome",
+					welcomeSince: now(),
+					seq: 1
+				};
+				lastState = "welcome";
+				controller.setState("welcome");
+			} else {
+				status = initialCharacterStatus(now());
+				lastState = "idle";
+			}
+			let prevCore = null;
+			let lastCurrent = void 0;
+			let sessionUnsub;
+			const disposers = [];
+			/** 处理一次快照：差分 -> 事件 -> reducer -> setState。 */
+			function processSnapshot(snapshot) {
+				const currCore = extractCore(snapshot);
+				const events = diffEvents(prevCore, currCore);
+				for (const event of events) status = reduceCharacter(status, event, now());
+				if (status.state !== lastState) {
+					controller.setState(status.state);
+					lastState = status.state;
+				}
+				prevCore = currCore;
+			}
+			/** 附加到 current 会话（释放旧订阅）。 */
+			function attachCurrent(id) {
+				sessionUnsub?.();
+				sessionUnsub = void 0;
+				prevCore = null;
+				if (id === void 0) {
+					if (status.state !== "welcome") {
+						status = initialCharacterStatus(now());
+						if (lastState !== "idle") {
+							controller.setState("idle");
+							lastState = "idle";
+						}
+					}
+					return;
+				}
+				const binding = sessions.binding(id);
+				if (binding === void 0) return;
+				sessionUnsub = binding.session.subscribe(() => {
+					processSnapshot(binding.session.getSnapshot());
+				});
+				processSnapshot(binding.session.getSnapshot());
+			}
+			const listUnsub = sessions.list.subscribe(() => {
+				const list = sessions.list.getSnapshot();
+				if (list.current !== lastCurrent) {
+					lastCurrent = list.current;
+					attachCurrent(list.current);
+				}
+			});
+			disposers.push(listUnsub);
+			const initialList = sessions.list.getSnapshot();
+			lastCurrent = initialList.current;
+			attachCurrent(initialList.current);
+			let tickTimer;
+			if (typeof setInterval === "function") tickTimer = setInterval(() => {
+				const prevState = status.state;
+				status = reduceCharacter(status, { type: "tick" }, now());
+				if (status.state !== prevState && status.state !== lastState) {
+					controller.setState(status.state);
+					lastState = status.state;
+				}
+			}, tickMs);
+			return () => {
+				sessionUnsub?.();
+				sessionUnsub = void 0;
+				for (const d of disposers.splice(0)) d();
+				if (tickTimer !== void 0 && typeof clearInterval === "function") {
+					clearInterval(tickTimer);
+					tickTimer = void 0;
+				}
+			};
+		}
 		//#endregion
 		//#region src/client/index.ts
-		/** Required services: slots (settings section), locale (i18n). */
-		const inject = ["slots", "locale"];
+		/** Required services: slots (settings section), locale (i18n), sessions (state follow). */
+		const inject = [
+			"slots",
+			"locale",
+			"sessions"
+		];
+		/** 模块级 flag：welcome 态每次启用至多触发一次（页面刷新后重置）。 */
+		let welcomeTriggered = false;
 		/** @font-face CSS text for the two inlined woff2 fonts. Each rule carries a
 		*  local() fallback chain so a host with the font installed uses the local
 		*  copy first, and the inlined woff2 only loads when the local font is
@@ -235,9 +1268,37 @@ window.__ModuleLoader__.load({
 			fontStyle.dataset.skinChrome = "fontface";
 			fontStyle.textContent = fontFaceCss();
 			document.head.append(fontStyle);
+			const fxSystem = initFxSystem();
+			let overlayDispose;
+			let overlayDisposed = false;
+			initCharacterOverlay().then((overlay) => {
+				if (overlay === null) return;
+				if (overlayDisposed) {
+					overlay.dispose();
+					return;
+				}
+				const shouldWelcome = !welcomeTriggered;
+				welcomeTriggered = true;
+				const sessions = ctx.get("sessions");
+				let followDispose;
+				if (sessions !== void 0) followDispose = attachSessionFollow(sessions, overlay, { initialWelcome: shouldWelcome });
+				else if (shouldWelcome) {
+					overlay.setState("welcome");
+					const t = setTimeout(() => overlay.setState("idle"), WELCOME_HOLD_MS);
+					followDispose = () => clearTimeout(t);
+				}
+				overlayDispose = () => {
+					followDispose?.();
+					overlay.dispose();
+				};
+			});
 			ctx.effect(() => () => {
+				overlayDisposed = true;
 				delete body.dataset.dshJiangxiao;
 				fontStyle.remove();
+				fxSystem.dispose();
+				overlayDispose?.();
+				welcomeTriggered = false;
 			}, "ui-skin-jiangxiao: Jiangxiao chrome");
 			const locale = ctx.get("locale");
 			if (locale !== void 0) ctx.effect(() => locale.register(NS, {
@@ -249,7 +1310,7 @@ window.__ModuleLoader__.load({
 				name: "settings.section",
 				id: "skin-jiangxiao",
 				order: 125,
-				label: () => locale.bind("skinJiangxiao")("settings.title"),
+				label: () => locale?.bind("skinJiangxiao")("settings.title") ?? "Jiangxiao Skin",
 				locale: "skinJiangxiao",
 				inject: () => ({})
 			}, SkinJiangxiaoSection));

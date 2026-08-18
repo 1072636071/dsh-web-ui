@@ -16,6 +16,15 @@ export const zh = {
   'pet.activated': '姜晓动画包已激活',
   'pet.activatedHint': '宠物动画已就绪，可在「宠物」设置页中选择姜晓宠物。',
   'pet.importLink': '前往宠物设置',
+  'fx.title': '特效开关',
+  'fx.description': '独立开关五类唐风特效，全关即与原版皮肤一致。',
+  'fx.shimmer': '鎏金流光',
+  'fx.fall': '银杏梅花飘落',
+  'fx.grain': '墨韵暗纹',
+  'fx.breathe': '墨光呼吸',
+  'fx.micro': '微交互',
+  'fx.allOn': '全部开启',
+  'fx.allOff': '全部关闭',
 } as const
 
 /** English copy. */
@@ -27,6 +36,15 @@ export const en = {
   'pet.activated': 'Jiangxiao animation pack is active',
   'pet.activatedHint': 'Pet animations are ready — select the Jiangxiao pet in the Pet settings page.',
   'pet.importLink': 'Go to Pet settings',
+  'fx.title': 'Effects',
+  'fx.description': 'Toggle the five Tang-style effects independently. All off matches the original skin.',
+  'fx.shimmer': 'Gold shimmer',
+  'fx.fall': 'Ginkgo/plum fall',
+  'fx.grain': 'Ink grain',
+  'fx.breathe': 'Ink breathe',
+  'fx.micro': 'Micro interactions',
+  'fx.allOn': 'Enable all',
+  'fx.allOff': 'Disable all',
 } as const
 
 /** Key union for this namespace. */
