@@ -1,6 +1,6 @@
 # PetSprite 渲染分流 + 状态机接线
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 03
 
@@ -21,5 +21,7 @@
 - 加载策略：按需拉取当前状态 + 切换预取目标态；加载前占位 fade-in
 
 ## 评论
+
+- 2026-08-19 核实：`PetSprite.tsx` 已按 `definition.kind` 分流，webp 走 `<img>` + 调度器过渡序列 + key 作废打断；点击/喂食/改名/拖动/隐藏/会话气泡等交互在 webp 型上可用；`PetSprite.test.tsx` 断言 webp `<img>` src、spritesheet 回归、交互可用性。姜晓以「导入后出现」替代「内置直通」（see 05/08 gating 语义）。
 
 （评论与对话历史追加于此，新内容置于最前。）

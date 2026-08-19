@@ -1,6 +1,6 @@
 # WebP 加载占位透明度修复
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 无——可立即开始
 
@@ -15,5 +15,7 @@
 - [ ] `pnpm test` 全绿
 
 ## 评论
+
+- 2026-08-19 核实：`PetSprite.tsx` webp `<img>` 占位 `opacity: 1` + `backgroundColor` 不透明，加载完成保留 `transition: opacity` fade-in；`PetSprite.test.tsx` 断言 `img.style.opacity === '1'` 且 background 非空、transition 含 opacity。
 
 （源自代码审查工单 11：PRD D14 要求"不透明 fade-in"，实现为 `opacity: 0.5` 半透明露出背景内容）

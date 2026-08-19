@@ -1,6 +1,6 @@
 # 打包脚本 + hash-manifest + CI 校验
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 无——可立即开始
 
@@ -17,5 +17,7 @@
 - [ ] 素材源 `local-assets/` 保持 gitignore（D12，不入库）
 
 ## 评论
+
+- 2026-08-19 核实：`pack-jiangxiao-pet.mjs` 支持全打包 / `--check` / `--init-manifest`，校验 10 循环 + 36 过渡命名契约，生成 `pet.json`（`kind: "animated-webp"`）+ 确定性 zip + `hash-manifest.json`（1+46 文件 sha256 + zip sha256）；`pack-jiangxiao-pet.test.mjs` 覆盖；zip 命名 `jiangxiao-pet-anim-<version>.zip`，素材源 `local-assets/` 在 .gitignore。注：`hash-manifest.json` 目前存在为 `assets/jiangxiao/hash-manifest.json`（seed，zipSha256≈null），进仓由维护者打包时重录。
 
 （评论与对话历史追加于此，新内容置于最前。）

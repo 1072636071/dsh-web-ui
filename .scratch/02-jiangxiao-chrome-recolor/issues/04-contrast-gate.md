@@ -1,6 +1,6 @@
 # 对比度 CI 门禁脚本
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 02
 
@@ -19,5 +19,7 @@
 - [ ] 脚本对当前 token 值（工单 02 完成后的值）校验通过
 
 ## 评论
+
+- 2026-08-19 核实：`check-jiangxiao-contrast.mjs` 零依赖纯 Node，解析深浅双套 `--jx-text-*`/`--jx-surface-*` 字面量，按 WCAG 2.1 校验（strong/base 4.5:1，weak/faint 3:1，含文字金 token），失败输出 token/surface/ratio；`check-jiangxiao-contrast.test.mjs` 包装接入 `pnpm test:scripts`。
 
 （评论与对话历史追加于此，新内容置于最前。）

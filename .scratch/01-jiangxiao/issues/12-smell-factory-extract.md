@@ -1,6 +1,6 @@
 # 代码异味清理：工厂函数提取
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 无——可立即开始
 
@@ -15,5 +15,7 @@
 - [ ] 无其他代码异味引入（如 emoji、命名不规范等）
 
 ## 评论
+
+- 2026-08-19 核实：`PetSprite.test.tsx` 已提取 `spritesheetTracks()` 共享工厂，`petDefinition()` 与 `webpPetDefinition()` 均复用它，仅传差异字段（id/kind/states/transitions）。
 
 （源自代码审查工单 12：PetSprite.test.tsx 工厂函数重复，Fowler Duplicated Code 异味）

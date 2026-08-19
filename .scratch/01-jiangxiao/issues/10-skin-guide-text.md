@@ -1,6 +1,6 @@
 # 皮肤设置卡补全导入引导文案
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 无——可立即开始
 
@@ -15,5 +15,7 @@
 - [ ] `pnpm test` + `pnpm docs:check` 全绿
 
 ## 评论
+
+- 2026-08-19 核实：`SkinSettingsCard.tsx` 随 04 轮落地：未导入时显示导入引导文案 + 跳转宠物设置卡入口（`pet.guidance`/`guidanceHint`/`importLink`），已导入时显示就绪态；文案中英走包内 locales。
 
 （源自代码审查工单 10：US-28 要求皮肤设置卡引导文案，但当前皮肤侧无任何提示，引用 Issue 05 验收标准、US-28）

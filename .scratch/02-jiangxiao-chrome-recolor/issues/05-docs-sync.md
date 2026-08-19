@@ -1,6 +1,6 @@
 # 双语文档与 CHANGELOG 同步
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 01, 02, 03, 04
 
@@ -18,5 +18,7 @@
 - [ ] `pnpm build` 绿
 
 ## 评论
+
+- 2026-08-19 核实：README.md 已无 chrome 条/favicon/title/印章发送钮描述，新增对比度门禁与烫金箔说明，装饰层对齐 D16；README 三件套配对（`docs:write-pair` 已重录）；CHANGELOG 0.2.0 记录 chrome 瘦身、颜色重设计、烫金箔、对比度门禁。04 轮又追加「对齐 skin-preview」段并更新 skin.json 描述。
 
 （评论与对话历史追加于此，新内容置于最前。）

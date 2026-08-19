@@ -1,6 +1,6 @@
 # 烫金箔引入
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 02
 
@@ -18,5 +18,7 @@
 - [ ] `pnpm build` 绿
 
 ## 评论
+
+- 2026-08-19 核实：CSS h1-h4 应用 `-webkit-text-fill-color + color`，`@supports not background-clip:text` 兜底纯色 gold；`--jx-gold-foil` 渐变深浅双套均定义；strong/b 走 `--jx-gold-bright` 纯色不叠加烫金箔。注：base（非 fx-shimmer）下标题用纯色金，烫金流动效果归 fx-shimmer 门控（对齐 skin-preview）。
 
 （评论与对话历史追加于此，新内容置于最前。）

@@ -1,6 +1,6 @@
 # 过渡调度器（纯函数）
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 02
 
@@ -23,5 +23,7 @@
 ```
 
 ## 评论
+
+- 2026-08-19 核实：`scheduler.ts` 已实现 `resolveTransition`（枢纽制直达 1 段 / idle 中转 2 段 / 空序列 crossfade 兜底）、key 作废（含 keySeed 确定性）、`petToJiangxiao` 映射（D8）；REACHABLE_STATES 过滤使 reading/permission 仅保留素材不进过渡表（D13），并防御降级为 crossfade；单测 `scheduler.test.ts` 覆盖直达/中转/兜底/作废/映射。
 
 （评论与对话历史追加于此，新内容置于最前。）

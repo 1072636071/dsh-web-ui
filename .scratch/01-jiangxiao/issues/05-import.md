@@ -1,6 +1,6 @@
 # 资产包导入 gating
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 02, 04
 
@@ -22,5 +22,7 @@
 - 删除热移除：registry 为启动时快照，删除目录需重启生效，不做文件 watcher
 
 ## 评论
+
+- 2026-08-19 核实：`import.ts` 用 fflate 解压、zip slip 校验（`safeEntryPath`）、`pet.json` manifest 校验、失败回滚，目标为 `~/.codex/pets/jiangxiao/`；重复导入拒绝（`pet.importExists`）；`routes.ts` 提供 `/api/pet/import-zip` POST（raw body）；`PetSettingsCard` 有"导入资产包..."入口 + i18n 错误提示；`import.test.ts` 覆盖成功/zip slip/非法 manifest 不残留。
 
 （评论与对话历史追加于此，新内容置于最前。）

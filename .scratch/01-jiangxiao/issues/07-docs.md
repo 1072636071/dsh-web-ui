@@ -1,6 +1,6 @@
 # 双语文档与发布同步
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 01, 04, 05, 06
 
@@ -16,5 +16,7 @@
 - [ ] ADR-0001 引用与 CONTEXT.md 词汇保持一致（决策 D12/D13/D14 已记录）
 
 ## 评论
+
+- 2026-08-19 核实：dsh-pet README 中英三件套已含 animated-webp 契约、gating、导入说明；皮肤 README 三件套与 CHANGELOG 已同步（见 02 轮 05）；`docs:write-pair` 已重录配对。ADR-0001（D1-D14）与 CONTEXT.md 决策表一致。
 
 （评论与对话历史追加于此，新内容置于最前。）

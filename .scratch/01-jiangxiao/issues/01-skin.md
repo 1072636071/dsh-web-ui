@@ -1,6 +1,6 @@
 # 姜晓皮肤包（深浅双主题）
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 无——可立即开始
 
@@ -18,5 +18,7 @@
 - [ ] `pnpm build` + 全仓门禁绿（含 `docs:check`）；皮肤包 README 中英配对就绪（与 07 协作）
 
 ## 评论
+
+- 2026-08-19 核实：皮肤本体当前视觉已按 `.scratch/skin-preview/` 重构（见 04 轮工单 02/03/05/08，resolved）；本工单宣称的「标题栏/发送钮/favicon 装饰」已按 02 轮 D16 原则删除（不注入 DSH 原生不存在的 chrome）。皮肤卡、深浅双主题、字体、remap、停用还原经核实在 `packages/skins/jiangxiao/` 落地，皮肤中心注册表含 `jiangxiao` 卡。
 
 （评论与对话历史追加于此，新内容置于最前。）

@@ -1,6 +1,6 @@
 # 颜色重设计 + gold 拆分 + 浅色加深
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 无——可立即开始
 
@@ -23,5 +23,7 @@
 - [ ] `pnpm build` 绿
 
 ## 评论
+
+- 2026-08-19 核实：CSS 深浅双套 `--jx-surface-0/-1/-2/-3`、`--jx-text-strong/base/weak/faint`、`--jx-seal`/`--jx-cinnabar` 均已重做（浅色 seal/cinnabar=#8e3a49、text-base=#5d4a42）。gold 拆分：原 02 轮的 `--jx-text-gold` 在金族在 04 轮已归并为深 `--jx-gold`(#d6b34a)/浅 `--jx-gold-dim`(#6f5306) 作为文字金，`--dsw-alias-brand-text` 映射到文字金 token。
 
 （评论与对话历史追加于此，新内容置于最前。）

@@ -1,6 +1,6 @@
 # 导入错误消息 i18n 化
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 05（导入路由 `import.ts` + `routes.ts` 已存在）
 
@@ -16,5 +16,7 @@
 - [ ] `pnpm test` 全绿
 
 ## 评论
+
+- 2026-08-19 核实：`import.ts` 返回 i18n 键（`pet.importError.*`/`pet.importExists`），`routes.ts` 按 `accept-language` 解析中英文案并透传；`locales.ts` zh/en 字典含全部导入键（含 `pet.importExists`）；导入路由测试覆盖错误消息。
 
 （源自代码审查工单 14：硬编码中文错误消息，`locales.ts` 已定义翻译键却未使用，违反双语纪律）

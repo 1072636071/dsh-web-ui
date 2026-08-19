@@ -12,21 +12,17 @@
 
 ## 工单清单
 
-| # | 工单 | 文件 | 阻塞于 |
-| --- | --- | --- | --- |
-| 01 | chrome 瘦身与装饰级删除 | `issues/01-chrome-trim.md` | 无 |
-| 02 | 颜色重设计 + gold 拆分 + 浅色加深 | `issues/02-color-redesign.md` | 无 |
-| 03 | 烫金箔引入 | `issues/03-gold-foil.md` | 02 |
-| 04 | 对比度 CI 门禁脚本 | `issues/04-contrast-gate.md` | 02 |
-| 05 | 双语文档与 CHANGELOG 同步 | `issues/05-docs-sync.md` | 01, 02, 03, 04 |
+| # | 工单 | 文件 | 状态 | 阻塞于 |
+| --- | --- | --- | --- | --- |
+| 01 | chrome 瘦身与装饰级删除 | `issues/01-chrome-trim.md` | resolved | 无 |
+| 02 | 颜色重设计 + gold 拆分 + 浅色加深 | `issues/02-color-redesign.md` | resolved | 无 |
+| 03 | 烫金箔引入 | `issues/03-gold-foil.md` | resolved | 02 |
+| 04 | 对比度 CI 门禁脚本 | `issues/04-contrast-gate.md` | resolved | 02 |
+| 05 | 双语文档与 CHANGELOG 同步 | `issues/05-docs-sync.md` | resolved | 01, 02, 03, 04 |
 
 ## 前沿
 
-无阻塞工单：**01**（chrome 瘦身）、**02**（颜色重设计）。两条线可并行推进：
-- chrome 瘦身线：01 → 05
-- 颜色重设计线：02 → 03 / 04 → 05
-
-01 和 02 都改 `jiangxiao.module.css`，但改的不同区域（01 删 chrome class + button/input 规则，02 改 token 字面量值），合并冲突风险中等。建议 01 先做（删东西快，让 CSS 更干净），02 后做。
+全部工单已 resolved（2026-08-19 按实际代码核查，详见各工单评论）。注：颜色/烫金箔的最终视觉由 04 轮（`.scratch/04-jiangxiao-skin-revamp/`）按其 skin-preview 设计基准做了归并对齐（如 `--jx-text-gold` 归并到 `--jx-gold`/`--jx-gold-dim` 文字金），此处不再单列返工。
 
 ## 已做决策
 

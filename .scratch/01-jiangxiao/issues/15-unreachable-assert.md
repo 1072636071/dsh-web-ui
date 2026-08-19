@@ -1,6 +1,6 @@
 # 不可达态防御断言
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 03（调度器 `scheduler.ts` 已存在）
 
@@ -15,5 +15,7 @@
 - [ ] `pnpm test` 全绿
 
 ## 评论
+
+- 2026-08-19 核实：`scheduler.ts` `resolveTransition` 经 `REACHABLE_STATES` 检查 reading/permission，不可达态降级为 crossfade（返回空序列），dev 打警告、prod 不 crash；`petToJiangxiao` 与 `PET_TO_JIANGXIAO` 注释说明不可达态策略；`scheduler.test.ts` 覆盖不可达态行为。
 
 （源自代码审查工单 15：调度器缺少对不可达态的防御断言，引用 PRD D13）

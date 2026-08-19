@@ -1,6 +1,6 @@
 # webp 宠物 manifest 契约与 registry 扩展
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 无——可立即开始
 
@@ -27,5 +27,7 @@ interface WebpPetAnimation {
 - 过渡文件 36 个全打包，但渲染层过渡表只索引 pet 可达 10 态路径（D13）
 
 ## 评论
+
+- 2026-08-19 核实：`registry.ts` 已含 `kind?: "spritesheet" | "animated-webp"`、`states` 10 循环态校验、`transitions` 编译校验、非法 id/路径穿越/未知 kind 拒收并记 warning，`/api/pet/pets` 返回 webp 定义且资产路由按声明 serve；`registry.test.ts` 覆盖 webp 解析/非法拒绝/spritesheet 回归。
 
 （评论与对话历史追加于此，新内容置于最前。）

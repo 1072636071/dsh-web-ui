@@ -1,6 +1,6 @@
 # chrome 瘦身与装饰级删除
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 无——可立即开始
 
@@ -22,5 +22,7 @@
 - [ ] `pnpm build` + `pnpm test`（含 apply.spec.ts）绿
 
 ## 评论
+
+- 2026-08-19 核实：`index.ts` apply() 只设 body 属性 + 注入 @font-face style（`data-skin-chrome="fontface"`）+ locale + settings section，无 chrome 条/favicon/title/印章发送钮注入；CSS 已无 `.jiangxiaoTitlebar*`/`.jiangxiaoStatusbar*`、button/input 硬编码 shadow、body padding、#root border（CHANGELOG 0.2.0「删除」段已列）；`apply.spec.ts` 契约更新为不注入 chrome。04 轮又按 skin-preview 进一步对齐（fx/浮层）。
 
 （评论与对话历史追加于此，新内容置于最前。）

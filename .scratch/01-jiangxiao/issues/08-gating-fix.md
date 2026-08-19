@@ -1,6 +1,6 @@
 # Gating 修复：移除内置 pet.json
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 无——可立即开始
 
@@ -17,5 +17,7 @@
 - [ ] 打包脚本 `pack-jiangxiao-pet.mjs` 仍可正常产出 zip（只移内置 asset，不移打包逻辑）
 
 ## 评论
+
+- 2026-08-19 核实：`packages/dsh-pet/assets/` 现仅含 `whale/`（无内置 `jiangxiao/`），registry 启动不再自动注册姜晓；导入后经 `~/.codex/pets/jiangxiao/` 的 `pet.json`（`kind: "animated-webp"`）被识别注册。已移除内置 pet.json，导出以 webp 资产导入为唯一通道，打包脚本逻辑未动。
 
 （源自代码审查工单 08：gating 被内置 pet.json 破坏，违反 PRD D3/D4/US-27）

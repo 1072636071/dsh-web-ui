@@ -1,6 +1,6 @@
 # 代码异味清理：fileHashes 提取
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 06（打包脚本 `pack-jiangxiao-pet.mjs` 已存在）
 
@@ -15,5 +15,7 @@
 - [ ] 无其他代码异味引入
 
 ## 评论
+
+- 2026-08-19 核实：`pack-jiangxiao-pet.mjs` 已提取 `buildFileHashes(petJsonBytes, files)` 共享函数，`cmdInitManifest()` 与 `cmdPack()` 均调用；`pack-jiangxiao-pet.test.mjs` 覆盖 hash-manifest 构建/校验。
 
 （源自代码审查工单 13：pack-jiangxiao-pet.mjs 中 fileHashes 构建重复，Fowler Data Clumps 异味）
