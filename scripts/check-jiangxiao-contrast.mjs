@@ -65,7 +65,10 @@ function extractHexVars(block) {
 
 // --- Gate logic ---------------------------------------------------------------
 
-const TEXT_TOKENS_AA = ['--jx-text-strong', '--jx-text-base', '--jx-text-gold']
+const TEXT_TOKENS_AA = {
+  dark: ['--jx-text-strong', '--jx-text-base', '--jx-gold'],
+  light: ['--jx-text-strong', '--jx-text-base', '--jx-gold-dim'],
+}
 const TEXT_TOKENS_3 = ['--jx-text-weak', '--jx-text-faint']
 const SURFACES = ['--jx-surface-0', '--jx-surface-1', '--jx-surface-2', '--jx-surface-3']
 
@@ -80,8 +83,9 @@ function runGate() {
   ]) {
     const block = extractBlock(css, selector)
     const vars = extractHexVars(block)
+    const aaTokens = TEXT_TOKENS_AA[label]
 
-    for (const tk of [...TEXT_TOKENS_AA, ...TEXT_TOKENS_3]) {
+    for (const tk of [...aaTokens, ...TEXT_TOKENS_3]) {
       if (!(tk in vars)) {
         failures.push({ variant: label, token: tk, surface: '-', ratio: 0, target: 0, reason: 'token not found in CSS' })
         continue
@@ -93,7 +97,7 @@ function runGate() {
       }
     }
 
-    for (const tk of TEXT_TOKENS_AA) {
+    for (const tk of aaTokens) {
       if (!(tk in vars)) continue
       for (const sf of SURFACES) {
         if (!(sf in vars)) continue

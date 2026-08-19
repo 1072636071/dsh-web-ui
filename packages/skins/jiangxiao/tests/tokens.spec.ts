@@ -1,8 +1,8 @@
 /**
  * 工单 02：令牌与 remap 完整性校验。
  *
- * 验证 DESIGN.md §2 令牌表每个令牌暗浅双值齐全，remap 原则合规，
- * 无纯 #fff/#000，皮肤作用域正确。
+ * 验证 .scratch/skin-preview/tokens.css 令牌表每个令牌暗浅双值齐全，
+ * remap 原则合规，无纯 #fff/#000，皮肤作用域正确。
  */
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
@@ -38,7 +38,7 @@ function extractJxTokens(scope: 'dark' | 'light'): Set<string> {
 const darkTokens = extractJxTokens('dark')
 const lightTokens = extractJxTokens('light')
 
-/** DESIGN.md §2 令牌表定义的必需令牌（暗浅双值齐全）。 */
+/** .scratch/skin-preview/tokens.css 定义的必需令牌（暗浅双值齐全）。 */
 const REQUIRED_TOKENS = [
   // Surface
   '--jx-surface-0', '--jx-surface-1', '--jx-surface-2', '--jx-surface-3',
@@ -46,17 +46,32 @@ const REQUIRED_TOKENS = [
   '--jx-text-strong', '--jx-text-base', '--jx-text-weak', '--jx-text-faint',
   // Gold
   '--jx-gold-bright', '--jx-gold', '--jx-gold-deep', '--jx-gold-dim', '--jx-ginkgo',
-  // Seal
-  '--jx-seal', '--jx-seal-deep', '--jx-seal-bright', '--jx-seal-ink',
-  // 状态
-  '--jx-success', '--jx-warn', '--jx-error',
-  // 装饰
-  '--jx-border-deco', '--jx-selection', '--jx-scroll-track', '--jx-scroll-thumb',
+  // Seal + Cinnabar
+  '--jx-seal', '--jx-seal-deep', '--jx-seal-bright', '--jx-seal-ink', '--jx-cinnabar',
+  // Atmosphere
+  '--jx-border-deco', '--jx-ink-glow',
+  // Scrollbar
+  '--jx-scroll-track', '--jx-scroll-thumb',
+  // Code syntax
+  '--jx-code-bg', '--jx-code-border', '--jx-kw', '--jx-str', '--jx-fn', '--jx-cmt', '--jx-num',
+  // Decorative fall + poem
+  '--jx-petal-1', '--jx-petal-2', '--jx-petal-3', '--jx-poem-color',
+  // Typography
+  '--jx-font-display', '--jx-font-ui', '--jx-font-code',
+  // Motion durations
+  '--jx-dur-fast', '--jx-dur', '--jx-breathe', '--jx-gold-rotate', '--jx-shimmer',
+  '--jx-leaf-fall-min', '--jx-leaf-fall-max', '--jx-seal-pulse', '--jx-bpulse',
+  // Radius
+  '--jx-radius-sm', '--jx-radius-md', '--jx-radius-lg', '--jx-radius-xl', '--jx-radius-seal',
+  // Shadow
+  '--jx-shadow-1', '--jx-shadow-2', '--jx-gold-rim',
+  // Layout
+  '--jx-sidebar-w', '--jx-files-w',
   // 渐变
   '--jx-gold-foil',
 ] as const
 
-describe('DESIGN.md §2 — token dark/light dual values complete', () => {
+describe('tokens.css — token dark/light dual values complete', () => {
   for (const token of REQUIRED_TOKENS) {
     it(`${token} defined in dark scope`, () => {
       expect(darkTokens.has(token)).toBe(true)
@@ -67,9 +82,13 @@ describe('DESIGN.md §2 — token dark/light dual values complete', () => {
   }
 })
 
-describe('soft tokens — success/warn/error soft dual values', () => {
-  const softTokens = ['--jx-success-soft', '--jx-warn-soft', '--jx-error-soft'] as const
-  for (const token of softTokens) {
+describe('auxiliary tokens — DSH remap 必需但 tokens.css 未定义（唐风派生，暗浅双值）', () => {
+  const auxTokens = [
+    '--jx-success', '--jx-warn', '--jx-error',
+    '--jx-success-soft', '--jx-warn-soft', '--jx-error-soft',
+    '--jx-selection',
+  ] as const
+  for (const token of auxTokens) {
     it(`${token} defined in dark scope`, () => {
       expect(darkTokens.has(token)).toBe(true)
     })

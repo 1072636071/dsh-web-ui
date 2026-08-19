@@ -1,6 +1,8 @@
 # PRD: 姜晓皮肤重新设计 — 墨金卷轴银杏 / 宣纸梅花
 
-Status: ready-for-agent
+Status: wontfix
+
+> 本轮范围已被 `.scratch/04-jiangxiao-skin-revamp/` 全量吸收：皮肤按本设计（`.scratch/skin-preview/`）落地了令牌 / FX / 角色浮层 / 素材链，剩余对齐返工见 04 轮工单（02/03/05/08）。本文件保留为设计缘起记录，不再单独派工。
 
 ## 问题陈述
 
@@ -82,9 +84,9 @@ Status: ready-for-agent
 
 ## 补充说明
 
-- demo 已确认：`.temp/skin-preview/index.html`
-- 设计令牌：`.temp/skin-preview/tokens.css`
-- 设计文档：`.temp/skin-preview/DESIGN.md`
-- 原姜晓动画素材源头：`D:\work\space\open-code-mm`（openCodeMM DESIGN.md §10）
+- demo 已确认：`.scratch/skin-preview/index.html`
+- 设计令牌：`.scratch/skin-preview/tokens.css`
+- 设计文档：`.scratch/skin-preview/DESIGN.md`
+- 姜晓动画素材源头：openCodeMM `public/character/*.webp`（10 循环 + 36 过渡）；素材现已按 ADR-0003 入仓 `packages/skins/jiangxiao/assets/character/`（仅开发源，运行时走 dsh-pet）
 - 原项目 ADR-034 已下线背景装饰，但 CSS keyframes 和 SVG 代码仍保留可复用
-- 落地阶段需决定：新建皮肤包 / 替换 jiangxiao / 推翻架构（用户倾向推翻架构，但工作量巨大且破坏 CI 门禁）
+- 落地方式已定案：保留 skin-center 皮肤形态、在现有 jiangxiao 皮肤包上重做（不新建包、不推翻架构），由 `.scratch/04-jiangxiao-skin-revamp/` 实施

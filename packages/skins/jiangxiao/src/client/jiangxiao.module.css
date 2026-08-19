@@ -1,23 +1,28 @@
 /* Jiangxiao skin — Tang-style anime theme for the dsh web GUI.
-   Source of truth: openCodeMM DESIGN.md §10 `--jx-*` token block.
-   Dark default "Moonlit Ink-Dyed" (ink-black ground, dark-gold text,
-   mist-purple atmosphere, cinnabar accent) lives on body[data-dsh-jiangxiao];
-   the light "Plum Blossom" variant (rice-white ground, pink plum, gold)
-   overrides on body[data-dsh-jiangxiao]:not([data-ds-dark-theme]).
+   Source of truth: .scratch/skin-preview/ (DESIGN.md + tokens.css +
+   index.html demo). Dark default "Ink-Gold Scroll Ginkgo" (ink-black
+   ground, gilt flow, ginkgo fall) lives on body[data-dsh-jiangxiao];
+   the light "Xuan-Paper Plum Blossom" variant (rice-white ground, ink
+   wash, plum fall) overrides on
+   body[data-dsh-jiangxiao]:not([data-ds-dark-theme]).
    The plugin's apply() sets data-dsh-jiangxiao and retracts it on dispose,
    so the skin stays fully hot-pluggable. The --jx-* tokens are remapped
    onto the dsh three-layer token system (--dsw-static-* / --dsw-alias-* /
    --aion-*), so every component that reads those tokens lands in the
    Tang-ink era. Decorative layer (cinnabar seal send button, title-bar
-   cloud pattern, gold scrollbar, gold rule) is ported selectively from
-   openCodeMM chrome/session. Code blocks / syntax highlighting keep the
-   upstream --syntax-* palette untouched. prefers-reduced-motion disables
-   all motion. No emoji anywhere (repo-wide rule). */
+   cloud pattern, gold scrollbar, gold rule) follows the demo. Code block
+   chrome uses the --jx-code-* tokens; syntax span colors stay the
+   upstream shiki palette (inline styles, out of skin scope).
+   prefers-reduced-motion disables all motion. No emoji anywhere
+   (repo-wide rule). */
 
 /* --- jx token block: dark default ------------------------------------------- */
-/* DESIGN.md §10 — the canonical --jx-* values. Dark is the default scope;
-   light overrides below. These tokens are the only source of truth for
-   the Tang palette; every later rule references them via var(). */
+/* .scratch/skin-preview/tokens.css — the canonical --jx-* values. Dark is
+   the default scope; light overrides below. These tokens are the only
+   source of truth for the Tang palette; every later rule references them
+   via var(). Tokens the DSH remap needs but tokens.css does not define
+   (status family success/warn/error + soft, selection) are skin-derived
+   auxiliaries kept on the Tang palette with dark/light dual values. */
 
 body[data-dsh-jiangxiao] {
   /* Surface (0 deepest/ground, 3 raised) */
@@ -30,10 +35,9 @@ body[data-dsh-jiangxiao] {
   --jx-text-base: #f2ead8;
   --jx-text-weak: #a99c8a;
   --jx-text-faint: #8a7e6e;
-  /* Gold family (--jx-gold is decoration-only; --jx-text-gold is text-only AA) */
+  /* Gold family (--jx-gold is the AA gold text/brand on dark ground) */
   --jx-gold-bright: #f6d365;
   --jx-gold: #d6b34a;
-  --jx-text-gold: #d6b34a;
   --jx-gold-deep: #b8860b;
   --jx-gold-dim: #996515;
   --jx-ginkgo: #dfb793;
@@ -43,51 +47,72 @@ body[data-dsh-jiangxiao] {
   --jx-seal-deep: #a8382b;
   --jx-seal-bright: #d85444;
   --jx-seal-ink: #fff8ef;
-  /* Atmosphere (gradient/fx/illustration only) */
-  --jx-mist: #b5a8b2;
-  --jx-mountain: #827686;
-  --jx-water: #767687;
-  --jx-cloud: #e7d3d2;
-  --jx-moon: #ecd8d8;
-  --jx-hair: #d1beca;
-  --jx-wisteria: #b89aac;
   /* Cinnabar accent */
   --jx-cinnabar: #c3272b;
-  /* Highlight variants */
-  --jx-hl-file: #7fd8e8;
-  --jx-hl-agent: #e5c07b;
+  /* Atmosphere (ink-glow radial gradients; gradient/fx layers only) */
+  --jx-border-deco: #3d3218;
+  --jx-ink-glow: rgba(184, 134, 11, 0.06);
+  /* Auxiliary: state colors required by the --dsw-alias-state-* remap
+     (stone green / rattan yellow / ochre red, Tang-derived) */
   --jx-success: #86b08a;
   --jx-success-soft: #1c3d26;
   --jx-warn: #d9a05b;
   --jx-warn-soft: #3a2e18;
   --jx-error: #d06552;
   --jx-error-soft: #3a1c1c;
-  --jx-border-deco: #3d3218;
+  /* Auxiliary: selection highlight (Tang-derived) */
   --jx-selection: rgba(184, 134, 11, 0.3);
+  /* Scrollbar */
   --jx-scroll-track: #2a2210;
   --jx-scroll-thumb: #b8860b;
+  /* Code block chrome + syntax token set (syntax span colors; DSH renders
+     code via shiki inline styles, so these feed the skin's own DOM and
+     document the Tang code palette) */
+  --jx-code-bg: #0b090d;
+  --jx-code-border: rgba(184, 134, 11, 0.26);
+  --jx-kw: #d6b34a;
+  --jx-str: #86b08a;
+  --jx-fn: #7fd8e8;
+  --jx-cmt: #8a7e6e;
+  --jx-num: #f6d365;
+  /* Decorative fall colors (ginkgo dark) + vertical poem */
+  --jx-petal-1: #d6b34a;
+  --jx-petal-2: #dfb793;
+  --jx-petal-3: #b8860b;
+  --jx-poem-color: #dfb793;
   /* Typography */
   --jx-font-display: 'Ma Shan Zheng', 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
   --jx-font-ui: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
   --jx-font-code: ui-monospace, 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
-  /* Spacing / radius */
+  /* Motion durations */
+  --jx-dur-fast: 0.15s;
+  --jx-dur: 0.35s;
+  --jx-breathe: 8s;
+  --jx-gold-rotate: 12s;
+  --jx-shimmer: 4s;
+  --jx-leaf-fall-min: 18s;
+  --jx-leaf-fall-max: 28s;
+  --jx-seal-pulse: 3s;
+  --jx-bpulse: 1.2s;
+  /* Radius */
   --jx-radius-sm: 4px;
   --jx-radius-md: 6px;
   --jx-radius-lg: 8px;
   --jx-radius-xl: 12px;
+  --jx-radius-seal: 50%;
   /* Depth */
   --jx-shadow-1: 0 2px 8px rgba(5, 3, 8, 0.5);
   --jx-shadow-2: 0 8px 24px rgba(5, 3, 8, 0.55);
   --jx-gold-rim: 0 0 0 1px #3d3218, 0 0 14px rgba(246, 211, 101, 0.12);
-  /* Motion */
-  --jx-dur-fast: 0.15s;
-  --jx-dur: 0.35s;
+  /* Layout (demo reference; the skin does not re-layout the DSH shell) */
+  --jx-sidebar-w: 220px;
+  --jx-files-w: 220px;
 }
 
 /* --- jx token block: light plum-blossom variant ----------------------------- */
-/* body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) — the light override.
-   Values are the加深-on-light versions from DESIGN.md §10 light block so
-   contrast holds on the rice-white ground. */
+/* body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) — the light override,
+   values per .scratch/skin-preview/tokens.css light block so contrast holds
+   on the rice-white ground. */
 
 body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
   --jx-surface-0: #faf5ee;
@@ -100,7 +125,6 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
   --jx-text-faint: #8a7765;
   --jx-gold-bright: #9c7a1e;
   --jx-gold: #b8860b;
-  --jx-text-gold: #6f5206;
   --jx-gold-deep: #8a6508;
   --jx-gold-dim: #6f5306;
   --jx-ginkgo: #b8860b;
@@ -109,26 +133,29 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
   --jx-seal-deep: #7a2a39;
   --jx-seal-bright: #d97a8e;
   --jx-seal-ink: #fff8f6;
-  --jx-mist: #c9b8b4;
-  --jx-mountain: #b3a49a;
-  --jx-water: #a9a9b4;
-  --jx-cloud: #f0e4e2;
-  --jx-moon: #f3e2e2;
-  --jx-hair: #dcc4ca;
-  --jx-wisteria: #9c3a54;
   --jx-cinnabar: #8e3a49;
-  --jx-hl-file: #2c6a7a;
-  --jx-hl-agent: #9c7a1e;
+  --jx-border-deco: #d9c9b5;
+  --jx-ink-glow: rgba(178, 74, 92, 0.05);
   --jx-success: #3d7a3d;
   --jx-success-soft: #ddf3e3;
   --jx-warn: #9c6b1e;
   --jx-warn-soft: #fdf3dd;
   --jx-error: #a83a3a;
   --jx-error-soft: #f8dcdc;
-  --jx-border-deco: #d9c9b5;
   --jx-selection: rgba(178, 74, 92, 0.14);
   --jx-scroll-track: #ece0d0;
   --jx-scroll-thumb: #d97a8e;
+  --jx-code-bg: #f5eddf;
+  --jx-code-border: rgba(138, 101, 8, 0.22);
+  --jx-kw: #8a6508;
+  --jx-str: #3d7a3d;
+  --jx-fn: #2c6a7a;
+  --jx-cmt: #8a7765;
+  --jx-num: #9c7a1e;
+  --jx-petal-1: #d97a8e;
+  --jx-petal-2: #e89aa8;
+  --jx-petal-3: #b24a5c;
+  --jx-poem-color: #8e3a49;
   --jx-shadow-1: 0 2px 8px rgba(5, 3, 8, 0.25);
   --jx-shadow-2: 0 8px 24px rgba(5, 3, 8, 0.3);
   --jx-gold-rim: 0 0 0 1px #d9c9b5, 0 0 14px rgba(184, 134, 11, 0.12);
@@ -141,14 +168,14 @@ body[data-dsh-jiangxiao] {
   --ds-font-family-code: var(--jx-font-code);
   color: var(--jx-text-base);
   background-color: var(--jx-surface-0);
-  /* Subtle Tang cloud pattern + ink gradient: a whisper of gold-leaf drift
-     over the ink-black ground, never competing with content. The plugin's
-     apply() also paints a fixed ink-gradient on the body inline background;
-     this is the no-art fallback. */
+  /* Static ink texture: multi-layer radial ink-glow over the surface
+     gradient (skin-preview design — deep ground bright text, contrast
+     holds by construction). Zero animation here; the breathing variant
+     lives on body::after behind the fx-breathe gate. */
   background-image:
-    radial-gradient(circle at 18% 12%, rgba(184, 134, 11, 0.06), transparent 42%),
-    radial-gradient(circle at 82% 28%, rgba(153, 118, 148, 0.05), transparent 38%),
-    radial-gradient(circle at 50% 92%, rgba(184, 134, 11, 0.04), transparent 45%),
+    radial-gradient(circle at 18% 12%, var(--jx-ink-glow), transparent 42%),
+    radial-gradient(circle at 82% 28%, var(--jx-ink-glow), transparent 38%),
+    radial-gradient(circle at 50% 92%, var(--jx-ink-glow), transparent 45%),
     linear-gradient(168deg, var(--jx-surface-0) 0%, var(--jx-surface-1) 60%, var(--jx-surface-2) 100%);
 
   box-sizing: border-box;
@@ -156,9 +183,9 @@ body[data-dsh-jiangxiao] {
 
 body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
   background-image:
-    radial-gradient(circle at 18% 12%, rgba(184, 134, 11, 0.08), transparent 42%),
-    radial-gradient(circle at 82% 28%, rgba(178, 74, 92, 0.06), transparent 38%),
-    radial-gradient(circle at 50% 92%, rgba(184, 134, 11, 0.05), transparent 45%),
+    radial-gradient(circle at 18% 12%, var(--jx-ink-glow), transparent 42%),
+    radial-gradient(circle at 82% 28%, var(--jx-ink-glow), transparent 38%),
+    radial-gradient(circle at 50% 92%, var(--jx-ink-glow), transparent 45%),
     linear-gradient(168deg, var(--jx-surface-0) 0%, var(--jx-surface-1) 60%, var(--jx-surface-2) 100%);
 }
 
@@ -353,7 +380,7 @@ body[data-dsh-jiangxiao] {
   --dsw-alias-brand-primary-invert: var(--jx-surface-0);
   --dsw-alias-brand-primary-new-colorprimary-new-color: var(--jx-gold);
   --dsw-alias-brand-primary: var(--jx-gold);
-  --dsw-alias-brand-text: var(--jx-text-gold);
+  --dsw-alias-brand-text: var(--jx-gold);
   --dsw-alias-button-contrast-fill: var(--jx-gold-deep);
   --dsw-alias-button-elevated-fill: var(--jx-surface-2);
   --dsw-alias-button-floating-fill: var(--jx-surface-2);
@@ -383,8 +410,8 @@ body[data-dsh-jiangxiao] {
   --dsw-alias-label-secondary: var(--jx-text-base);
   --dsw-alias-label-tertiary: var(--jx-text-weak);
   --dsw-alias-markdown-citation: var(--jx-surface-2);
-  --dsw-alias-markdown-code-block-banner: var(--jx-surface-0);
-  --dsw-alias-markdown-code-block: var(--jx-surface-0);
+  --dsw-alias-markdown-code-block-banner: color-mix(in srgb, var(--jx-surface-2) 80%, transparent);
+  --dsw-alias-markdown-code-block: var(--jx-code-bg);
   --dsw-alias-markdown-code-segment-selected: var(--jx-surface-2);
   --dsw-alias-markdown-code-segment-unselected: var(--jx-surface-1);
   --dsw-alias-markdown-inline-code: var(--jx-surface-2);
@@ -446,7 +473,7 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
   --dsw-alias-brand-primary-invert: var(--jx-surface-0);
   --dsw-alias-brand-primary-new-colorprimary-new-color: var(--jx-gold);
   --dsw-alias-brand-primary: var(--jx-gold);
-  --dsw-alias-brand-text: var(--jx-text-gold);
+  --dsw-alias-brand-text: var(--jx-gold-dim);
   --dsw-alias-button-contrast-fill: var(--jx-gold-deep);
   --dsw-alias-button-elevated-fill: var(--jx-surface-2);
   --dsw-alias-button-floating-fill: var(--jx-surface-2);
@@ -476,8 +503,8 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) {
   --dsw-alias-label-secondary: var(--jx-text-base);
   --dsw-alias-label-tertiary: var(--jx-text-weak);
   --dsw-alias-markdown-citation: var(--jx-surface-2);
-  --dsw-alias-markdown-code-block-banner: var(--jx-surface-1);
-  --dsw-alias-markdown-code-block: var(--jx-surface-1);
+  --dsw-alias-markdown-code-block-banner: color-mix(in srgb, var(--jx-surface-2) 80%, transparent);
+  --dsw-alias-markdown-code-block: var(--jx-code-bg);
   --dsw-alias-markdown-code-segment-selected: var(--jx-surface-2);
   --dsw-alias-markdown-code-segment-unselected: var(--jx-surface-1);
   --dsw-alias-markdown-inline-code: var(--jx-surface-2);
@@ -641,7 +668,7 @@ body[data-dsh-jiangxiao] a {
 }
 
 body[data-dsh-jiangxiao] a:visited {
-  color: var(--jx-wisteria);
+  color: var(--jx-seal-bright);
 }
 
 body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) a {
@@ -649,7 +676,7 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) a {
 }
 
 body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) a:visited {
-  color: var(--jx-wisteria);
+  color: var(--jx-seal);
 }
 
 
@@ -670,7 +697,7 @@ body[data-dsh-jiangxiao] [data-slot='titlebar-v2'] {
 
 /* fx-shimmer: 鎏金流光顶线（titlebar gold-rotate 动画）。 */
 html.fx-shimmer body[data-dsh-jiangxiao] [data-slot='titlebar-v2'] {
-  animation: jx-gold-rotate 12s linear infinite;
+  animation: jx-gold-rotate var(--jx-gold-rotate) linear infinite;
 }
 
 body[data-dsh-jiangxiao] [data-slot='titlebar-v2']::after {
@@ -709,8 +736,8 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) [data-slot='titlebar-v2'] [da
 /* h1-h4 wear the Tang gold-foil: background-clip: text over the --jx-gold-foil
    gradient gives the headings a flowing gold-leaf feel. The --jx-gold-foil
    token is overridden in the light variant, so both scopes get their own
-   foil. Browsers without background-clip: text fall back to solid
-   --jx-text-gold (still AA on surface-0). strong/b keep a flat bright-gold
+   foil. Browsers without background-clip: text fall back to the solid AA
+   gold (dark --jx-gold / light --jx-gold-dim). strong/b keep a flat gold
    so small inline emphasis stays crisp. */
 
 /* Headings base: Kaiti display + solid AA gold (shimmer off 时静态金字)。 */
@@ -720,8 +747,16 @@ body[data-dsh-jiangxiao] h3,
 body[data-dsh-jiangxiao] h4 {
   font-family: var(--jx-font-display);
   letter-spacing: 0.01em;
-  color: var(--jx-text-gold);
-  -webkit-text-fill-color: var(--jx-text-gold);
+  color: var(--jx-gold);
+  -webkit-text-fill-color: var(--jx-gold);
+}
+
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) h1,
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) h2,
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) h3,
+body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) h4 {
+  color: var(--jx-gold-dim);
+  -webkit-text-fill-color: var(--jx-gold-dim);
 }
 
 /* fx-shimmer: 标题烫金流动（gold-foil background-clip:text + sweep 动画）。 */
@@ -736,7 +771,7 @@ html.fx-shimmer body[data-dsh-jiangxiao] h4 {
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  animation: jx-shimmer-sweep 4s ease-in-out infinite alternate;
+  animation: jx-shimmer-sweep var(--jx-shimmer) ease-in-out infinite alternate;
 }
 
 /* @supports fallback: no background-clip: text -> solid AA gold. */
@@ -746,8 +781,16 @@ html.fx-shimmer body[data-dsh-jiangxiao] h4 {
   html.fx-shimmer body[data-dsh-jiangxiao] h3,
   html.fx-shimmer body[data-dsh-jiangxiao] h4 {
     background: none;
-    color: var(--jx-text-gold);
-    -webkit-text-fill-color: var(--jx-text-gold);
+    color: var(--jx-gold);
+    -webkit-text-fill-color: var(--jx-gold);
+  }
+
+  html.fx-shimmer body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) h1,
+  html.fx-shimmer body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) h2,
+  html.fx-shimmer body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) h3,
+  html.fx-shimmer body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) h4 {
+    color: var(--jx-gold-dim);
+    -webkit-text-fill-color: var(--jx-gold-dim);
   }
 }
 
@@ -762,64 +805,85 @@ body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) b {
   color: var(--jx-gold-deep);
 }
 
-/* --- 炫技增强：@property + 鎏金流光 + 银杏/梅花飘落 + 金箔流光 + 墨晕呼吸 + 印章脉冲 --- */
+/* --- 炫技增强：@property + 鎏金流光 + 银杏/梅花飘落 + 墨晕呼吸 + 印章脉冲 --- */
+/* FX 视觉按 .scratch/skin-preview/DESIGN.md §4：所有动画走 transform/opacity
+   GPU 合成，零 backdrop-filter，prefers-reduced-motion 全关（文件尾）。
+   html 上 fx-* 类门控每效（fx-system.ts 编排）；无类即无规则生效，
+   全关 = 与原版皮肤零差异。 */
 
 @property --jx-gold-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
 @property --jx-shimmer-x { syntax: '<percentage>'; inherits: false; initial-value: 100%; }
-@property --jx-breathe { syntax: '<number>'; inherits: false; initial-value: 1; }
+@property --jx-breathe-val { syntax: '<number>'; inherits: false; initial-value: 1; }
 
 @keyframes jx-gold-rotate { to { --jx-gold-angle: 360deg; } }
 @keyframes jx-shimmer-sweep { to { --jx-shimmer-x: 0%; } }
-@keyframes jx-ink-breathe { 0%,100% { --jx-breathe: 1; } 50% { --jx-breathe: 1.15; } }
-
-@keyframes jx-leaf-fall {
-  0% { background-position: 200px -120px, 260px -150px, 160px -95px; }
-  100% { background-position: -200px 100vh, -260px 100vh, -160px 100vh; }
-}
-
-@keyframes jx-petal-fall {
-  0% { background-position: 170px -100px, 220px -130px, 135px -80px; }
-  100% { background-position: -170px 100vh, -220px 100vh, -135px 100vh; }
-}
-
+@keyframes jx-ink-breathe { 0%,100% { --jx-breathe-val: 1; } 50% { --jx-breathe-val: 1.15; } }
 @keyframes jx-seal-pulse {
   0%,100% { box-shadow: 0 2px 6px rgba(199,73,58,.4), inset 0 1px 0 rgba(255,248,239,.22), 0 0 0 0 rgba(199,73,58,.3); }
   50% { box-shadow: 0 2px 6px rgba(199,73,58,.4), inset 0 1px 0 rgba(255,248,239,.22), 0 0 12px 2px rgba(199,73,58,.15); }
 }
 
-/* fx-fall: 银杏(暗)/梅花(浅)飘落。CSS body::before 是无 WAAPI 环境的降级
-   fallback；html.fx-fall-waapi 抑制此 fallback（WAAPI 12 片接管，见 fx-system.ts）。 */
-html.fx-fall:not(.fx-fall-waapi) body[data-dsh-jiangxiao]::before {
+/* 飘落（fall）：8 片独立装饰，各异轨迹/速度/延迟，translate3d + rotate +
+   opacity GPU 合成（18-28s）。飘片由 fx-system.ts 注入 [data-jx-fx='fall']
+   容器；形状为 currentColor SVG，颜色取 --jx-petal-* 令牌族。 */
+
+@keyframes jx-leaf-fall-1 { 0% { transform: translate3d(110vw,-10vh,0) rotate(0deg); opacity: 0; } 8% { opacity: .5; } 90% { opacity: .5; } 100% { transform: translate3d(-10vw,110vh,0) rotate(720deg); opacity: 0; } }
+@keyframes jx-leaf-fall-2 { 0% { transform: translate3d(90vw,-8vh,0) rotate(45deg); opacity: 0; } 8% { opacity: .42; } 90% { opacity: .42; } 100% { transform: translate3d(-15vw,112vh,0) rotate(-540deg); opacity: 0; } }
+@keyframes jx-leaf-fall-3 { 0% { transform: translate3d(75vw,-12vh,0) rotate(-30deg); opacity: 0; } 8% { opacity: .38; } 90% { opacity: .38; } 100% { transform: translate3d(5vw,108vh,0) rotate(900deg); opacity: 0; } }
+@keyframes jx-leaf-fall-4 { 0% { transform: translate3d(60vw,-6vh,0) rotate(90deg); opacity: 0; } 8% { opacity: .45; } 90% { opacity: .45; } 100% { transform: translate3d(-20vw,110vh,0) rotate(-720deg); opacity: 0; } }
+@keyframes jx-leaf-fall-5 { 0% { transform: translate3d(45vw,-10vh,0) rotate(180deg); opacity: 0; } 8% { opacity: .35; } 90% { opacity: .35; } 100% { transform: translate3d(10vw,105vh,0) rotate(540deg); opacity: 0; } }
+
+/* 飘片基底：absolute 定位 + contain 容器内 GPU 合成。形状 = currentColor
+   SVG（暗银杏 / 浅梅花），色 = --jx-petal-* 三阶轮转。 */
+html.fx-fall body[data-dsh-jiangxiao] [data-jx-fx='fall'] > div {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 2px 4px color-mix(in srgb, var(--jx-surface-0) 20%, transparent));
+}
+
+/* 银杏叶（深色）：扇形带柄 + 5 条叶脉。 */
+html.fx-fall body[data-dsh-jiangxiao] [data-jx-fx='fall'] > div {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 96L50 72C40 70 24 64 18 50C14 38 20 22 34 16C42 13 47 20 50 20C53 20 58 13 66 16C80 22 86 38 82 50C76 64 60 70 50 72Z' fill='currentColor'/%3E%3Cpath d='M50 72L18 50M50 72L34 16M50 72L50 20M50 72L66 16M50 72L82 50' fill='none' stroke='currentColor' stroke-width='1.2' stroke-opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* 梅花（浅色）：5 瓣旋转 72deg x5 + 花蕊。 */
+html.fx-fall body[data-dsh-jiangxiao]:not([data-ds-dark-theme]) [data-jx-fx='fall'] > div {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='currentColor'%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(72 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(144 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(216 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(288 50 50)'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='5' fill='currentColor' fill-opacity='0.6'/%3E%3C/svg%3E");
+}
+
+/* 三色轮转（petal 令牌族）。 */
+html.fx-fall body[data-dsh-jiangxiao] [data-jx-fx='fall'] > div:nth-child(3n+1) { color: var(--jx-petal-1); }
+html.fx-fall body[data-dsh-jiangxiao] [data-jx-fx='fall'] > div:nth-child(3n+2) { color: var(--jx-petal-2); }
+html.fx-fall body[data-dsh-jiangxiao] [data-jx-fx='fall'] > div:nth-child(3n) { color: var(--jx-petal-3); }
+
+/* 8 片各异轨迹/速度/延迟（时长在 --jx-leaf-fall-min..max 区间内）。 */
+html.fx-fall body[data-dsh-jiangxiao] [data-jx-fx='fall'] > div:nth-child(1) { width: 48px; height: 64px; animation: jx-leaf-fall-1 var(--jx-leaf-fall-min) linear infinite; animation-delay: 0s; }
+html.fx-fall body[data-dsh-jiangxiao] [data-jx-fx='fall'] > div:nth-child(2) { width: 38px; height: 52px; animation: jx-leaf-fall-2 22s linear infinite; animation-delay: -3s; }
+html.fx-fall body[data-dsh-jiangxiao] [data-jx-fx='fall'] > div:nth-child(3) { width: 56px; height: 72px; animation: jx-leaf-fall-3 25s linear infinite; animation-delay: -7s; }
+html.fx-fall body[data-dsh-jiangxiao] [data-jx-fx='fall'] > div:nth-child(4) { width: 32px; height: 44px; animation: jx-leaf-fall-4 20s linear infinite; animation-delay: -11s; }
+html.fx-fall body[data-dsh-jiangxiao] [data-jx-fx='fall'] > div:nth-child(5) { width: 44px; height: 60px; animation: jx-leaf-fall-5 var(--jx-leaf-fall-max) linear infinite; animation-delay: -15s; }
+html.fx-fall body[data-dsh-jiangxiao] [data-jx-fx='fall'] > div:nth-child(6) { width: 36px; height: 50px; animation: jx-leaf-fall-1 24s linear infinite; animation-delay: -5s; }
+html.fx-fall body[data-dsh-jiangxiao] [data-jx-fx='fall'] > div:nth-child(7) { width: 50px; height: 68px; animation: jx-leaf-fall-3 19s linear infinite; animation-delay: -9s; }
+html.fx-fall body[data-dsh-jiangxiao] [data-jx-fx='fall'] > div:nth-child(8) { width: 28px; height: 40px; animation: jx-leaf-fall-2 26s linear infinite; animation-delay: -18s; }
+
+/* fx-grain: 墨韵暗纹——静态多层 radial 墨晕（--jx-ink-glow），零热循环。 */
+html.fx-grain body[data-dsh-jiangxiao]::before {
   content: '';
   position: fixed;
-  inset: -40px 0 0 0;
+  inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 96L50 72C40 70 24 64 18 50C14 38 20 22 34 16C42 13 47 20 50 20C53 20 58 13 66 16C80 22 86 38 82 50C76 64 60 70 50 72Z' fill='%23d6b34a'/%3E%3Cpath d='M50 72L18 50M50 72L34 16M50 72L50 20M50 72L66 16M50 72L82 50' fill='none' stroke='%23996515' stroke-width='1.2' stroke-opacity='0.6'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg transform='rotate(-12 50 50)'%3E%3Cpath d='M50 96L50 72C40 70 24 64 18 50C14 38 20 22 34 16C42 13 47 20 50 20C53 20 58 13 66 16C80 22 86 38 82 50C76 64 60 70 50 72Z' fill='%23dfb793'/%3E%3Cpath d='M50 72L18 50M50 72L34 16M50 72L50 20M50 72L66 16M50 72L82 50' fill='none' stroke='%23996515' stroke-width='1.2' stroke-opacity='0.6'/%3E%3C/g%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg transform='rotate(20 50 50)'%3E%3Cpath d='M50 92L50 70C40 68 24 62 18 48C14 36 20 20 34 14C42 11 47 18 50 18C53 18 58 11 66 14C80 20 86 36 82 48C76 62 60 68 50 70Z' fill='%23b8860b'/%3E%3Cpath d='M50 70L18 48M50 70L34 14M50 70L50 18M50 70L66 14M50 70L82 48' fill='none' stroke='%23996515' stroke-width='1.2' stroke-opacity='0.6'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 80px 120px, 110px 150px, 65px 95px;
-  background-repeat: repeat;
-  animation: jx-leaf-fall 28s linear infinite;
-  opacity: 0.42;
-  -webkit-mask-image: linear-gradient(to bottom, black, transparent 88%);
-  mask-image: linear-gradient(to bottom, black, transparent 88%);
+  background:
+    radial-gradient(ellipse 55% 45% at 22% 18%, var(--jx-ink-glow), transparent 70%),
+    radial-gradient(ellipse 45% 55% at 78% 72%, var(--jx-ink-glow), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 50% 45%, var(--jx-ink-glow), transparent 75%);
 }
 
-html.fx-fall:not(.fx-fall-waapi) body[data-dsh-jiangxiao]:not([data-ds-dark-theme])::before {
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23d97a8e'%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(72 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(144 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(216 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(288 50 50)'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='5' fill='%23b24a5c'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23e89aa8' transform='rotate(36 50 50)'%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(72 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(144 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(216 50 50)'/%3E%3Cpath d='M50 50C40 40 40 25 50 22C60 25 60 40 50 50Z' transform='rotate(288 50 50)'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='5' fill='%23b24a5c'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23b24a5c'%3E%3Cpath d='M50 50C42 42 42 28 50 25C58 28 58 42 50 50Z'/%3E%3Cpath d='M50 50C42 42 42 28 50 25C58 28 58 42 50 50Z' transform='rotate(72 50 50)'/%3E%3Cpath d='M50 50C42 42 42 28 50 25C58 28 58 42 50 50Z' transform='rotate(144 50 50)'/%3E%3Cpath d='M50 50C42 42 42 28 50 25C58 28 58 42 50 50Z' transform='rotate(216 50 50)'/%3E%3Cpath d='M50 50C42 42 42 28 50 25C58 28 58 42 50 50Z' transform='rotate(288 50 50)'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='4' fill='%238e3a49'/%3E%3C/svg%3E");
-  background-size: 70px 100px, 95px 130px, 55px 80px;
-  animation: jx-petal-fall 28s linear infinite;
-  opacity: 0.5;
-  -webkit-mask-image: none;
-  mask-image: none;
-}
-
-/* fx-breathe: 墨光呼吸背景（body::after opacity 呼吸）。 */
+/* fx-breathe: 墨晕呼吸（body::after opacity 呼吸，--jx-breathe-val 驱动）。 */
 html.fx-breathe body[data-dsh-jiangxiao]::after {
   content: '';
   position: fixed;
@@ -827,15 +891,32 @@ html.fx-breathe body[data-dsh-jiangxiao]::after {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 60% 50% at 30% 40%, rgba(184,134,11,0.06), transparent 70%),
-    radial-gradient(ellipse 50% 40% at 70% 60%, rgba(184,134,11,0.06), transparent 70%);
-  opacity: var(--jx-breathe);
-  animation: jx-ink-breathe 8s ease-in-out infinite;
+    radial-gradient(ellipse 60% 50% at 30% 40%, var(--jx-ink-glow), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 70% 60%, var(--jx-ink-glow), transparent 70%);
+  opacity: var(--jx-breathe-val);
+  animation: jx-ink-breathe var(--jx-breathe) ease-in-out infinite;
   will-change: opacity;
 }
 
+/* 角色浮层背光门控：背光属装饰，跟随 fx-breathe 开关；
+   prefers-reduced-motion 下由文件尾全局规则停呼吸动画（静态保留光晕）。 */
+html:not(.fx-breathe) [data-jx-overlay='character'] [data-jx-backlight] {
+  display: none;
+}
+
+html:not(.fx-breathe) [data-jx-overlay='character'] img {
+  filter: none;
+}
+
+/* 代码块唐风包边：DSH 代码经 <pre> 渲染（语法色仍由上游 shiki 内联提供）。 */
+body[data-dsh-jiangxiao] pre {
+  background: var(--jx-code-bg);
+  border: 1px solid var(--jx-code-border);
+  border-radius: var(--jx-radius-lg);
+}
+
 body[data-dsh-jiangxiao] [data-action='prompt-submit'] {
-  border-radius: 9999px !important;
+  border-radius: var(--jx-radius-seal) !important;
   background-image: none !important;
   background-color: var(--jx-seal) !important;
   border: 1px solid var(--jx-seal-deep) !important;
@@ -846,7 +927,7 @@ body[data-dsh-jiangxiao] [data-action='prompt-submit'] {
 
 /* fx-micro: 印章脉冲 + hover/active 微交互。 */
 html.fx-micro body[data-dsh-jiangxiao] [data-action='prompt-submit'] {
-  animation: jx-seal-pulse 3s ease-in-out infinite;
+  animation: jx-seal-pulse var(--jx-seal-pulse) ease-in-out infinite;
 }
 
 html.fx-micro body[data-dsh-jiangxiao] [data-action='prompt-submit']:hover:not(:disabled) {

@@ -153,6 +153,22 @@
     el.style.display = 'block'
   }
 
+  /** 最小 react shim：带设置卡（React 组件）的皮肤 bundle 在模块求值时
+      require react / react-jsx-runtime；组件本体由真实宿主渲染，模拟器只需
+      模块可求值、apply() 可执行。 */
+  var REACT_NOOP = function () {}
+  var REACT_STUB = {
+    useState: function (init) { return [typeof init === 'function' ? init() : init, REACT_NOOP] },
+    useEffect: REACT_NOOP,
+    createElement: function (type, props) { return { type: type, props: props } },
+    Fragment: 'Fragment',
+  }
+  var JSX_RUNTIME_STUB = {
+    jsx: function (type, props) { return { type: type, props: props } },
+    jsxs: function (type, props) { return { type: type, props: props } },
+    Fragment: 'Fragment',
+  }
+
   /** 真实执行皮肤 bundle：shim __ModuleLoader__ 捕获 exports.apply，用最小
       ctx（effect 收集 disposer）调用。 */
   function loadSkin(id) {
@@ -163,6 +179,8 @@
     window.__ModuleLoader__ = {
       load: function (entry) {
         var result = entry.factory(function require(spec) {
+          if (spec === 'react') return REACT_STUB
+          if (spec === 'react/jsx-runtime') return JSX_RUNTIME_STUB
           throw new Error('模拟器不支持 require(' + JSON.stringify(spec) + ')')
         })
         skinApply = result && result.apply

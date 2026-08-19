@@ -3,6 +3,7 @@
 ## 上下文指针
 
 - **PRD**：`.scratch/02-jiangxiao-chrome-recolor/PRD.md`（Status: ready-for-agent）
+- **当前设计基准**：`.scratch/skin-preview/`（本轮 chrome 瘦身与 AA 纪律被继承；`--jx-*` 字面量后被 tokens.css 取代）
 - **ADR**：`docs/adr/0002-jiangxiao-chrome-trim-and-recolor.md`（D15-D25 决策基线）
 - **词汇表**：根目录 `CONTEXT.md`（术语 + D1-D25 决策表，第二轮 D15-D25 在文件下半部）
 - **前序 ADR**：`docs/adr/0001-jiangxiao-skin-pet.md`（D1-D14，本轮不修正）

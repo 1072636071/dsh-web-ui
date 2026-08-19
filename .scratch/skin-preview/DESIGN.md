@@ -1,7 +1,7 @@
 # 姜晓 · 墨金卷轴 / 宣纸梅花 — 设计文档
 
 > 唐风二次元 · 黑金鎏金卷轴银杏深色 + 宣纸梅花浅色双主题
-> 事实源：`.temp/skin-preview/index.html` demo（已确认） + `tokens.css` 设计令牌
+> 事实源：`.scratch/skin-preview/index.html` demo（已确认） + `tokens.css` 设计令牌
 
 ## 1. 设计哲学
 

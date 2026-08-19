@@ -144,8 +144,8 @@ describe('Jiangxiao skin CSS — @property animatable properties', () => {
   it('registers --jx-shimmer-x for gold-foil sweep', () => {
     expect(css).toContain('@property --jx-shimmer-x')
   })
-  it('registers --jx-breathe for ink pulse', () => {
-    expect(css).toContain('@property --jx-breathe')
+  it('registers --jx-breathe-val for ink pulse', () => {
+    expect(css).toContain('@property --jx-breathe-val')
   })
 })
 
@@ -156,11 +156,9 @@ describe('Jiangxiao skin CSS — keyframes', () => {
   it('has jx-shimmer-sweep (gold-foil text)', () => {
     expect(css).toContain('@keyframes jx-shimmer-sweep')
   })
-  it('has jx-leaf-fall (ginkgo leaves)', () => {
-    expect(css).toContain('@keyframes jx-leaf-fall')
-  })
-  it('has jx-petal-fall (plum blossoms)', () => {
-    expect(css).toContain('@keyframes jx-petal-fall')
+  it('has jx-leaf-fall-1..5 (ginkgo/plum fall trajectories)', () => {
+    expect(css).toContain('@keyframes jx-leaf-fall-1')
+    expect(css).toContain('@keyframes jx-leaf-fall-5')
   })
   it('has jx-ink-breathe (ink glow)', () => {
     expect(css).toContain('@keyframes jx-ink-breathe')
@@ -170,14 +168,29 @@ describe('Jiangxiao skin CSS — keyframes', () => {
   })
 })
 
-describe('Jiangxiao skin CSS — falling SVG', () => {
-  it('contains ginkgo leaf SVG (dark)', () => {
-    expect(css).toContain("fill='%23d6b34a'")
-    expect(css).toContain("fill='%23dfb793'")
+describe('Jiangxiao skin CSS — falling pieces (<=8, currentColor SVG, petal tokens)', () => {
+  it('fall pieces use currentColor SVG shapes (ginkgo dark / plum light)', () => {
+    expect(css).toContain("fill='currentColor'")
   })
-  it('contains plum blossom SVG (light)', () => {
-    expect(css).toContain("fill='%23d97a8e'")
-    expect(css).toContain("fill='%23e89aa8'")
+  it('fall piece colors come from the petal token family', () => {
+    expect(css).toContain('var(--jx-petal-1)')
+    expect(css).toContain('var(--jx-petal-2)')
+    expect(css).toContain('var(--jx-petal-3)')
+  })
+  it('fall pieces stay within the 8-piece cap', () => {
+    const nthRules = css.match(/\[data-jx-fx='fall'\] > div:nth-child\(\d+\)/g) ?? []
+    const indices = nthRules.map((r) => Number(r.match(/nth-child\((\d+)\)/)?.[1]))
+    expect(indices.length).toBeGreaterThan(0)
+    for (const i of indices) {
+      expect(i).toBeLessThanOrEqual(8)
+    }
+  })
+})
+
+describe('Jiangxiao skin CSS — character overlay backlight gate', () => {
+  it('backlight layer hidden when fx-breathe off', () => {
+    expect(css).toContain("[data-jx-backlight]")
+    expect(css).toContain("html:not(.fx-breathe) [data-jx-overlay='character'] [data-jx-backlight]")
   })
 })
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## 未发布 — 对齐 skin-preview 设计（墨金卷轴银杏 / 宣纸梅花）
+
+### 新增
+- 角色浮层金色发光背光：drop-shadow 光晕勾勒角色轮廓 + radial 呼吸光晕层（`data-jx-backlight`），跟随 fx-breathe 开关与 prefers-reduced-motion
+- 令牌对齐 `.scratch/skin-preview/tokens.css`：新增代码语法（code-bg/code-border/kw/str/fn/cmt/num）、petal-1/2/3、poem-color、ink-glow、动效时长（breathe/gold-rotate/shimmer/leaf-fall-min/max/seal-pulse/bpulse）、radius-seal、布局（sidebar-w/files-w）令牌族
+- 代码块唐风包边：pre 元素应用 `--jx-code-bg` / `--jx-code-border` / 圆角
+- 台词气泡升级为金边楷书质感（对齐 demo）
+
+### 变更
+- FX 视觉对齐原型：fall 收敛为 8 片独立飘片（CSS keyframes，translate3d GPU 合成，18-28s 各异轨迹），grain 改为静态多层 radial 墨晕零热循环；各效时长走令牌
+- 文字金归并：`--dsw-alias-brand-text` 与 h1-h4 改用 `--jx-gold`（深）/ `--jx-gold-dim`（浅）；对比度门禁同步按变体校验金族文字令牌
+- visited 链接色改用 seal/梅红族
+
+### 删除
+- 未被设计引用的氛围族令牌 mist/mountain/water/cloud/moon/hair、`--jx-text-gold`、`--jx-wisteria`、`--jx-hl-file` / `--jx-hl-agent`
+- fall 的 WAAPI 12 片实现与 `fx-fall-waapi` 降级标记；grain 的 SVG turbulence 实现
+
 ## 0.2.0 — chrome 瘦身与颜色重设计
 
 ### 新增
@@ -35,6 +52,23 @@
 ---
 
 # Changelog (English)
+
+## Unreleased — aligned with the skin-preview design (Ink-Gold Scroll Ginkgo / Xuan-Paper Plum Blossom)
+
+### Added
+- Character overlay gold glow backlight: a drop-shadow halo tracing the character plus a breathing radial glow layer (`data-jx-backlight`), following the fx-breathe toggle and prefers-reduced-motion
+- Token alignment with `.scratch/skin-preview/tokens.css`: added code syntax (code-bg/code-border/kw/str/fn/cmt/num), petal-1/2/3, poem-color, ink-glow, motion duration (breathe/gold-rotate/shimmer/leaf-fall-min/max/seal-pulse/bpulse), radius-seal and layout (sidebar-w/files-w) token families
+- Tang-framed code blocks: pre elements styled with `--jx-code-bg` / `--jx-code-border` / rounded corners
+- Speech bubble restyled as a gold-bordered kaiti look (aligned with the demo)
+
+### Changed
+- FX visuals aligned with the prototype: fall converged to 8 independent pieces (CSS keyframes, translate3d GPU compositing, 18-28s distinct trajectories); grain is now a static multi-layer radial ink texture with zero hot loops; effect durations run through tokens
+- Gold-as-text consolidated: `--dsw-alias-brand-text` and h1-h4 now use `--jx-gold` (dark) / `--jx-gold-dim` (light); the contrast gate verifies the gold text token per variant
+- Visited link color moved to the seal/plum family
+
+### Removed
+- Atmosphere tokens not referenced by the design (mist/mountain/water/cloud/moon/hair), `--jx-text-gold`, `--jx-wisteria`, `--jx-hl-file` / `--jx-hl-agent`
+- The WAAPI 12-piece fall implementation and the `fx-fall-waapi` fallback marker; the grain SVG turbulence implementation
 
 ## 0.2.0 — Chrome trim and color redesign
 

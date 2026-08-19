@@ -1,15 +1,15 @@
-# dsh-client-ui-skin-jiangxiao · 姜晓·墨染主题皮肤
+# dsh-client-ui-skin-jiangxiao · 姜晓·墨金卷轴主题皮肤
 
 [English](README.md) | 中文
 
-为 DeepSeek Harness（DSH）Web GUI 打造的唐风二次元主题皮肤，源自 openCodeMM「姜晓·墨染」设计系统。除纯呈现层的 token 重映射外，本皮肤另带运行时层：FX 开关系统、角色浮层、DSH 会话状态跟随，以及设置卡内的素材导入引导。
+为 DeepSeek Harness（DSH）Web GUI 打造的唐风二次元主题皮肤：深色「墨金卷轴银杏」+ 浅色「宣纸梅花」双主题，按仓内 `skin-preview` 原型设计。除纯呈现层的 token 重映射外，本皮肤自带运行时层：FX 开关系统、带金色背光的角色浮层、DSH 会话状态跟随，以及设置卡内的素材导入引导。
 
-- **配色**：墨黑底、暗金文、雾紫氛、朱砂点睛（深色默认「月夜墨染」）；米白底、粉梅、金（浅色变体「梅花」）
+- **配色**：墨黑底、鎏金流光、银杏飘落、朱砂印章（深色默认「墨金卷轴银杏」）；宣纸米白底、水墨晕染、梅花飘落（浅色变体「宣纸梅花」）
 - **双主题**：深色为默认，浅色跟随 DSH 深浅信号自动切换（`body[data-ds-dark-theme]`）
-- **token 级移植**：`--jx-*` 令牌语义映射到 dsh 三层 token（`--dsw-static-*` / `--dsw-alias-*` / `--aion-*`），所有组件统一进入唐风墨染调。`--jx-text-gold` 拆为文字专用金（在每个 surface 上达 AA）；`--jx-gold` 收窄为装饰专用（边框、图标背景、渐变、滚动条）。
-- **装饰级**：h1-h4 烫金箔（`background-clip: text`，`@supports` 兜底回退 `--jx-text-gold`）、titlebar-v2 唐风云纹端饰、金线滚动条、::selection、strong/b 亮金、:focus-visible outline。无 chrome 条、无 favicon、不覆盖 document.title、不硬编码 button/input。
+- **token 级移植**：`--jx-*` 令牌按 skin-preview 令牌表（surface / text / gold / seal / cinnabar / ink-glow / 代码语法 / petal / motion / radius / shadow / layout）映射到 dsh 三层 token（`--dsw-static-*` / `--dsw-alias-*` / `--aion-*`），所有组件统一进入唐风墨染调。文字金用 `--jx-gold`（深）/ `--jx-gold-dim`（浅），均在每个 surface 上达 AA。
+- **装饰级**：h1-h4 烫金箔（`background-clip: text`，`@supports` 兜底回退纯色 AA 金）、titlebar-v2 唐风云纹端饰 + 鎏金流光、金线滚动条、::selection、strong/b 亮金、:focus-visible outline、唐风代码块包边（`--jx-code-bg` / `--jx-code-border`）。无 chrome 条、无 favicon、不覆盖 document.title、不硬编码 button/input。
 - **字体**：内置 2 个 woff2 字体（Ma Shan Zheng 楷体 + Noto Serif SC 宋体），离线可用，`@font-face` 含 `local()` 回退链
-- **语法高亮**：代码块保持上游 `--syntax-*` 配色不改
+- **语法高亮**：语法 span 颜色保持上游 shiki 内联配色，皮肤只负责代码块包边
 
 ![浅色](preview/light.png) · ![深色](preview/dark.png)
 
@@ -20,8 +20,8 @@
 - 样式全部挂在 `body[data-dsh-jiangxiao]` 下（浅色变体 `:not([data-ds-dark-theme])`）
 - 字体无静态资源文件：以 base64 data URL 内嵌进 JS bundle
 - `prefers-reduced-motion` 下动效全关，并强制 FX 系统全关
-- **FX 开关系统**：五效独立开关（shimmer 鎏金流光 / fall 银杏梅花飘落 / grain 墨韵暗纹 / breathe 墨光呼吸 / micro 微交互），经 `html.fx-*` 类控制并持久化到 `localStorage('jx-fx')`。默认全开；可独立关；全关 = 与原版皮肤零视觉差异。设置卡暴露开关。
-- **角色浮层**：右下角常驻的透明无底角色精灵，素材按需从 `/pet/jiangxiao/<state>.webp` 加载（10 循环态 + 36 过渡段）。素材包缺失时浮层不渲染，无破图闪烁。
+- **FX 开关系统**：五效独立开关（shimmer 鎏金流光顶栏 + 金箔文字 / fall 银杏梅花飘落 8 片独立飘片 / grain 静态墨韵暗纹 / breathe 墨晕呼吸 / micro 印章脉冲 + hover 微交互），经 `html.fx-*` 类控制并持久化到 `localStorage('jx-fx')`。默认全开；可独立关；全关 = 与原版皮肤零视觉差异。设置卡暴露开关。
+- **角色浮层**：右下角常驻的透明无底角色精灵，带金色发光背光（drop-shadow 光晕 + 呼吸 radial 光晕），素材按需从 `/pet/jiangxiao/<state>.webp` 加载（10 循环态 + 36 过渡段）。素材包缺失时浮层不渲染，无破图闪烁。
 - **DSH 会话状态跟随**：当 `sessions` 服务可用时，浮层订阅当前会话快照，自动驱动角色在 idle / thinking / replying / working / error / permission / done / welcome 间切换。快照差分驱动状态转移；皮肤拆卸时释放全部订阅。
 - **素材导入引导**：设置卡打开时探测 `HEAD /pet/jiangxiao/idle.webp`。探测失败（404 / 网络异常 / fetch 不可用）时展示导入引导；成功时展示 FX 开关。
 
@@ -100,7 +100,7 @@ dsh-skin list            # 查看皮肤与当前激活项
 
 `scripts/check-jiangxiao-contrast.mjs` 解析 `jiangxiao.module.css` 中的 `--jx-text-*` / `--jx-surface-*` 字面量（深浅双套），按 WCAG 2.1 对比度公式在构建时校验：
 
-- `--jx-text-strong` / `--jx-text-base` / `--jx-text-gold` 在 `--jx-surface-0` / `-1` / `-2` / `-3` 上 >= 4.5:1
+- `--jx-text-strong` / `--jx-text-base` 与文字金令牌（深色 `--jx-gold` / 浅色 `--jx-gold-dim`）在 `--jx-surface-0` / `-1` / `-2` / `-3` 上 >= 4.5:1
 - `--jx-text-weak` / `--jx-text-faint` >= 3:1
 
 门禁接入 `pnpm test:scripts`（CI），任何使对比度跌破 AA 的颜色回退都会变红。
@@ -111,7 +111,6 @@ dsh-skin list            # 查看皮肤与当前激活项
 - 本皮肤重映射 dsh 三层 token 体系；绕过 token 硬编码颜色的组件不会进入唐风调。
 - 角色浮层与状态跟随需 `dsh-pet` 插件提供 `/pet/jiangxiao/*.webp`。缺失时皮肤优雅降级为纯呈现外观（无浮层、无状态跟随，设置卡展示导入引导）。
 - 浮层精灵集（46 个 webp）不随皮肤包分发，须由 `dsh-pet` 或等价静态服务器提供。源码树中的 `assets/character/` 目录是规范参考集。
-- 预览 PNG 为占位色板；有截图采集条件时请用真实截图替换 `preview/light.png` 与 `preview/dark.png`。
 
 ## License
 

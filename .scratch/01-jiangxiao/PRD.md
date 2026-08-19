@@ -4,6 +4,8 @@ Status: ready-for-agent
 
 领域词汇见仓库根目录 `CONTEXT.md`；本 PRD 遵守 `docs/adr/0001-jiangxiao-skin-pet.md`。
 
+> 设计谱系说明：本轮描述的皮肤配色（月夜墨染/梅花）为初版视觉，后经 `02-jiangxiao-chrome-recolor`（对比度与 chrome 瘦身）、`03-jiangxiao-skin-redesign` 与 `04-jiangxiao-skin-revamp` 重做。当前唯一设计基准为 `.scratch/skin-preview/`（墨金卷轴银杏深 / 宣纸梅花浅）。本轮的宠物交付链（animated-webp 渲染、枢纽制过渡、zip 导入 gating、打包工具）与设计基准无关，继续有效。
+
 ## 问题陈述
 
 dsh-web-ui 的用户希望把 `E:\work\sp\openCodeMM` 项目中沉淀的「姜晓·墨染」唐风二次元设计系统（DESIGN.md 与 `--jx-*` 令牌）带进 dsh Web GUI，获得深浅双主题皮肤；同时用同一设计体系下的姜晓角色动画素材（46 个独立 WebP，10 循环态 + 36 过渡态）替换默认鲸鱼娘宠物。素材体量大（46 WebP 约 232MB），不应随主插件包分发；动画模型（独立 WebP + 枢纽制过渡）与现有宠物渲染模型（spritesheet 切帧）不兼容，需要扩展渲染层。

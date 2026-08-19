@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 /**
- * 工单 05：角色浮层单测 — DOM 存在性 / 透明无底契约 / 素材缺失不渲染 /
- * 缺段 crossfade 兜底。
+ * 工单 05：角色浮层单测 — DOM 存在性 / 透明无容器底契约 / 金色背光层 /
+ * 素材缺失不渲染 / 缺段 crossfade 兜底。
  *
  * 只测外部行为，不测 CSS 色值/动画时序。
  */
@@ -10,6 +10,7 @@ import {
   initCharacterOverlay,
   OVERLAY_ATTR,
   OVERLAY_VALUE,
+  BACKLIGHT_ATTR,
   PET_BASE,
   type CharacterOverlayOptions,
 } from '../src/client/character-overlay.ts'
@@ -77,11 +78,38 @@ describe('initCharacterOverlay — overlay DOM contract', () => {
     overlay!.dispose()
   })
 
-  it('container has no box-shadow (无背光/无光晕)', async () => {
+  it('container has no box-shadow (容器无阴影)', async () => {
     mockFetchOk()
     const overlay = await initCharacterOverlay()
     const el = document.querySelector(`[${OVERLAY_ATTR}="${OVERLAY_VALUE}"]`) as HTMLElement
     expect(el.style.boxShadow).toBe('')
+    overlay!.dispose()
+  })
+
+  it('overlay has a gold backlight layer (data-jx-backlight)', async () => {
+    mockFetchOk()
+    const overlay = await initCharacterOverlay()
+    const backlight = document.querySelector(`[${OVERLAY_ATTR}="${OVERLAY_VALUE}"] [${BACKLIGHT_ATTR}]`)
+    expect(backlight).not.toBeNull()
+    overlay!.dispose()
+  })
+
+  it('backlight is a glow layer, not a container background', async () => {
+    mockFetchOk()
+    const overlay = await initCharacterOverlay()
+    const el = document.querySelector(`[${OVERLAY_ATTR}="${OVERLAY_VALUE}"]`) as HTMLElement
+    expect(el.style.background).toBe('')
+    expect(el.style.backgroundColor).toBe('')
+    const backlight = document.querySelector(`[${BACKLIGHT_ATTR}]`) as HTMLElement
+    expect(backlight.style.pointerEvents).toBe('none')
+    overlay!.dispose()
+  })
+
+  it('img carries the gold drop-shadow glow', async () => {
+    mockFetchOk()
+    const overlay = await initCharacterOverlay()
+    const img = document.querySelector(`[${OVERLAY_ATTR}="${OVERLAY_VALUE}"] img`) as HTMLImageElement
+    expect(img.style.filter).toContain('drop-shadow')
     overlay!.dispose()
   })
 

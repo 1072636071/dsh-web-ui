@@ -73,11 +73,11 @@ export function apply(ctx: ClientContext): void {
   fontStyle.textContent = fontFaceCss()
   document.head.append(fontStyle)
 
-  // FX 特效系统（DESIGN.md §5）：html fx-* 类 + localStorage('jx-fx') 控制，
+  // FX 特效系统：html fx-* 类 + localStorage('jx-fx') 控制，
   // 默认全开、可独立关、全关 = 与原版皮肤零差异。prefers-reduced-motion 全关。
   const fxSystem = initFxSystem()
 
-  // 角色浮层（DESIGN.md §4）：右下角常驻，透明无底，按需加载 webp。
+  // 角色浮层：右下角常驻，透明无容器底 + 金色发光背光，按需加载 webp。
   // 启动探测 /pet/jiangxiao/idle.webp，404 -> 浮层不渲染。
   // 素材就绪时：触发一次 welcome（每次启用至多一次）+ attach session follow
   // 自动跟随 DSH current 会话状态。

@@ -4,6 +4,8 @@ Status: ready-for-agent
 
 领域词汇见仓库根目录 `CONTEXT.md`；本 PRD 遵守 `docs/adr/0002-jiangxiao-chrome-trim-and-recolor.md`。承接 `01-jiangxiao`（皮肤本体 + 宠物已落地），本轮是同一皮肤的二次打磨，不涉及宠物。
 
+> 设计谱系说明：本轮的 chrome 瘦身（删硬编码阴影/装饰条）与 WCAG AA 对比度纪律被后续设计继承（见 `.scratch/skin-preview/DESIGN.md` §8 对比度修复）；`--jx-*` 字面量与 gold 拆分（D17/D18）后被 `.scratch/skin-preview/tokens.css` 令牌表取代，`--jx-text-gold` 在 `04-jiangxiao-skin-revamp` 令牌返工中归并。当前唯一设计基准为 `.scratch/skin-preview/`。
+
 ## 问题陈述
 
 `01-jiangxiao` 落地后，姜晓皮肤在 dsh Web GUI 中出现两个观感问题：

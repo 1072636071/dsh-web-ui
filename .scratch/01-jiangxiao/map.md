@@ -3,6 +3,7 @@
 ## 上下文指针
 
 - **PRD**：`.scratch/01-jiangxiao/PRD.md`（Status: ready-for-agent）
+- **当前设计基准**：`.scratch/skin-preview/`（皮肤视觉已在 04-jiangxiao-skin-revamp 重做对齐；本轮宠物交付链不受设计基准影响）
 - **语义审查**：`.scratch/01-jiangxiao/REVIEW.md`（判定：准奏）
 - **ADR**：`docs/adr/0001-jiangxiao-skin-pet.md`（D1-D14 决策基线）
 - **词汇表**：根目录 `CONTEXT.md`（术语 + D1-D14 决策表）
