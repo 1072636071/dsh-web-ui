@@ -25,6 +25,7 @@ const JIANGXIAO_STATES: readonly JiangxiaoState[] = [
 let dir: string
 let server: Server
 let port: number
+let routes: ReturnType<typeof makePetRoutes>
 
 beforeAll(async () => {
   dir = mkdtempSync(join(tmpdir(), 'dsh-pet-routes-'))
@@ -65,7 +66,7 @@ beforeAll(async () => {
   const ctx = new Context()
   const registry = loadPetRegistry({ packageRoot: dir, petsDir: '' })
   const service = new PetService(ctx, { persistDir: join(dir, 'home'), registry })
-  const routes = makePetRoutes({ service })
+  routes = makePetRoutes({ service })
   server = createServer((req, res) => {
     const pathname = (req.url ?? '').split('?')[0]!
     for (const route of routes) {
@@ -164,6 +165,33 @@ describe('pet routes', () => {
     expect(back.ok).toBe(true)
     const whaleState = await fetch(url('/api/pet/state')).then(res => res.json()) as { name: string }
     expect(whaleState.name).toBe('鲸鱼娘')
+  })
+
+  it('fences LAN clients out of the API and asset routes', () => {
+    const probe = () => {
+      let status = 0
+      let body = ''
+      return {
+        res: {
+          writeHead: (code: number) => { status = code },
+          end: (chunk?: string) => { body = chunk ?? '' },
+        },
+        status: () => status,
+        body: () => body,
+      }
+    }
+    const lanRequest = { method: 'GET', socket: { remoteAddress: '192.168.1.9' }, headers: { host: '192.168.1.9:3080' } }
+    const api = probe()
+    const apiRoute = routes.find(route => route.kind === 'exact' && route.path === '/api/pet/state')
+    apiRoute!.handler(lanRequest as never, api.res as never)
+    expect(api.status()).toBe(403)
+    expect(api.body()).toContain('loopback-only')
+
+    const asset = probe()
+    const assetRoute = routes.find(route => route.kind === 'prefix' && route.path === '/pet')
+    assetRoute!.handler({ ...lanRequest, url: '/pet/whale-girl/pet.json' } as never, asset.res as never)
+    expect(asset.status()).toBe(403)
+    expect(asset.body()).toContain('loopback-only')
   })
 })
 

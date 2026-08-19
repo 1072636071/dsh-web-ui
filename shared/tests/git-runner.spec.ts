@@ -12,14 +12,14 @@ interface FakeHandle {
 
 /** One fake subprocess ctx recording every spec and answering with canned outcomes. */
 function fakeCtx(
-  answer: (argv: readonly string[]) => Promise<{ exitCode: number | null }> | { exitCode: number | null },
+  answer: (argv: readonly string[], spec: Record<string, unknown>) => Promise<{ exitCode: number | null }> | { exitCode: number | null },
   spawnThrows: unknown | null = null,
 ): { ctx: { subprocess: SubprocessServiceLike }; specs: Array<Record<string, unknown>>; spawn: ReturnType<typeof vi.fn> } {
   const specs: Array<Record<string, unknown>> = []
   const spawn = vi.fn((spec: Record<string, unknown>): FakeHandle => {
     if (spawnThrows !== null) throw spawnThrows
     specs.push(spec)
-    const done = Promise.resolve(answer(spec.argv as readonly string[]))
+    const done = Promise.resolve(answer(spec.argv as readonly string[], spec))
     return {
       done,
       collected: {
@@ -49,6 +49,39 @@ describe('subprocessRunner', () => {
     expect(result).toEqual({ exitCode: 0, stdout: 'out', stderr: 'err' })
   })
 
+  it('passes cancellation to spawn and never degrades an aborted run', async () => {
+    const reason = new Error('git status timed out')
+    const controller = new AbortController()
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      const { ctx, specs } = fakeCtx((_argv, spec) => new Promise((resolve) => {
+        const signal = spec.signal as AbortSignal
+        signal.addEventListener('abort', () => { resolve({ exitCode: null }) }, { once: true })
+      }))
+      const runner = withRunner(ctx, { failureMode: 'degrade', errorTag: 'dsh-aionui-panel' })
+      const pending = runner.run(['status'], '/w', controller.signal)
+
+      expect(specs[0]!.signal).toBe(controller.signal)
+      controller.abort(reason)
+
+      await expect(pending).rejects.toBe(reason)
+      expect(consoleSpy).not.toHaveBeenCalled()
+    } finally {
+      consoleSpy.mockRestore()
+    }
+  })
+
+  it('does not spawn when cancellation already fired', async () => {
+    const reason = new Error('cancelled before spawn')
+    const controller = new AbortController()
+    controller.abort(reason)
+    const { ctx, spawn } = fakeCtx(async () => ({ exitCode: 0 }))
+    const runner = withRunner(ctx)
+
+    await expect(runner.run(['status'], '/w', controller.signal)).rejects.toBe(reason)
+    expect(spawn).not.toHaveBeenCalled()
+  })
+
   it('uses the custom spawnArgv (win32 git.exe)', async () => {
     const { ctx, specs } = fakeCtx(async () => ({ exitCode: 0 }))
     const runner = withRunner(ctx, { spawnArgv: (argv) => ['git.exe', ...argv] })
@@ -74,7 +107,7 @@ describe('subprocessRunner', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     try {
       const { ctx, spawn } = fakeCtx(async () => ({ exitCode: 0 }))
-      spawn.mockImplementationOnce((spec: Record<string, unknown>) => ({
+      spawn.mockImplementationOnce(() => ({
         done: Promise.reject(new Error('killed')),
         collected: {
           stdout: { readFrom: () => ({ text: '' }) },

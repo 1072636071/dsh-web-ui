@@ -50,8 +50,17 @@ function mergeFrame(state: PanelState, frame: PairStateFrame): PanelState {
 export function RemoteEntry({ wide, useWorkspaces, t }: RemoteEntryProps) {
   const [open, setOpen] = useState(false)
   const [state, setState] = useState<PanelState>({ kind: 'lan-required' })
+  // Latest-state mirror for the EventSource callback: transition detection
+  // must live outside setState updaters (updaters may run twice and must be
+  // pure), so mint decisions read this ref instead.
+  const stateRef = useRef(state)
+  useEffect(() => { stateRef.current = state }, [state])
   const [copied, setCopied] = useState(false)
   const eventSource = useRef<EventSource | undefined>(undefined)
+  // Generation counter for the open flow: closing (or re-opening) the panel
+  // bumps it, so an in-flight issue() that resolves after a close does not
+  // spawn a stray EventSource.
+  const openSeq = useRef(0)
 
   // The current workspace (the recent-workspace projection the shell's New
   // Session flow targets) — the deep-link target for the phone.
@@ -99,8 +108,13 @@ export function RemoteEntry({ wide, useWorkspaces, t }: RemoteEntryProps) {
   }, [workspaceId])
 
   const openPanel = useCallback(async (): Promise<void> => {
+    const seq = ++openSeq.current
     setOpen(true)
     const next = await mint()
+    // A close (or re-open) during the await invalidates this issue: skip the
+    // state write and the stream so a panel closed mid-mint neither leaks an
+    // EventSource nor resurrects a stale QR.
+    if (seq !== openSeq.current) return
     setState(next)
     // Live status: the desktop panel mirrors the pairing service state. The
     // stream makes sense in the ready state and on the lan-required banner —
@@ -115,21 +129,22 @@ export function RemoteEntry({ wide, useWorkspaces, t }: RemoteEntryProps) {
       try {
         const frame = JSON.parse(event.data as string) as PairStateFrame
         if (frame.type !== 'state') return
-        setState(previous => {
-          // The auto-tunnel crossed into running while the panel sat on the
-          // lan-required banner: re-issue so the server hands back a ready
-          // QR built on the public base (only on the transition into
-          // running, to avoid mint storms).
-          if (
-            previous.kind === 'lan-required'
-            && frame.tunnel?.state === 'running'
-            && previous.tunnel?.state !== 'running'
-          ) {
-            void mint().then(setState)
-            return previous
-          }
-          return mergeFrame(previous, frame)
-        })
+        // The auto-tunnel crossed into running while the panel sat on the
+        // lan-required banner: re-issue so the server hands back a ready QR
+        // built on the public base (only on the transition into running, to
+        // avoid mint storms). Detected on the ref, outside the updater: an
+        // updater may be invoked twice and must stay pure, so mint() cannot
+        // run inside it.
+        const previous = stateRef.current
+        if (
+          previous.kind === 'lan-required'
+          && frame.tunnel?.state === 'running'
+          && previous.tunnel?.state !== 'running'
+        ) {
+          void mint().then(setState)
+          return
+        }
+        setState(current => mergeFrame(current, frame))
       } catch {
         // Malformed frames are dropped; the snapshot on open is authoritative.
       }
@@ -137,6 +152,7 @@ export function RemoteEntry({ wide, useWorkspaces, t }: RemoteEntryProps) {
   }, [mint])
 
   const closePanel = useCallback(() => {
+    openSeq.current += 1
     closeEventSource()
     setOpen(false)
   }, [closeEventSource])
@@ -216,13 +232,13 @@ export function RemoteEntry({ wide, useWorkspaces, t }: RemoteEntryProps) {
   )
 }
 
-/** The trigger: an icon button matching the settings rail/row geometry. */
+/** The trigger: an icon-only control with a persistent accessible label. */
 function TooltipAnchor({ wide, label, onClick }: { wide: boolean; label: string; onClick: () => void }) {
   return (
     <button
       type="button"
       className={css.trigger}
-      data-wide={wide ? undefined : 'rail'}
+      data-wide={wide ? 'wide' : 'rail'}
       aria-label={label}
       title={label}
       onClick={onClick}

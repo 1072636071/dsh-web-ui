@@ -9,12 +9,15 @@
 本仓库接受以下 PR：
 
 - **修复**：bug 修复、兼容性适配；
-- **增强 / 优化**：现有功能的改进、性能 / 体验优化、维护与文档修正；
+- **增强 / 优化**：现有功能的改进、性能 / 体验优化、维护；
 - **新皮肤**：属于内容贡献，始终欢迎直接提 PR。
 
 暂**不接受**全新特性 / 新功能的 PR；有相关需求请先在
 [Issues](https://github.com/zhu1090093659/dsh-web-ui/issues) 提 issue 讨论，
 确认后再开 PR。
+
+**不接受仅文档类 PR**（标题以 `docs:` 开头或勾选「仅文档」类型），会被
+自动关闭；文档改动请先提 issue 讨论，确认后由维护者处理。
 
 ## 开发前置
 
@@ -50,7 +53,7 @@ active panel (#76 #87)`。提交信息禁止 emoji（全仓规则）。
    `README.zh.md` + `README.i18n.yaml`），改完任一侧后重录配对记录：
 
 ```sh
-pnpm docs:write-pair <包目录名>   # 如 dsh-ssh 或 qq98
+pnpm docs:write-pair <包目录名>   # 如 dsh-ssh 或 xp
 ```
 
 3. **无 emoji**：代码、注释、文档、提交信息均不得出现 emoji（CI 有全树

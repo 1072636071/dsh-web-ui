@@ -1,5 +1,5 @@
 ﻿import { describe, expect, it } from 'vitest'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import {
@@ -10,6 +10,8 @@ import {
   loadPetRegistry,
   petAssetFiles,
   petEntryView,
+  petAtlasFile,
+  petPackageRoot,
   resolvePetManifest,
 } from './registry.ts'
 import type { JiangxiaoState, PetManifest } from './registry.ts'
@@ -32,6 +34,7 @@ describe('resolvePetManifest', () => {
     expect(entry!.kind).toBe('spritesheet')
     expect(entry!.cell).toEqual(DEFAULT_PET_CELL)
     expect(entry!.columns).toBe(8)
+    expect(entry!.atlasRows).toBe(9)
     expect(entry!.rows).toEqual([...DEFAULT_FRAME_COUNTS])
     expect(entry!.atlasUrl).toBe('/pet/otter/spritesheet.webp')
     expect(entry!.manifestUrl).toBe('/pet/otter/pet.json')
@@ -47,6 +50,21 @@ describe('resolvePetManifest', () => {
     expect(entry!.transitions).toBeUndefined()
   })
 
+  it('marks v2 (spriteVersionNumber 2) atlases with 11 rows', () => {
+    const entry = resolvePetManifest({
+      id: 'firefly',
+      displayName: 'Firefly',
+      spritesheetPath: 'spritesheet.webp',
+      spriteVersionNumber: 2,
+    }, join(tmpdir(), 'firefly'))
+    expect(entry).toBeDefined()
+    // v2 atlases carry 11 rows: the 9 animation rows plus 2 look rows.
+    expect(entry!.atlasRows).toBe(11)
+    // The 9 animation rows still resolve the hatch-pet contract.
+    expect(entry!.rows).toEqual([...DEFAULT_FRAME_COUNTS])
+    expect(entry!.tracks.idle.frames.length).toBe(entry!.rows[0])
+  })
+
   it('keeps the legacy whale-girl frame counts and its own durations', () => {
     const entry = resolvePetManifest({
       id: 'whale-girl',
@@ -59,6 +77,36 @@ describe('resolvePetManifest', () => {
     expect(entry!.tracks.idle.durations).toEqual([400, 400, 500, 400, 400, 500])
     // Non-overridden tracks keep the contract rhythm.
     expect(entry!.tracks['running-right'].durations.length).toBe(8)
+  })
+
+  it('normalizes valid per-scene animation sequences', () => {
+    const entry = resolvePetManifest({
+      id: 'whale-girl',
+      displayName: '鲸鱼娘',
+      spritesheetPath: 'spritesheet.webp',
+      sequences: {
+        thinking: ['running', 'running-right', 'running', 'running-left', 'waiting'],
+      },
+    }, join(tmpdir(), 'whale'))
+    expect(entry!.sequences).toEqual({
+      thinking: ['running', 'running-right', 'running', 'running-left', 'waiting'],
+    })
+  })
+
+  it('drops invalid or undersized per-scene animation sequences', () => {
+    const warnings: string[] = []
+    const entry = resolvePetManifest({
+      id: 'whale-girl',
+      displayName: '鲸鱼娘',
+      spritesheetPath: 'spritesheet.webp',
+      sequences: {
+        waiting: ['waiting', 'idle'],
+        thinking: ['running', 'bogus', 'running', 'running-left', 'waiting'],
+      },
+    }, join(tmpdir(), 'whale'), { warnings })
+    expect(entry!.sequences).toBeUndefined()
+    expect(warnings).toContain('manifest whale-girl: sequence waiting must contain at least 5 animations')
+    expect(warnings).toContain('manifest whale-girl: sequence thinking contains unknown animation "bogus"')
   })
 
   it('cycles short override durations up to the row frame count', () => {
@@ -110,6 +158,25 @@ describe('resolvePetManifest', () => {
 })
 
 describe('loadPetRegistry', () => {
+  it('ships the original and refined whale variants while keeping the original default', () => {
+    const registry = loadPetRegistry({
+      packageRoot: petPackageRoot(import.meta.url),
+      petsDir: '',
+    })
+
+    expect(registry.entries.map(entry => entry.id)).toEqual([
+      'whale-girl',
+      'whale-girl-refined',
+    ])
+    expect(registry.byId('whale-girl')?.displayName).toBe('鲸鱼娘（原版）')
+    expect(registry.byId('whale-girl-refined')?.displayName).toBe('鲸鱼娘（精致版）')
+    expect(existsSync(petAtlasFile(registry.byId('whale-girl-refined')!))).toBe(true)
+    expect(readFileSync(petAtlasFile(registry.byId('whale-girl')!)).equals(
+      readFileSync(petAtlasFile(registry.byId('whale-girl-refined')!)),
+    )).toBe(false)
+    expect(registry.defaultEntry().id).toBe('whale-girl')
+  })
+
   it('scans built-in assets, the custom pets dir, and composed extras with precedence', () => {
     const root = tempDir()
     try {
@@ -144,13 +211,40 @@ describe('loadPetRegistry', () => {
     }
   })
 
+  it('resolves a composed extra atlas to the real file (no doubled directory)', () => {
+    const root = tempDir()
+    try {
+      // The atlas sits at <root>/pets/otter/spritesheet.webp.
+      mkdirSync(join(root, 'pets', 'otter'), { recursive: true })
+      writeFileSync(join(root, 'pets', 'otter', 'spritesheet.webp'), 'png', 'utf8')
+
+      const registry = loadPetRegistry({
+        packageRoot: root,
+        petsDir: '',
+        extra: [{ id: 'otter', displayName: '水獭', spritesheetPath: 'pets/otter/spritesheet.webp' }],
+      })
+      const entry = registry.byId('otter')
+      expect(entry).toBeDefined()
+      // dir is the spritesheet's parent; the stored path is its basename, so
+      // joining them resolves to the real file instead of applying the
+      // directory twice.
+      expect(entry!.dir).toBe(join(root, 'pets', 'otter'))
+      expect(entry!.spritesheetPath).toBe('spritesheet.webp')
+      const atlas = petAtlasFile(entry!)
+      expect(atlas).toBe(join(root, 'pets', 'otter', 'spritesheet.webp'))
+      expect(existsSync(atlas)).toBe(true)
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
   it('defaults to the built-in pet even when custom pets sort first', () => {
     const root = tempDir()
     try {
       const petsDir = join(root, 'pets')
       mkdirSync(join(petsDir, 'aardvark'), { recursive: true })
       writeFileSync(join(petsDir, 'aardvark', 'pet.json'), JSON.stringify({
-        id: 'aardvark', displayName: '土豚', spritesheetPath: 'spritesheet.webp',
+        id: 'aardvark', displayName: '鍦熻睔', spritesheetPath: 'spritesheet.webp',
       }), 'utf8')
       const registry = loadPetRegistry({ packageRoot: join(root, 'no-assets'), petsDir })
       expect(registry.defaultEntry().id).toBe('aardvark')
@@ -162,6 +256,7 @@ describe('loadPetRegistry', () => {
 
 describe('codexPetsDir', () => {
   it('honors CODEX_HOME and expands a leading tilde', () => {
+    // Expected values join through the platform separator (POSIX on CI).
     expect(codexPetsDir({ CODEX_HOME: '/opt/codex' }, '/home/user')).toBe(join('/opt/codex', 'pets'))
     expect(codexPetsDir({ CODEX_HOME: '~/codex' }, '/home/user')).toBe(join('/home/user', 'codex', 'pets'))
     expect(codexPetsDir({}, '/home/user')).toBe(join('/home/user', '.codex', 'pets'))
@@ -181,7 +276,7 @@ function webpManifest(overrides: Partial<PetManifest> = {}): PetManifest {
   }
   return {
     id: 'jiangxiao',
-    displayName: '姜晓',
+    displayName: '濮滄檽',
     kind: 'animated-webp',
     states,
     transitions: {
@@ -300,7 +395,7 @@ describe('resolvePetManifest animated-webp', () => {
   it('rejects a missing states object', () => {
     const warnings: string[] = []
     const entry = resolvePetManifest(
-      { id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', transitions: {} },
+      { id: 'jiangxiao', displayName: '濮滄檽', kind: 'animated-webp', transitions: {} },
       '/tmp',
       { warnings },
     )
@@ -313,7 +408,7 @@ describe('resolvePetManifest animated-webp', () => {
     const states = {} as Record<JiangxiaoState, string>
     for (const state of JIANGXIAO_STATES) states[state] = 'states/' + state + '.webp'
     const entry = resolvePetManifest(
-      { id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', states },
+      { id: 'jiangxiao', displayName: '濮滄檽', kind: 'animated-webp', states },
       '/tmp',
       { warnings },
     )
@@ -329,7 +424,7 @@ describe('resolvePetManifest animated-webp', () => {
       states[state] = 'states/' + state + '.webp'
     }
     const entry = resolvePetManifest(
-      { id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', states, transitions: { 'idle->thinking': { webp: 't.webp', durationMs: 100 } } },
+      { id: 'jiangxiao', displayName: '濮滄檽', kind: 'animated-webp', states, transitions: { 'idle->thinking': { webp: 't.webp', durationMs: 100 } } },
       '/tmp',
       { warnings },
     )
@@ -343,7 +438,7 @@ describe('resolvePetManifest animated-webp', () => {
     for (const state of JIANGXIAO_STATES) states[state] = 'states/' + state + '.webp'
     ;(states as Record<string, string>).listenting2 = 'states/listening2.webp'
     const entry = resolvePetManifest(
-      { id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', states, transitions: { 'idle->thinking': { webp: 't.webp', durationMs: 100 } } },
+      { id: 'jiangxiao', displayName: '濮滄檽', kind: 'animated-webp', states, transitions: { 'idle->thinking': { webp: 't.webp', durationMs: 100 } } },
       '/tmp',
       { warnings },
     )
@@ -357,7 +452,7 @@ describe('resolvePetManifest animated-webp', () => {
     for (const state of JIANGXIAO_STATES) states[state] = 'states/' + state + '.webp'
     states.idle = '../etc/passwd'
     const entry = resolvePetManifest(
-      { id: 'jiangxiao', displayName: '姜晓', kind: 'animated-webp', states, transitions: { 'idle->thinking': { webp: 't.webp', durationMs: 100 } } },
+      { id: 'jiangxiao', displayName: '濮滄檽', kind: 'animated-webp', states, transitions: { 'idle->thinking': { webp: 't.webp', durationMs: 100 } } },
       '/tmp',
       { warnings },
     )

@@ -7,7 +7,7 @@
  * deployments must not serve them.
  */
 
-import { createReadStream, createWriteStream, mkdirSync } from 'node:fs'
+import { closeSync, createReadStream, createWriteStream, mkdirSync, openSync } from 'node:fs'
 import { unlink } from 'node:fs/promises'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { basename, join } from 'node:path'
@@ -78,6 +78,8 @@ export interface SshRoutesDeps {
   engine: SshEngine
   /** Temp dir for upload/download staging (tests inject a sandbox). */
   stagingDir?: string
+/** Upload byte cap override (tests); defaults to MAX_UPLOAD_BYTES. */
+maxUploadBytes?: number
 }
 
 /**
@@ -88,9 +90,12 @@ export interface SshRoutesDeps {
 export function makeRoutes(deps: SshRoutesDeps): { routes: WebRoute[]; upgrade: WebUpgradeRoute } {
   const { store, engine } = deps
   const staging = deps.stagingDir ?? join(tmpdir(), 'dsh-ssh-uploads')
+const maxUploadBytes = deps.maxUploadBytes ?? MAX_UPLOAD_BYTES
   // The upload route stages request bodies here; it must exist before the
   // first request (a missing dir would hang the first upload forever).
-  mkdirSync(staging, { recursive: true })
+  // 0700 keeps in-flight transfers unreadable to other local users (the
+  // staged files below are 0600; downloads are pre-created 0600 as well).
+  mkdirSync(staging, { recursive: true, mode: 0o700 })
 
   /** Guard helper: fence + method check. */
   const guard = (req: IncomingMessage, res: ServerResponse, method: string): boolean => {
@@ -154,6 +159,13 @@ export function makeRoutes(deps: SshRoutesDeps): { routes: WebRoute[]; upgrade: 
           }
           try {
             const entry = store.update(alias, body as unknown as Partial<HostPayload>)
+            // Connection-relevant changes invalidate the pooled connection:
+            // without this the pool would keep running commands on the old
+            // host/credentials until the idle sweep (up to 30 min later).
+            const patch = body as Record<string, unknown>
+            if (['host', 'port', 'user', 'auth', 'proxyJump'].some(key => patch[key] !== undefined)) {
+              engine.dropAlias(alias)
+            }
             writeJson(res, 200, { host: store.summarize(entry) })
           } catch (error) {
             writeJson(res, 400, { error: error instanceof Error ? error.message : String(error) })
@@ -162,7 +174,7 @@ export function makeRoutes(deps: SshRoutesDeps): { routes: WebRoute[]; upgrade: 
         }
         if (method === 'DELETE') {
           try {
-            engine.stopAllTunnels(alias)
+            engine.dropAlias(alias)
             store.delete(alias)
             writeJson(res, 200, { ok: true })
           } catch (error) {
@@ -329,7 +341,7 @@ export function makeRoutes(deps: SshRoutesDeps): { routes: WebRoute[]; upgrade: 
           return
         }
         const declared = Number(req.headers['content-length'])
-        if (Number.isFinite(declared) && declared > MAX_UPLOAD_BYTES) {
+        if (Number.isFinite(declared) && declared > maxUploadBytes) {
           writeJson(res, 413, { error: 'upload body too large' })
           return
         }
@@ -343,7 +355,7 @@ export function makeRoutes(deps: SshRoutesDeps): { routes: WebRoute[]; upgrade: 
         }
         // Stage the uploaded bytes, then SFTP them out with progress frames.
         const tmp = join(staging, `upload-${randomBytes(6).toString('hex')}`)
-        const sink = createWriteStream(tmp)
+        const sink = createWriteStream(tmp, { mode: 0o600 })
         let settled = false
         // Every terminal path (sink error, client abort, response loss) must
         // emit a result frame, end the response, and remove the tmp file.
@@ -351,9 +363,22 @@ export function makeRoutes(deps: SshRoutesDeps): { routes: WebRoute[]; upgrade: 
           if (settled) return
           settled = true
           emit({ type: 'result', ok: false, error: error instanceof Error ? error.message : String(error) })
-          try { sink.destroy() } catch { /* closed */ }
-          void unlink(tmp).catch(() => undefined)
-          try { res.end() } catch { /* closed */ }
+          // End the response only after the tmp file is gone, and unlink only
+          // after the sink is fully closed: destroying a WriteStream whose
+          // fs.open is still pending lets the open RE-CREATE the file after
+          // an early unlink, leaving staging populated (this raced the
+          // response end and made the byte-cap test flaky).
+          const cleanup = (): void => {
+            void unlink(tmp).catch(() => undefined).finally(() => {
+              try { res.end() } catch { /* closed */ }
+            })
+          }
+          if (sink.destroyed) {
+            cleanup()
+          } else {
+            sink.once('close', cleanup)
+            try { sink.destroy() } catch { cleanup() }
+          }
         }
         const done = (): void => {
           if (settled) return
@@ -365,6 +390,24 @@ export function makeRoutes(deps: SshRoutesDeps): { routes: WebRoute[]; upgrade: 
         req.on('aborted', () => fail('upload aborted by the client'))
         res.on('error', () => fail('response stream closed'))
         res.on('close', () => { if (!res.writableEnded) fail('connection closed') })
+        // The content-length pre-check above can be bypassed by chunked or
+        // header-less requests: count the bytes as they actually arrive and
+        // abort the moment the cap is exceeded.
+        let received = 0
+        let capped = false
+        req.on('data', (chunk: Buffer) => {
+          received += chunk.byteLength
+          if (received > maxUploadBytes && !capped) {
+            capped = true
+            fail('upload body too large')
+            // Keep the socket alive until the response flush finishes:
+            // destroying the request here races res.end() and the client
+            // sees a hang-up instead of the result frame. Drain the rest of
+            // the body so the socket can close cleanly afterwards.
+            res.on('finish', () => { try { req.destroy() } catch { /* closed */ } })
+            req.resume()
+          }
+        })
         req.pipe(sink)
         sink.on('finish', async () => {
           if (settled) return
@@ -396,6 +439,9 @@ export function makeRoutes(deps: SshRoutesDeps): { routes: WebRoute[]; upgrade: 
         }
         const tmp = join(staging, `download-${randomBytes(6).toString('hex')}`)
         try {
+          // Pre-create with 0600: ssh2's fastGet opens the destination with
+          // umask-default permissions and a pre-created file keeps the mode.
+          closeSync(openSync(tmp, 'w', 0o600))
           const outcome = await engine.download(alias, remotePath, tmp)
           res.writeHead(200, {
             'content-type': 'application/octet-stream',

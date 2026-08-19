@@ -58,11 +58,14 @@ async function call(
   port: number,
   method: 'GET' | 'POST',
   path: string,
-  opts: { host?: string; body?: unknown; cookie?: string } = {},
+  opts: { host?: string; body?: unknown; cookie?: string; headers?: Record<string, string> } = {},
 ): Promise<{ status: number; body: Record<string, unknown>; cookies: string[] }> {
   return await new Promise((resolve, reject) => {
     const payload = opts.body === undefined ? undefined : JSON.stringify(opts.body)
     const headers: Record<string, string> = { host: opts.host ?? `127.0.0.1:${String(port)}` }
+    for (const [name, value] of Object.entries(opts.headers ?? {})) {
+      if (name.toLowerCase() !== 'host') headers[name] = value
+    }
     if (payload !== undefined) headers['content-type'] = 'application/json'
     if (opts.cookie !== undefined) headers.cookie = opts.cookie
     const req = httpRequest(
@@ -96,7 +99,7 @@ describe('/api/pair routes', () => {
       // Loopback issues; the URL embeds the token and workspace target.
       const issued = await call(port, 'POST', '/api/pair/issue', { body: { workspaceId: 'ws-7' } })
       expect(issued.status).toBe(200)
-      expect(issued.body.url).toMatch(/^http:\/\/192\.168\.1\.5:3080\/\?pair=tok-1&workspace=ws-7$/)
+      expect(issued.body.url).toMatch(/^http:\/\/192\.168\.1\.5:3080\/m\/\?pair=tok-1&workspace=ws-7$/)
       expect(issued.body.lanAddresses).toEqual(['192.168.1.5'])
       // A LAN phone accepts: sets the HttpOnly device cookie.
       const accepted = await call(port, 'POST', '/api/pair/accept', { host: '192.168.1.5:3080', body: { token: 'tok-1' } })
@@ -139,7 +142,7 @@ describe('/api/pair routes', () => {
     try {
       const chosen = await call(port, 'POST', '/api/pair/issue', { body: { address: '10.0.0.3' } })
       expect(chosen.status).toBe(200)
-      expect(chosen.body.url).toMatch(/^http:\/\/10\.0\.0\.3:3080\/\?pair=tok-1$/)
+      expect(chosen.body.url).toMatch(/^http:\/\/10\.0\.0\.3:3080\/m\/\?pair=tok-1$/)
       expect(chosen.body.lanAddresses).toEqual(['192.168.1.5', '10.0.0.3'])
       const unknown = await call(port, 'POST', '/api/pair/issue', { body: { address: '192.0.2.1' } })
       expect(unknown.status).toBe(400)
@@ -190,12 +193,12 @@ describe('/api/pair routes', () => {
       // Loopback issues; the default URL is now built from the public base.
       const issued = await call(port, 'POST', '/api/pair/issue', {})
       expect(issued.status).toBe(200)
-      expect(issued.body.url).toMatch(/^https:\/\/phone\.example\.com\/\?pair=tok-1$/)
+      expect(issued.body.url).toMatch(/^https:\/\/phone\.example\.com\/m\/\?pair=tok-1$/)
       expect(issued.body.publicBaseUrl).toBe('https://phone.example.com')
       expect(issued.body.lanAddresses).toEqual(['192.168.1.5'])
       // An explicit LAN address still mints a LAN URL (in-network fallback).
       const lan = await call(port, 'POST', '/api/pair/issue', { body: { address: '192.168.1.5' } })
-      expect(lan.body.url).toMatch(/^http:\/\/192\.168\.1\.5:3080\/\?pair=tok-1$/)
+      expect(lan.body.url).toMatch(/^http:\/\/192\.168\.1\.5:3080\/m\/\?pair=tok-1$/)
       // The tunneled host passes the phone-facing fence: accept + status work.
       const accepted = await call(port, 'POST', '/api/pair/accept', { host: 'phone.example.com', body: { token: 'tok-1' } })
       expect(accepted.status).toBe(200)
@@ -222,12 +225,73 @@ describe('/api/pair routes', () => {
     try {
       const issued = await call(port, 'POST', '/api/pair/issue', {})
       expect(issued.status).toBe(200)
-      expect(issued.body.url).toMatch(/^https:\/\/phone\.example\.com:8443\/\?pair=tok-1$/)
+      expect(issued.body.url).toMatch(/^https:\/\/phone\.example\.com:8443\/m\/\?pair=tok-1$/)
       // The fence matches the authority verbatim, port included.
       const accepted = await call(port, 'POST', '/api/pair/accept', { host: 'phone.example.com:8443', body: { token: 'tok-1' } })
       expect(accepted.status).toBe(200)
       const wrongPort = await call(port, 'POST', '/api/pair/heartbeat', { host: 'phone.example.com:9999', cookie: 'dsh_pair=tok-1' })
       expect(wrongPort.status).toBe(403)
+    } finally {
+      await close()
+    }
+  })
+
+  it('redacts the pairing oracle fields from unpaired status callers', async () => {
+    const service = makeService()
+    service.setPublicBaseUrl('https://phone.example.com')
+    service.setTunnelStatus({ state: 'running', url: 'https://xyz.trycloudflare.com' })
+    service.issue('ws-7', undefined)
+    const { port, close } = await serve(makeRoutes({ service, lanAddresses: ['192.168.1.5'] }))
+    try {
+      // No cookie: only pairing-relevant fields, no token/device/tunnel oracle.
+      const unpaired = await call(port, 'GET', '/api/pair/status', { host: '192.168.1.5:3080' })
+      expect(unpaired.status).toBe(200)
+      expect(unpaired.body).toMatchObject({ ok: true, paired: false, phase: 'waiting', lanAvailable: true })
+      expect(unpaired.body).not.toHaveProperty('tokenId')
+      expect(unpaired.body).not.toHaveProperty('tokenExpiresAt')
+      expect(unpaired.body).not.toHaveProperty('deviceCount')
+      expect(unpaired.body).not.toHaveProperty('onlineCount')
+      expect(unpaired.body).not.toHaveProperty('publicUrl')
+      expect(unpaired.body).not.toHaveProperty('tunnel')
+      // A live device cookie sees the full snapshot.
+      await call(port, 'POST', '/api/pair/accept', { host: '192.168.1.5:3080', body: { token: 'tok-1' } })
+      const paired = await call(port, 'GET', '/api/pair/status', { host: '192.168.1.5:3080', cookie: 'dsh_pair=tok-1' })
+      expect(paired.body).toMatchObject({ ok: true, paired: true, phase: 'connected' })
+      expect(paired.body).toHaveProperty('deviceCount')
+      expect(paired.body).toHaveProperty('onlineCount')
+      expect(paired.body).toHaveProperty('tokenExpiresAt')
+    } finally {
+      await close()
+    }
+  })
+
+  it('partitions the accept rate-limit buckets by the client-visible XFF hop', async () => {
+    const service = makeService()
+    const { port, close } = await serve(makeRoutes({ service, lanAddresses: ['192.168.1.5'] }))
+    try {
+      // Distinct XFF clients each get their own bucket: none trips the limit.
+      for (let index = 0; index < 12; index += 1) {
+        const attempt = await call(port, 'POST', '/api/pair/accept', {
+          host: '192.168.1.5:3080',
+          body: { token: 'nope' },
+          headers: { 'x-forwarded-for': '203.0.113.' + String(index) },
+        })
+        expect(attempt.status).not.toBe(429)
+      }
+      // One client exhausting its bucket is rate-limited from attempt 12 on.
+      for (let index = 0; index < 11; index += 1) {
+        await call(port, 'POST', '/api/pair/accept', {
+          host: '192.168.1.5:3080',
+          body: { token: 'nope' },
+          headers: { 'x-forwarded-for': '198.51.100.7' },
+        })
+      }
+      const limited = await call(port, 'POST', '/api/pair/accept', {
+        host: '192.168.1.5:3080',
+        body: { token: 'nope' },
+        headers: { 'x-forwarded-for': '198.51.100.7' },
+      })
+      expect(limited.status).toBe(429)
     } finally {
       await close()
     }

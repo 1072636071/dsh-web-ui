@@ -46,6 +46,22 @@
 - `tests/` 放测试，测试文件不得依赖 DSH 源码 checkout 的 fixture。
 - 聚合载具包（dsh-web-ui-all / dsh-skins）可无单测，但聚合生成脚本必须有
   `--check` 一致性门禁（`aggregate.mjs` / `build.mjs` 的 check 模式）。
+- 例外：dsh-aionui-panel 已停止支持——不再保留测试、typecheck 门禁与 e2e 断言
+  （右侧面板由 dsh-better-sidebar 接管），后续版本将从聚合包移除。
+- 例外：dsh-live-stats（实时令牌估算）已彻底移除——包、测试、门禁与文档引用
+  均已清理，不再支持。
+
+## 语义属性约定（L2，issue #506）
+
+- 插件根容器与关键部件必须输出语义属性：根容器打 `data-dsh-plugin="<插件短名>"`，
+  部件打裸值 `data-dsh-part`（归属交给 plugin 属性，如 `column` 而非
+  `task-board-column`）；枚举、owner 与锚定方式见
+  [skins/skin-center/contracts/semantic-attrs-v1.md](skins/skin-center/contracts/semantic-attrs-v1.md)。
+- 新增/修改枚举值必须与该契约表同 PR 更新；每个值要有 owner、含义与锚定方式，
+  不得只堆字符串。
+- 不输出语义属性的插件只享受 L1 token 基础换肤覆盖，不承诺完整覆盖。
+- 不复用官方 `data-plugin`（它标注 style 标签归属，语义不同）；body/html 级
+  属性不属于 surface/part/plugin 枚举。
 
 ## 双语纪律
 

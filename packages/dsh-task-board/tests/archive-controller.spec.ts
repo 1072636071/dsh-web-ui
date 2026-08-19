@@ -3,7 +3,7 @@
  * brings them back, the archive view toggles, and leaving the view with an
  * archived selection closes the selection.
  */
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { BoardController, type ControllerDeps } from '../src/core/controller.ts'
 import { ExecutionService, type ExecutionEvent } from '../src/core/execution.ts'
 import { InMemoryTaskStore } from '../src/core/store.ts'
@@ -64,9 +64,11 @@ describe('BoardController archive', () => {
   it('restores an archived task back to its column', () => {
     const done = { ...task('done', 'done'), archivedAt: NOW }
     const { controller, store } = makeController([done])
+    controller.openTask('done')
     expect(controller.restoreTask('done')).toBe(true)
     expect(store.load()[0]).toMatchObject({ id: 'done', status: 'done' })
     expect(store.load()[0].archivedAt).toBeUndefined()
+    expect(controller.getSnapshot().selectedTaskId).toBeUndefined()
     expect(controller.restoreTask('done')).toBe(false)
   })
 

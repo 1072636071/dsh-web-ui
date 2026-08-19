@@ -18,8 +18,10 @@ import type { Context } from '@deepseek-ai/cordis'
 import { installSettingsSection } from '@deepseek-ai/dsh-settings'
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import type { GenericCallView } from '@deepseek-ai/dsh-tools'
-import { registerAttachRoute } from './attach-routes.ts'
+import { registerAttachRoute, registerModelRoutes } from './attach-routes.ts'
 import { DEFAULT_MAX_BYTES } from './media.ts'
+import { createCapabilityProbe, createRouteResolver } from './model-capability.ts'
+import { installToolVisibility } from './tool-visibility.ts'
 import { Config, DESCRIBE_IMAGE_SETTINGS_NAMESPACE, resolveApiKey, resolveConfig, type ResolvedConfig } from './config-resolve.ts'
 import { callVision, createVisionCache, loadImage } from './vision-client.ts'
 import { mountOnce } from './mount-once.ts'
@@ -39,6 +41,7 @@ export {
   DEFAULT_API_KEY_ENV,
   DEFAULT_API_STYLE,
   DEFAULT_MAX_OUTPUT_TOKENS,
+  DEFAULT_INTERCEPT_IMAGE_SEND,
   DEFAULT_PROMPT,
   DEFAULT_RENDER_IMAGE_PREVIEW,
   DEFAULT_TIMEOUT_MS,
@@ -64,16 +67,35 @@ export {
   semanticRequestKey,
 } from './vision-client.ts'
 export type { LoadedImage, VisionCache } from './vision-client.ts'
+export {
+  buildModelsUrl,
+  buildModelPingRequest,
+  extractModelIds,
+  handleModelProbe,
+  handleModelTest,
+  probeModels,
+  testModelConnection,
+  PROBE_MAX_BODY_BYTES,
+  PROBE_MAX_MODELS,
+  PROBE_MODEL_PLACEHOLDER,
+  PROBE_TIMEOUT_MS,
+} from './model-probe.ts'
+export type { ModelProbeOutcome, ModelTestOutcome, ProbeKeyResolver } from './model-probe.ts'
 
 const DESCRIPTION_HEAD =
-  'Inspect one image — a local absolute path, an http(s) URL, or the JSON of an image attachment '
-  + 'note — and return the text the user needs. Use when the user references an image file or URL, '
+  'Inspect one image — a local absolute path, an http(s) URL, a complete `[image attachment ...]` note, '
+  + 'or a self-contained Markdown attachment reference — and return the text the user needs. Use when the user references an image file or URL, '
   + 'or when a task needs OCR, chart or diagram reading, screenshot or UI analysis, translation of '
   + 'image text, or photo understanding. '
   + 'Always pass an explicit `prompt` with a precise instruction — e.g. "transcribe all text", '
   + '"extract the table as CSV", "diagnose the UI layout problems", "translate the text into '
   + 'Chinese" — instead of leaving it to the default description: a targeted instruction produces '
   + 'a much more useful answer. '
+  + 'If your model accepts image input directly, never call this tool for an image that is already '
+  + 'visible to you in the conversation — analyze it with your own vision — and prefer a native '
+  + 'image-reading tool (when one is available to you) for local image files. Reserve this tool '
+  + 'for images you cannot see: http(s) URLs, `[image attachment …]` notes, or when your model '
+  + 'lacks image input entirely. '
 
 /** The describe_image call’s validated arguments. */
 export interface DescribeImageArgs {
@@ -126,7 +148,12 @@ function applyImpl(ctx: Context, config: Config = {}): void {
     },
     onChange: () => {},
     validate: (value) => {
-      if (value.baseURL !== undefined || value.model !== undefined) resolveConfig(value)
+      // The Host applies a batched edit op by op, so each intermediate state
+      // is judged too: a connection is only validated once both halves
+      // exist, otherwise baseURL alone (model not landed yet) or model alone
+      // would each refuse the other's op and strand the save. A partial
+      // config still fails loud at the first describe_image call.
+      if (value.baseURL !== undefined && value.model !== undefined) resolveConfig(value)
     },
   })
   const spec = (): ResolvedConfig => resolveConfig(current())
@@ -134,23 +161,37 @@ function applyImpl(ctx: Context, config: Config = {}): void {
   // within the TTL reuse the prior answer instead of a second fetch.
   const visionCache = createVisionCache()
   // The webserver is optional (the loader-composition tests boot without one):
-  // the attach route registers only when the service is actually mounted.
-  registerAttachRoute(ctx, () => current().maxBytes ?? DEFAULT_MAX_BYTES)
+  // the attach route registers only when the service is actually mounted. The
+  // capability probe lets the browser send hook pass raw image blocks to
+  // models whose adapter declares image input, instead of rewriting every
+  // image-bearing send into describe-image references. The route resolver is
+  // shared with the tool-visibility controller so both seams always agree on
+  // one session's verdict: multimodal sessions get the raw blocks and never
+  // see describe_image in their toolset, text-only sessions get the rewrite
+  // and the tool.
+  const routeResolver = createRouteResolver(ctx)
+  const probe = createCapabilityProbe(ctx, routeResolver)
+  installToolVisibility(ctx, routeResolver)
+  registerAttachRoute(ctx, () => current().maxBytes ?? DEFAULT_MAX_BYTES, probe)
+  // The settings card's probe button: list the endpoint's models per request,
+  // honoring unsaved drafts so the user can verify a new endpoint before
+  // saving; the key resolves through the same seam a vision call uses.
+  registerModelRoutes(ctx, () => current(), (spec) => resolveApiKey(ctx, spec))
   ctx.tools.register(defineTool({
     name: 'describe_image',
     description: DESCRIPTION_HEAD
-      + 'The image may be a local path, an http(s) URL, the JSON object from an `[image attachment …]` '
-      + "note, or — the common case when the user used this plugin's input-box image button — a "
-      + 'short markdown image reference like `![图片](/describe-image/raw/sha256:abc…)` pasted into '
-      + 'the conversation. In the markdown form, take the attachment id from the URL and pass that id '
-      + 'as the `image` value (never the whole markdown, and never a made-up path); the tool resolves '
-      + 'the id to the stored image. The image itself never enters the conversation — only the '
-      + 'returned text is shown to you.',
+      + 'The image may be a local path, an http(s) URL, a complete `[image attachment ...]` note, or — '
+      + "the common case when the user used this plugin's input-box image button — the complete Markdown "
+      + 'image reference like `![图片](/describe-image/raw/sha256:abc?ref=...)` pasted into the conversation. '
+      + 'Pass that complete Markdown reference as the `image` value: it carries the durable attachment '
+      + 'metadata needed after a host restart or inside a PTC nested tool call. A bare attachment id stays '
+      + 'supported only while this host process has seen the upload. The image itself never enters the '
+      + 'conversation — only the returned text is shown to you.',
     parameters: {
       image: {
         type: 'string',
         required: true,
-        description: 'Absolute path to a local image file, an http(s) URL of the image, the JSON object from an [image attachment …] note, or the bare attachment id (e.g. sha256:abc…) taken from the markdown image reference ![图片](/describe-image/raw/<id>) that the plugin\'s input-box image button pasted into the conversation.',
+        description: 'Absolute local image path, http(s) URL, complete [image attachment ...] note, or complete Markdown reference ![图片](/describe-image/raw/<id>?ref=...) from the input box. The complete Markdown reference is durable across host restarts and PTC nested tool calls; a bare attachment id is only a current-process fallback.',
       },
       prompt: {
         type: 'string',

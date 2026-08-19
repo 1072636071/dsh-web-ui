@@ -5,21 +5,13 @@
  */
 import { memo, useCallback, useEffect, useState } from 'react'
 import { selectedTaskOf, type BoardController } from '../../core/controller.ts'
-import { COLUMNS, type TaskRecord, type TaskStatus } from '../../core/tasks.ts'
-import { t, type TaskBoardKey } from '../locales.ts'
+import { COLUMNS, type TaskRecord } from '../../core/tasks.ts'
+import { t } from '../locales.ts'
 import css from '../board.module.css'
 import { NewTaskModal } from './NewTaskModal.tsx'
+import { STATUS_KEY } from './status-key.ts'
 import { TaskCard } from './TaskCard.tsx'
 import { TaskDetail } from './TaskDetail.tsx'
-
-/** Column status → locale key. */
-const STATUS_KEY: Record<TaskStatus, TaskBoardKey> = {
-  backlog: 'board.status.backlog',
-  todo: 'board.status.todo',
-  running: 'board.status.running',
-  done: 'board.status.done',
-  failed: 'board.status.failed',
-}
 
 /** Case-insensitive title/description match. */
 function matchesFilter(task: TaskRecord, filter: string): boolean {
@@ -34,9 +26,9 @@ function matchesFilter(task: TaskRecord, filter: string): boolean {
  * re-renders only when its own task changes — not when a sibling card status,
  * the filter, or the selection moves.
  */
-const MemoTaskCard = memo(function MemoTaskCard({ task, onOpen }: { task: TaskRecord; onOpen: (id: string) => void }) {
+const MemoTaskCard = memo(function MemoTaskCard({ task, pending, timeZone, onOpen }: { task: TaskRecord; pending: boolean; timeZone?: string; onOpen: (id: string) => void }) {
   const onClick = useCallback(() => { onOpen(task.id) }, [task.id, onOpen])
-  return <TaskCard task={task} onClick={onClick} />
+  return <TaskCard task={task} pending={pending} timeZone={timeZone} onClick={onClick} />
 })
 
 /** Board component; subscribes to the controller snapshot. */
@@ -58,7 +50,7 @@ export function TaskBoard({ controller }: { controller: BoardController }) {
   const openTask = useCallback((id: string): void => { controller.openTask(id) }, [controller])
 
   return (
-    <div className={css.board} data-dsh-taskboard-board="">
+    <div className={css.board} data-dsh-taskboard-board="" data-dsh-plugin="task-board">
       <header className={css.boardHeader}>
         <button
           type="button"
@@ -70,6 +62,14 @@ export function TaskBoard({ controller }: { controller: BoardController }) {
           <span>{t('board.close')}</span>
         </button>
         <h2 className={css.boardTitle}>{t('board.title')}</h2>
+        {snapshot.host !== undefined && (
+          <span className={css.detailMeta}>
+            {t('board.hostMeta', {
+              revision: String(snapshot.host.revision),
+              timeZone: snapshot.host.scheduler.timeZone,
+            })}
+          </span>
+        )}
         <input
           className={css.search}
           type="search"
@@ -96,16 +96,25 @@ export function TaskBoard({ controller }: { controller: BoardController }) {
         </button>
       </header>
 
+      {snapshot.transportError !== undefined && (
+        <div className={css.formError}>
+          {t('board.hostError', { error: snapshot.transportError })}{' '}
+          <button type="button" className={css.linkButton} onClick={() => { void controller.retryHostSync() }}>
+            {t('board.retryHost')}
+          </button>
+        </div>
+      )}
+
       <div className={css.columns}>
         {archiveView ? (
-          <section className={css.column} data-status="archived">
+          <section className={css.column} data-status="archived" data-dsh-part="column">
             <header className={css.columnHeader}>
               <h3 className={css.columnTitle}>{t('board.archive')}</h3>
               <span className={css.columnCount}>{visible.length}</span>
             </header>
             <div className={css.cards}>
               {visible.map(task => (
-                <MemoTaskCard key={task.id} task={task} onOpen={openTask} />
+                <MemoTaskCard key={task.id} task={task} pending={snapshot.pendingTaskIds.includes(task.id)} timeZone={snapshot.host?.scheduler.timeZone} onOpen={openTask} />
               ))}
               {visible.length === 0 && <div className={css.columnEmpty}>{t('archive.empty')}</div>}
             </div>
@@ -114,7 +123,7 @@ export function TaskBoard({ controller }: { controller: BoardController }) {
           COLUMNS.map(column => {
             const tasks = visible.filter(task => task.status === column.status)
             return (
-              <section key={column.status} className={css.column} data-status={column.status}>
+              <section key={column.status} className={css.column} data-status={column.status} data-dsh-part="column">
                 <header className={css.columnHeader}>
                   <span className={css.statusDot} data-status={column.status} aria-hidden="true" />
                   <h3 className={css.columnTitle}>{t(STATUS_KEY[column.status])}</h3>
@@ -122,7 +131,7 @@ export function TaskBoard({ controller }: { controller: BoardController }) {
                 </header>
                 <div className={css.cards}>
                   {tasks.map(task => (
-                    <MemoTaskCard key={task.id} task={task} onOpen={openTask} />
+                    <MemoTaskCard key={task.id} task={task} pending={snapshot.pendingTaskIds.includes(task.id)} timeZone={snapshot.host?.scheduler.timeZone} onOpen={openTask} />
                   ))}
                   {tasks.length === 0 && <div className={css.columnEmpty}>{t('board.empty')}</div>}
                 </div>

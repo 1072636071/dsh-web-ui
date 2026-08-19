@@ -1,25 +1,32 @@
 /**
  * The skin-center card: rendered as the content of a first-level settings
- * section, listing every installed skin plus the official stock look. Live
- * try-on executes the real bundle inside the GUI (light/dark preview, full
- * restore on exit); Apply is one click — the host half runs `dsh-skin use`
- * through /api/skin-center/apply, the config watcher hot-reloads the patch,
- * and the page reloads into the new skin. Copy rides the standard `t` seat;
- * the theme preview control drives the official theme service (persisted,
- * same as the Appearance row).
+ * section, listing the official stock look plus every skin in the v2 catalog
+ * (built-in asset directories inside the skin-center package + user dirs
+ * under $DSH_HOME/skins).
+ *
+ * v2 architecture (issue #506): skins are pure asset directories loaded by
+ * the skin-center runtime. Try-on and apply both go through the same atomic
+ * switch engine (src/client/runtime/skin-controller.ts) — try-on simply
+ * skips persistence, and apply is one click with NO page reload, no
+ * cordis.patch.yml rewrite, no boot-graph regeneration. The "trying on"
+ * badge tracks the controller's live state, so closing and reopening the
+ * settings panel keeps showing the skin that is still being previewed.
+ * Copy rides the standard `t` seat; the theme preview control drives the
+ * official theme service (persisted, same as the Appearance row).
  */
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import type { ThemeSnapshot } from '@deepseek-ai/dsh-client-ui-theme/client'
-import { SKIN_CENTER_ENTRIES, type SkinCenterEntry } from './generated/skins.ts'
-import { manifestHasSkin } from './manifest.ts'
+import type { CatalogSkin, SkinRuntimeStore } from './runtime/boot.ts'
 import type { SkinBackgroundHandle } from './background.ts'
-import { activeSkinEntry, TryOnController } from './try-on.ts'
+import type { WallpaperHandle } from './wallpaper.ts'
+import { WallpaperPanel } from './WallpaperPanel.tsx'
 import css from './skin-center.module.css'
 
 /** Business face the skin-center apply() injects into the card. */
 export interface SkinCenterInjected {
-  controller: TryOnController
+  /** The v2 skin runtime store (controller + catalog). */
+  runtime: SkinRuntimeStore
   theme: {
     getTheme(): ThemeSnapshot
     subscribe(listener: () => void): () => void
@@ -27,6 +34,8 @@ export interface SkinCenterInjected {
   }
   /** Background occluder over the shared skin-background namespace. */
   background: SkinBackgroundHandle
+  /** Wallpaper Engine bridge over the skin-wallpaper namespace. */
+  wallpaper: WallpaperHandle
 }
 
 /** Plugin-card component props: locale seat + injected face. */
@@ -36,209 +45,82 @@ export type SkinCenterComponentProps =
 /** The apply target of the official stock-look card. */
 const OFFICIAL = 'official'
 
-/** Skin ids that read the background-scrim variable and paint a backdrop. */
-const BACKDROP_SKIN_IDS = new Set(['blue-fantasy', 'whale-song', 'whale-mom'])
-
 /**
  * Render the skin-center card: a static header naming the plugin, with the
- * always-visible skin list (official default + every installed skin; try-on /
+ * always-visible skin list (official default + every catalog skin; try-on /
  * theme preview / one-click apply) rendered below it.
  * @param props - card props.
  * @returns the plugin card.
  */
-export function SkinCenter({ t, controller, theme, background }: SkinCenterComponentProps) {
+export function SkinCenter({ t, runtime, theme, background, wallpaper }: SkinCenterComponentProps) {
   const snapshot = useSyncExternalStore(theme.subscribe, theme.getTheme)
   const enabled = useSyncExternalStore(background.subscribe, background.enabled)
   const opacity = useSyncExternalStore(background.subscribe, background.opacity)
   const blurEmpty = useSyncExternalStore(background.subscribe, background.blurEmpty)
   const blurContent = useSyncExternalStore(background.subscribe, background.blurContent)
-  const activePackage = activeSkinEntry()?.package
-  const activeId = activeSkinEntry()?.id
-  const backdropActive = activeId !== undefined && BACKDROP_SKIN_IDS.has(activeId)
-  const [tryingId, setTryingId] = useState<string | null>(null)
-  const [tryingOfficial, setTryingOfficial] = useState(false)
-  const [loadingId, setLoadingId] = useState<string | null>(null)
-  const [applying, setApplying] = useState<string | null>(null)
+  const catalog = useSyncExternalStore(runtime.subscribe, runtime.catalog)
+  const state = useSyncExternalStore(runtime.subscribe, runtime.controller.getState)
+  const activeId = state.active
+  const previewing = state.previewing
+  const tryingId = state.trying
+  const activeEntry = activeId === null ? null : runtime.find(activeId)
+  const backdropActive = activeEntry?.manifest.contributes.backgroundMedia !== undefined
+  const [busyId, setBusyId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  // Unmount guard for the confirmation poll: once the card is gone, the
-  // pending timers must stop and no reload / setState may fire.
+  // Unmount guard: once the card is gone, pending async completions must not
+  // setState (the controller itself owns the skin state and lives on).
   const mounted = useRef(false)
-  // Latest-click-wins token for async bundle loads. A chained try-on or exit
-  // invalidates older completions so a slow bundle can never overwrite the
-  // UI state chosen by a newer click.
-  const tryOnRequest = useRef(0)
+  // Latest-click-wins token; a newer click invalidates older completions.
+  const requestSeq = useRef(0)
   useEffect(() => {
     mounted.current = true
     return () => { mounted.current = false }
   }, [])
 
-  const tryOn = (entry: SkinCenterEntry): void => {
-    if (loadingId === entry.id) return
-    const request = ++tryOnRequest.current
+  const run = (target: string, action: () => Promise<string | null>): void => {
+    const seq = ++requestSeq.current
     setError(null)
-    setLoadingId(entry.id)
-    void controller.tryOn(entry)
-      .then(mountedTarget => {
-        if (!mounted.current || request !== tryOnRequest.current || !mountedTarget) return
-        setLoadingId(null)
-        setTryingId(entry.id)
-        setTryingOfficial(false)
-      })
+    setBusyId(target)
+    void action()
       .catch(() => {
-        if (!mounted.current || request !== tryOnRequest.current) return
-        // A load failure keeps the previous preview mounted; a mount failure
-        // restores the original active skin. Mirror the controller's actual
-        // session instead of blindly clearing a preview that may still exist.
-        setLoadingId(null)
-        setError(t('tryOnError'))
-        setTryingId(controller.trying?.id ?? null)
-        setTryingOfficial(controller.tryingOfficial)
+        if (!mounted.current || seq !== requestSeq.current) return
+        setError(t('applyFailed'))
       })
+      .finally(() => {
+        if (!mounted.current || seq !== requestSeq.current) return
+        setBusyId(null)
+      })
+  }
+
+  const tryOn = (entry: CatalogSkin): void => {
+    run(entry.manifest.id, () => runtime.controller.tryOn(entry.manifest.id, entry))
   }
 
   const tryOnOfficial = (): void => {
-    ++tryOnRequest.current
-    setError(null)
-    setLoadingId(null)
-    try {
-      controller.tryOnOfficial()
-    } catch {
-      setError(t('tryOnError'))
-      setTryingOfficial(false)
-      return
-    }
-    setTryingId(null)
-    setTryingOfficial(true)
+    run(OFFICIAL, () => runtime.controller.tryOn(null, null))
   }
 
   const exitTryOn = (): void => {
-    ++tryOnRequest.current
-    controller.exit()
-    setLoadingId(null)
-    setTryingId(null)
-    setTryingOfficial(false)
+    run(tryingId ?? OFFICIAL, () => runtime.controller.exitTryOn())
   }
 
   /**
-   * Poll the host state until the config watcher reports the target active
-   * (the patch write lands before the watcher re-applies it), or time out.
-   * @param target - skin id, or `official` for the stock look.
-   * @returns whether the target became active within the poll budget.
-   */
-  const confirmActive = (target: string): Promise<boolean> =>
-    new Promise(resolve => {
-      const expected = target === OFFICIAL ? 'none' : target
-      let tries = 0
-      const tick = (): void => {
-        if (!mounted.current) {
-          resolve(false)
-          return
-        }
-        tries += 1
-        void fetch('/api/skin-center/state')
-          .then(async response => {
-            const payload = await response.json().catch(() => null) as { ok?: boolean; active?: string } | null
-            if (response.ok && payload?.ok === true && payload.active === expected) {
-              resolve(true)
-              return
-            }
-            if (tries >= 20 || !mounted.current) resolve(false)
-            else window.setTimeout(tick, 250)
-          })
-          .catch(() => {
-            if (tries >= 20 || !mounted.current) resolve(false)
-            else window.setTimeout(tick, 250)
-          })
-      }
-      tick()
-    })
-
-  /**
-   * Poll the served GUI document until the boot manifest actually enables
-   * the target (the config watcher regenerates it asynchronously after the
-   * patch write — reloading earlier boots the page into the previous skin),
-   * or time out.
-   * @param target - skin id, or `official` for the stock look.
-   * @returns whether the manifest caught up within the poll budget.
-   */
-  const manifestReady = (target: string): Promise<boolean> =>
-    new Promise(resolve => {
-      const expected = target === OFFICIAL ? null : target
-      let tries = 0
-      const tick = (): void => {
-        if (!mounted.current) {
-          resolve(false)
-          return
-        }
-        tries += 1
-        void fetch(window.location.href, { cache: 'no-store' })
-          .then(async response => {
-            const html = await response.text().catch(() => null)
-            if (html !== null && manifestHasSkin(html, expected)) {
-              resolve(true)
-              return
-            }
-            if (tries >= 40 || !mounted.current) resolve(false)
-            else window.setTimeout(tick, 500)
-          })
-          .catch(() => {
-            if (tries >= 40 || !mounted.current) resolve(false)
-            else window.setTimeout(tick, 500)
-          })
-      }
-      tick()
-    })
-
-  /**
-   * One-click apply: the host half runs `dsh-skin use <target>` (or
-   * `use official`), the config watcher hot-reloads the patch within
-   * seconds, then this page reloads to pick up the new boot graph. The
-   * reload waits for both the patch (state poll) and the regenerated boot
-   * manifest (manifest poll) so the page never boots into the old skin.
+   * One-click apply: atomic client-side switch + persisted selection. No
+   * reload, no boot-graph wait — the tapIndex adapter makes the next page
+   * load boot straight into this skin.
    * @param target - skin id, or `official` for the stock look.
    */
   const applySkin = (target: string): void => {
-    setError(null)
-    setApplying(target)
-    const body = target === OFFICIAL ? { official: true } : { skin: target }
-    void fetch('/api/skin-center/apply', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-      .then(async response => {
-        const payload = await response.json().catch(() => null) as { ok?: boolean; error?: string } | null
-        if (!response.ok || payload?.ok !== true) {
-          throw new Error(payload?.error ?? `HTTP ${response.status}`)
-        }
-        setApplying(null)
-        // Patch written; reload only once the watcher reports the target
-        // active AND the boot manifest caught up, so the page never boots
-        // into the old skin.
-        void confirmActive(target).then(confirmed => {
-          if (!mounted.current) return
-          if (!confirmed) {
-            const command = target === OFFICIAL ? 'dsh-skin use official' : `dsh-skin use ${target}`
-            setError(`${t('appliedUnconfirmed')} — ${command}`)
-            return
-          }
-          void manifestReady(target).then(ready => {
-            if (!mounted.current) return
-            if (ready) {
-              window.location.reload()
-            } else {
-              const command = target === OFFICIAL ? 'dsh-skin use official' : `dsh-skin use ${target}`
-              setError(`${t('appliedUnconfirmed')} — ${command}`)
-            }
-          })
-        })
-      })
-      .catch((cause: unknown) => {
-        setApplying(null)
-        const detail = cause instanceof Error ? cause.message : String(cause)
-        const command = target === OFFICIAL ? 'dsh-skin use official' : `dsh-skin use ${target}`
-        setError(`${t('applyFailed')} (${detail}) — ${command}`)
-      })
+    if (target === OFFICIAL) {
+      run(OFFICIAL, () => runtime.controller.switchTo(null, null))
+      return
+    }
+    const entry = runtime.find(target)
+    if (entry === null) {
+      setError(t('applyFailed'))
+      return
+    }
+    run(target, () => runtime.controller.switchTo(target, entry))
   }
 
   const dark = snapshot.active.colorScheme === 'dark'
@@ -252,7 +134,7 @@ export function SkinCenter({ t, controller, theme, background }: SkinCenterCompo
     applyLabel: string
   }): ReactNode => (
     <div className={css.actions}>
-      {opts.isActive ? (
+      {opts.isActive && !opts.isTrying ? (
         <button type="button" className={`${css.button} ${css.buttonGhost}`} disabled>
           {t('tryOn')}
         </button>
@@ -264,19 +146,19 @@ export function SkinCenter({ t, controller, theme, background }: SkinCenterCompo
         <button
           type="button"
           className={`${css.button} ${css.buttonPrimary}`}
-          disabled={loadingId === opts.key}
+          disabled={busyId === opts.key}
           onClick={opts.onTryOn}
         >
-          {loadingId === opts.key ? t('loading') : t('tryOn')}
+          {busyId === opts.key ? t('loading') : t('tryOn')}
         </button>
       )}
       <button
         type="button"
         className={css.button}
-        disabled={applying !== null || loadingId !== null}
+        disabled={busyId !== null}
         onClick={() => { applySkin(opts.key) }}
       >
-        {applying === opts.key ? t('applying') : opts.applyLabel}
+        {busyId === opts.key ? t('applying') : opts.applyLabel}
       </button>
     </div>
   )
@@ -287,7 +169,7 @@ export function SkinCenter({ t, controller, theme, background }: SkinCenterCompo
         <span className={css.headText}>
           <span className={css.pluginName}>
             {t('title')}
-            <span className={css.titleBadge}>{String(SKIN_CENTER_ENTRIES.length)}</span>
+            <span className={css.titleBadge}>{String(catalog?.length ?? 0)}</span>
           </span>
           <span className={css.cardDescription} title={t('cardDescription')}>{t('cardDescription')}</span>
         </span>
@@ -392,12 +274,14 @@ export function SkinCenter({ t, controller, theme, background }: SkinCenterCompo
                   </div>
 
 
+                  <WallpaperPanel t={t} wallpaper={wallpaper} />
+
                   {error !== null && <div className={css.error}>{error}</div>}
 
                   <div className={css.list}>
                     {(() => {
-                      const isActive = activePackage === undefined
-                      const isTrying = tryingOfficial
+                      const isActive = activeId === null && !previewing
+                      const isTrying = previewing && tryingId === null
                       const badge = isActive ? t('active') : isTrying ? t('tryingOn') : null
                       return (
                         <div className={css.card} key={OFFICIAL}>
@@ -422,24 +306,31 @@ export function SkinCenter({ t, controller, theme, background }: SkinCenterCompo
                       )
                     })()}
 
-                    {SKIN_CENTER_ENTRIES.map(entry => {
-                      const isActive = entry.package === activePackage
-                      const isTrying = entry.id === tryingId
+                    {(catalog ?? []).map(entry => {
+                      const id = entry.manifest.id
+                      const isActive = id === activeId && !previewing
+                      const isTrying = previewing && id === tryingId
                       const badge = isActive ? t('active') : isTrying ? t('tryingOn') : null
                       return (
-                        <div className={css.card} key={entry.id}>
+                        <div className={css.card} key={id}>
                           <div className={css.cardHead}>
-                            <span className={css.swatch} style={{ background: entry.accent }} aria-hidden="true" />
-                            <span className={css.cardName} title={entry.nameEn}>{entry.nameEn}</span>
+                            <span
+                              className={css.swatch}
+                              style={{ background: entry.manifest.accent ?? '#98a1ab' }}
+                              aria-hidden="true"
+                            />
+                            <span className={css.cardName} title={entry.manifest.nameEn}>{entry.manifest.nameEn}</span>
                             {badge !== null && (
                               <span className={`${css.badge} ${isActive ? css.badgeActive : css.badgeTrying}`}>
                                 {badge}
                               </span>
                             )}
                           </div>
-                          <div className={css.cardTagline} title={entry.tagline}>{entry.tagline}</div>
+                          <div className={css.cardTagline} title={entry.manifest.tagline ?? ''}>
+                            {entry.manifest.tagline ?? ''}
+                          </div>
                           {actionButtons({
-                            key: entry.id,
+                            key: id,
                             isActive,
                             isTrying,
                             onTryOn: () => { tryOn(entry) },
@@ -467,10 +358,10 @@ export type SkinCenterSectionProps =
 
 /** Render the skin-center card as a first-level settings page. */
 export function SkinCenterSection(props: SkinCenterSectionProps): ReactNode {
-  const { t, controller, theme, background } = props
+  const { t, runtime, theme, background, wallpaper } = props
   return (
     <ul className={css.sectionList}>
-      <SkinCenter t={t} controller={controller} theme={theme} background={background} />
+      <SkinCenter t={t} runtime={runtime} theme={theme} background={background} wallpaper={wallpaper} />
     </ul>
   )
 }

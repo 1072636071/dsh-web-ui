@@ -7,7 +7,7 @@
  * @module @linxin666/dsh-pet/client/spritesheet
  */
 
-import type { PetAnimation } from '../state.ts'
+import { rowOf, type PetAnimation } from '../state.ts'
 import type { PetCell, PetTrackDef } from '../registry.ts'
 
 /** Animation track shape the frame loop consumes. */
@@ -15,18 +15,8 @@ export type TrackDef = PetTrackDef
 
 /** Row index of one animation track (the fixed 9-row contract). */
 export function rowOfTrack(animation: PetAnimation): number {
-  const rows: Record<PetAnimation, number> = {
-    idle: 0,
-    'running-right': 1,
-    'running-left': 2,
-    waving: 3,
-    jumping: 4,
-    failed: 5,
-    waiting: 6,
-    running: 7,
-    review: 8,
-  }
-  return rows[animation]
+  // The table itself lives in state.ts (rowOf) — the single source of truth.
+  return rowOf(animation)
 }
 
 /**
@@ -36,13 +26,8 @@ export function rowOfTrack(animation: PetAnimation): number {
  * atlas coordinates here would drift each frame by the scale factor and
  * render torn/overlapping frames.
  */
-export function framePosition(cell: PetCell, columns: number, row: number, col: number, scale = 1): { x: number; y: number } {
+export function framePosition(cell: PetCell, row: number, col: number, scale = 1): { x: number; y: number } {
   return { x: -col * cell.width * scale, y: -row * cell.height * scale }
-}
-
-/** Total duration of one track, ms. */
-export function trackDuration(track: TrackDef): number {
-  return track.durations.reduce((sum, d) => sum + d, 0)
 }
 
 /**

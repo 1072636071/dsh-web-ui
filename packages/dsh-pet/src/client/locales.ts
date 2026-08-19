@@ -37,6 +37,8 @@ export const zh = {
   'pet.importError.invalidStates': 'pet.json 缺少完整的 states 结构',
   'pet.importError.invalidTransitions': 'pet.json 缺少有效的 transitions 结构',
   'pet.importError.writeFailed': '文件写入失败：{detail}',
+  'pet.moreSessions': '展开其余 {n} 个会话的气泡',
+  'pet.collapseSessions': '收起会话气泡',
   // 一级设置页（settings.section 席位）。
   'settings.title': '宠物',
   'settings.description': '选择宠物并调整它的显示布局。',
@@ -100,6 +102,8 @@ export const en = {
   'pet.importError.invalidStates': 'pet.json has an incomplete states structure',
   'pet.importError.invalidTransitions': 'pet.json has an invalid transitions structure',
   'pet.importError.writeFailed': 'File write failed: {detail}',
+  'pet.moreSessions': 'Expand {n} more session bubbles',
+  'pet.collapseSessions': 'Collapse session bubbles',
   // First-level settings section (the `settings.section` seat).
   'settings.title': 'Pet',
   'settings.description': 'Pick a pet and tune its display layout.',

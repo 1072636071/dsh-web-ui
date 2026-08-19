@@ -15,6 +15,7 @@ import type { BranchesView, GraphView, RepoStatus, SwitchResult } from '../src/c
 import type { GitGraphInjected } from '../src/client/index.ts'
 import type { BranchChipProps } from '../src/client/chips/BranchChip.tsx'
 import { BranchChip } from '../src/client/chips/BranchChip.tsx'
+import { GraphDialog } from '../src/client/graph/GraphDialog.tsx'
 import { zh, type GitGraphKey } from '../src/client/locales.ts'
 import css from '../src/client/chips/context.module.css'
 
@@ -120,13 +121,14 @@ function bench(options: BenchOptions = {}, seat: BenchSeat = 'context') {
     subscribeChanges: vi.fn((sessionId: SessionId | undefined, _onChange: () => void) => { record('subscribeChanges', sessionId); return () => {} }),
   }
 
+  const blank = options.blank ?? seat === 'context'
   const sessionsState = {
-    byId: { [sessionId]: { cwd, blank: options.blank === true } },
+    byId: { [sessionId]: { cwd, blank } },
   }
   const commonProps = {
     // The context/dock holes read their state from the standard session kit +
     // the inject face; the dock seat additionally carries the conversation
-    // snapshot (and indents the chip to the input card start).
+    // snapshot used to identify the blank hero phase.
     useSession: (() => undefined) as never,
     useSessions: ((selector: (state: typeof sessionsState) => unknown) => selector(sessionsState)) as never,
     useWorkspaces: (() => undefined) as never,
@@ -164,6 +166,14 @@ describe('BranchChip', () => {
     expect(branchChip.textContent).toContain('main')
   })
 
+  it('opts the chip anchor into the L2 semantic attributes (#506)', async () => {
+    bench()
+    const branchChip = await screen.findByRole('button', { name: '分支' })
+    const anchor = anchorOf(branchChip)
+    expect(anchor.getAttribute('data-dsh-plugin')).toBe('git-graph')
+    expect(anchor.getAttribute('data-dsh-part')).toBe('chip')
+  })
+
   it('marks only the unskinned light skin-center page for stock-light fallback styles', async () => {
     document.body.setAttribute('data-dsh-skin-center', '')
     bench()
@@ -187,57 +197,30 @@ describe('BranchChip', () => {
     expect(branchChip.textContent).toContain('main')
   })
 
-  it('shows the chip on the dock seat above the composer card', async () => {
-    bench({}, 'dock')
-    const branchChip = await screen.findByRole('button', { name: '分支' })
-    expect(branchChip.textContent).toContain('main')
+  it('hides the branch selector in active dock sessions', async () => {
+    const { injected } = bench({}, 'dock')
+    await act(async () => {})
+    expect(screen.queryByRole('button', { name: '分支' })).toBeNull()
+    expect(injected.repoStatus).not.toHaveBeenCalled()
+    expect(injected.subscribeChanges).not.toHaveBeenCalled()
   })
 
-  it('indents the dock copy so it starts flush with the input card', async () => {
-    bench({}, 'dock')
-    const branchChip = await screen.findByRole('button', { name: '分支' })
-    // The dock row spans the composer stack; only the dock seat carries the
-    // side-clearance indent that aligns the chip with the input card below.
-    // The chip's parent is the positioning wrapper; the outer anchor owns
-    // the indent padding.
-    const chipWrap = branchChip.parentElement as HTMLElement
-    expect(chipWrap.className).toContain('chipWrap')
-    expect(chipWrap.contains(branchChip)).toBe(true)
-    const anchor = anchorOf(branchChip)
-    expect(anchor.className).toContain('anchorDock')
+  it('hides the branch selector in active context sessions', async () => {
+    const { injected } = bench({ blank: false })
+    await act(async () => {})
+    expect(screen.queryByRole('button', { name: '分支' })).toBeNull()
+    expect(injected.repoStatus).not.toHaveBeenCalled()
+    expect(injected.subscribeChanges).not.toHaveBeenCalled()
   })
 
-  it('measures the input card left edge and applies it as the dock indent', async () => {
-    const card = document.createElement('div')
-    card.setAttribute('data-composer-card', '')
-    document.body.append(card)
-    try {
-      const { view } = bench({}, 'dock')
-      const chip = await screen.findByRole('button', { name: '分支' })
-      const chipWrap = chip.parentElement as HTMLElement
-      expect(chipWrap.className).toContain('chipWrap')
-      const anchor = anchorOf(chip)
-      anchor.getBoundingClientRect = () => ({
-        left: 540, right: 1344, top: 0, bottom: 24, width: 804, height: 24, x: 540, y: 0, toJSON: () => ({}),
-      }) as DOMRect
-      card.getBoundingClientRect = () => ({
-        left: 600, right: 1380, top: 0, bottom: 100, width: 780, height: 100, x: 600, y: 0, toJSON: () => ({}),
-      }) as DOMRect
-      await act(async () => {
-        window.dispatchEvent(new Event('resize'))
-        await nextFrame()
-      })
-      expect(anchor.style.paddingLeft).toBe('60px')
-      expect(view.unmount).toBeTruthy()
-    } finally {
-      card.remove()
-    }
-  })
-
-  it('keeps the context copy without the dock indent', async () => {
-    bench()
-    const branchChip = await screen.findByRole('button', { name: '分支' })
-    expect(anchorOf(branchChip).className).not.toContain('anchorDock')
+  it('keeps the full pill in the blank hero and context seats', async () => {
+    bench({ blank: true, composerPhase: 'blank' }, 'dock')
+    const heroChip = await screen.findByRole('button', { name: '分支' })
+    expect(heroChip.className).toContain('chipHero')
+    cleanup()
+    bench({ blank: true })
+    const contextChip = await screen.findByRole('button', { name: '分支' })
+    expect(contextChip.className).not.toContain('chipHero')
   })
 
   it('styles the dock chip with the official hero seat in the blank phase', async () => {
@@ -443,5 +426,28 @@ describe('BranchChip', () => {
     } finally {
       vi.useRealTimers()
     }
+  })
+})
+
+describe('GraphDialog', () => {
+  it('opts the dialog into the L2 semantic attributes (#506)', async () => {
+    render(
+      <GraphDialog
+        graph={async () => ({
+          root: '/ws/proj', branch: 'main',
+          commits: [
+            { oid: 'aabbcc', parents: [], subject: 'root commit', author: 'Bob', authorTime: 1690000000, refs: [] },
+          ],
+          hasMore: false,
+        })}
+        onClose={() => {}}
+        t={makeTranslate()}
+      />,
+    )
+    const dialog = await screen.findByRole('dialog', { name: 'Git 图谱' })
+    expect(dialog.getAttribute('data-gitgraph-dialog')).not.toBeNull()
+    expect(dialog.getAttribute('data-dsh-plugin')).toBe('git-graph')
+    expect(dialog.getAttribute('data-dsh-part')).toBe('dialog')
+    expect(await screen.findByText('root commit')).toBeTruthy()
   })
 })

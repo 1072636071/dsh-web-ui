@@ -31,3 +31,7 @@ REVIEW-PROMPT.md
 
 # 本地素材源（姜晓动画资产 232MB，不入库；由 scripts/pack-jiangxiao-pet.mjs 打包）
 local-assets/
+# 挂载冒烟产物（scripts/e2e-mount.sh）
+*.tgz
+playwright-report/
+test-results/

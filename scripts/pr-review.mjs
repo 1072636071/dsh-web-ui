@@ -239,10 +239,10 @@ export function addedLinesFromDiff(text) {
   return out
 }
 
-/** 密钥扫描：命中新增行即拒绝；测试目录内的命中降级为警告（防 fixture 误拒）。 */
-export function checkSecrets(diffText) {
+/** 密钥扫描：命中新增行即拒绝；测试目录内的命中降级为警告（防 fixture 误拒）。调用方可传入预解析的新增行避免重复解析 diff。 */
+export function checkSecrets(diffText, addedLines) {
   const findings = []
-  for (const { path, line, text } of addedLinesFromDiff(diffText)) {
+  for (const { path, line, text } of addedLines ?? addedLinesFromDiff(diffText)) {
     const isTest = TEST_PATH_RE.test(path)
     for (const { re, name } of SECRET_RES) {
       if (re.test(text)) {
@@ -258,12 +258,11 @@ export function checkSecrets(diffText) {
 }
 
 /** emoji 扫描：与 ci.yml 相同码点范围，命中新增行即拒绝。 */
-export function checkEmoji(diffText) {
+export function checkEmoji(diffText, addedLines) {
   const findings = []
-  for (const { path, line, text } of addedLinesFromDiff(diffText)) {
-    const re = new RegExp(EMOJI_RE.source, 'gu')
-    let m
-    while ((m = re.exec(text)) !== null) {
+  // matchAll 复用模块级正则（不改动其 lastIndex），不再逐行 new RegExp。
+  for (const { path, line, text } of addedLines ?? addedLinesFromDiff(diffText)) {
+    for (const m of text.matchAll(EMOJI_GLOBAL_RE)) {
       findings.push({
         severity: `reject`, rule: `emoji`,
         message: `新增行含 emoji 字符 U+` + m[0].codePointAt(0).toString(16).toUpperCase().padStart(4, `0`) + `: ` + path + `:` + line,
@@ -293,16 +292,15 @@ export function checkLockfile(changes) {
   }))
 }
 
-/** 皮肤变更识别：返回 { isSkin, skinIds }。仅源码类变更触发（README/preview/文档不算）。 */
+/** 皮肤变更识别：返回 { isSkin, skinIds }。仅源码类变更触发（README/preview/文档不算）。
+    v2 布局（issue #506）：皮肤事实源是 skin-center 包内的资产目录。 */
 export function checkSkinChanges(changes) {
   const ids = new Set()
   const SKIP_RE = /(README(\.zh)?\.md|README\.i18n\.yaml|preview\/|^docs\/)/i
   for (const c of changes) {
     if (SKIP_RE.test(c.path)) continue
-    let m = c.path.match(/^packages\/skins\/([^/]+)\//)
-    if (!m) m = c.path.match(/^packages\/dsh-skins\/skins\/([^/]+)\//)
-    if (!m) m = c.path.match(/^skins\/([^/]+)\//)
-    if (m && m[1] !== `skin-center`) ids.add(m[1])
+    const m = c.path.match(/^packages\/skins\/skin-center\/skins\/([^/]+)\//)
+    if (m) ids.add(m[1])
   }
   return { isSkin: ids.size > 0, skinIds: [...ids] }
 }
@@ -319,18 +317,18 @@ export function checkCopyright(prInfo, isSkin, repoOwner) {
     message: `皮肤 PR 请提醒作者在 PR 模板「贡献者版权声明（Contributor Copyright）」节声明贡献者版权（在 README 版权表追加一行）`,
   }]
 }
-/** 新皮肤 gallery 适配检查：注册（bundles.js/manifest.js）与预览截图（docs/screenshots）。 */
+/** 新皮肤 gallery 适配检查：注册（manifest.js/styles.js）与预览截图（docs/screenshots）。 */
 export function checkGalleryAdaptation(changes, skinIds) {
   if (!skinIds.length) return []
   const findings = []
-  const touchedGallery = changes.some((c) => c.path === `gallery/bundles.js` || c.path === `gallery/manifest.js`)
+  const touchedGallery = changes.some((c) => c.path === `gallery/styles.js` || c.path === `gallery/manifest.js`)
   const touchedScreenshots = changes.some((c) => c.path.startsWith(`docs/screenshots/`))
   for (const id of skinIds) {
     const isNew = changes.some((c) => c.status === `A` &&
-      (c.path.startsWith(`packages/skins/` + id + `/`) || c.path.startsWith(`packages/dsh-skins/skins/` + id + `/`)))
+      c.path.startsWith(`packages/skins/skin-center/skins/` + id + `/`))
     if (!isNew) continue
     if (!touchedGallery) {
-      findings.push({ severity: `warn`, rule: `gallery`, message: `新皮肤 ` + id + ` 未适配画廊预览：请同步更新 gallery/bundles.js 与 gallery/manifest.js 注册` })
+      findings.push({ severity: `warn`, rule: `gallery`, message: `新皮肤 ` + id + ` 未适配画廊预览：请同步更新 gallery/manifest.js 与 gallery/styles.js 注册` })
     }
     if (!touchedScreenshots) {
       findings.push({ severity: `warn`, rule: `gallery`, message: `新皮肤 ` + id + ` 未提供画廊预览截图：请提交 docs/screenshots/ 截图（light/dark）` })
@@ -667,11 +665,13 @@ export function staticReview(prInfo, diff, opts, repoOwner) {
   if (sizeFindings.some((f) => f.severity === `reject`)) {
     return [...sizeFindings, ...checkForbiddenFiles(diff.addedFiles, diff.sizes, opts.maxFileBytes)]
   }
+  // addedLinesFromDiff 解析一次，密钥与 emoji 扫描共享。
+  const addedLines = addedLinesFromDiff(diff.diffText)
   return [
     ...sizeFindings,
     ...checkForbiddenFiles(diff.addedFiles, diff.sizes, opts.maxFileBytes),
-    ...checkSecrets(diff.diffText),
-    ...checkEmoji(diff.diffText),
+    ...checkSecrets(diff.diffText, addedLines),
+    ...checkEmoji(diff.diffText, addedLines),
     ...checkWorkflowChanges(diff.allChanges),
     ...checkLockfile(diff.allChanges),
     ...checkTemplate(prInfo, repoOwner),

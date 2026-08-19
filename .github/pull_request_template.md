@@ -1,20 +1,20 @@
 > 提 PR 前请阅读 [CONTRIBUTING.md](../CONTRIBUTING.md) 与 [AGENTS.md](../AGENTS.md)；
 > 提交信息用 Conventional Commits（`type(scope): subject`），禁止 emoji。
-> 本仓库接受修复、增强与优化类 PR（bug 修复、现有功能的增强、性能 / 体验优化、维护与文档修正）；新皮肤始终欢迎。全新特性 / 新功能的 PR 暂不接受，请先提 Issue 讨论。
+> 本仓库接受修复、增强与优化类 PR（bug 修复、现有功能的增强、性能 / 体验优化、维护）；新皮肤始终欢迎。全新特性 / 新功能的 PR 暂不接受，请先提 Issue 讨论。
+> 仅文档类 PR（标题以 `docs:` 开头或勾选「仅文档」）不接受，会被自动关闭；文档改动请先提 Issue 讨论。
 ## 摘要（Summary）
 
 <!-- 用一两句话说明改了什么、为什么改。 -->
 
 ## 涉及包（Affected Packages）
 
-<!-- 勾选本次改动涉及的包；仅文档/脚本改动可全部不勾选并说明。 -->
+<!-- 勾选本次改动涉及的包；仅脚本改动（维护类）可全部不勾选并说明。 -->
 
 - [ ] 任务看板 `packages/dsh-task-board`
 - [ ] Git 图谱 `packages/dsh-git-graph`
 - [ ] 右侧面板 `packages/dsh-aionui-panel`
 - [ ] 远程 Web UI `packages/dsh-remote-web-ui`
 - [ ] SSH 远程运维 `packages/dsh-ssh`
-- [ ] 实时令牌统计 `packages/dsh-live-stats`
 - [ ] 宠物 `packages/dsh-pet`
 - [ ] 皮肤 / 皮肤中心 `packages/dsh-skins` / `packages/skins`
 - [ ] 聚合包 / 设置 `packages/dsh-web-ui-all` / `packages/dsh-web-ui-settings`
@@ -28,8 +28,9 @@
 - [ ] Bug 修复
 - [ ] 增强 / 优化（现有功能的改进、性能 / 体验优化）
 - [ ] 新皮肤收录（内容贡献，欢迎直接提交，无需先提 issue）
-- [ ] 仅文档
 - [ ] 维护 / 重构
+
+<!-- 仅文档类 PR 不接受，会被自动关闭；文档改动请先提 Issue 讨论。 -->
 
 ## 最新代码确认（Latest Codebase Confirmation）
 
@@ -73,11 +74,11 @@
 
 <!-- 仅当本 PR 新增皮肤时必填；其余改动可跳过本节。新皮肤属于内容贡献，欢迎直接提交（无需先提 issue）。 -->
 
-- [ ] 遵循官方独立 bundle 标准四件套（`dsh.bundle.patch` → `cordis.patch.yml`、`dsh.client` 浏览器半区、`prepare` = tsdown、devDependencies 仅真实发布版本），并满足纯呈现层约束（样式只挂 `body[data-dsh-<name>]`，apply disposer 全部收回）。
-- [ ] `skin.json` 契约完整（id / name / nameEn / author / tagline / description / tags / accent / bodyAttr / package / wiring / preview / order）。
-- [ ] 已重跑 `node scripts/skin-center-bundles` 并重建 skin-center（新皮肤出现在设置 → 皮肤中心）；已重跑 `node scripts/gallery-build` 并提交 gallery 产物（`gallery/bundles.js` / `gallery/manifest.js`）。
+- [ ] 纯资产目录契约：`packages/skins/skin-center/skins/<name>/` 只含 skin.json + skin.css（+ 可选 patches.css / hooks.mjs / assets/），无 package.json 与构建文件；`node scripts/dsh-skin validate` 通过；纯呈现层约束满足（不注入服务、不发事件、不触及模型请求）。
+- [ ] `skin.json` 符合 v2 清单（contracts/skin-manifest-v2.schema.json：skinManifestVersion / id / name / nameEn / version / author / contributes，另含 tagline / description / tags / accent / preview / order）。
+- [ ] `pnpm skin-center:check` 通过（新皮肤出现在设置 → 皮肤中心）；已重跑 `node scripts/gallery-build` 并提交 gallery 产物（`gallery/manifest.js` / `gallery/styles.js`）。
 - [ ] 已用 `node scripts/capture-previews` 重拍并提交 `preview/{light,dark}.png`。
-- [ ] README 中英双语三件套、LICENSE 与贡献者版权声明齐全；PR 描述附 gallery 试穿截图（亮 / 暗）。
+- [ ] README 中英双语、LICENSE 与贡献者版权声明齐全；PR 描述附 gallery 试穿截图（亮 / 暗）。
 
 ## 社区插件索引登记（Community Plugin Index）
 
@@ -114,4 +115,4 @@ pnpm build
 
 证据：
 
-<!-- 粘贴 GitHub 图片 / 视频附件、Markdown 图片或直接图片 / 视频链接。仅文档或纯内部改动可填 N/A。 -->
+<!-- 粘贴 GitHub 图片 / 视频附件、Markdown 图片或直接图片 / 视频链接。纯内部改动（无用户可见变更）可填 N/A。 -->

@@ -140,28 +140,34 @@ export async function connectChain(engine: PoolEngine, entry: SshHostEntry): Pro
   const hops: Client[] = []
   let sock: ConnectConfig['sock']
   const chain = entry.proxyJump
-  for (let index = 0; index < chain.length; index += 1) {
-    const hopAlias = chain[index]
-    const hop = engine.store.find(hopAlias)
-    if (hop === undefined) {
-      for (const client of hops) client.end()
-      throw new Error('proxyJump alias \'' + hopAlias + '\' not found — create it first')
-    }
-    const hopClient = await connectClient(buildConnectConfig(hop, sock, engine.opts))
-    hops.push(hopClient)
-    const next = index + 1 < chain.length ? engine.store.find(chain[index + 1]) : undefined
-    const nextHost = next !== undefined ? next.host : entry.host
-    const nextPort = next !== undefined ? next.port : entry.port
-    sock = await new Promise<ConnectConfig['sock']>((resolve, reject) => {
-      hopClient.forwardOut('127.0.0.1', 0, nextHost, nextPort, (error, stream) => {
-        if (error !== undefined) {
-          for (const client of hops) client.end()
-          reject(error)
-        } else {
-          resolve(stream)
-        }
+  try {
+    for (let index = 0; index < chain.length; index += 1) {
+      const hopAlias = chain[index]
+      const hop = engine.store.find(hopAlias)
+      if (hop === undefined) {
+        throw new Error('proxyJump alias \'' + hopAlias + '\' not found — create it first')
+      }
+      const hopClient = await connectClient(buildConnectConfig(hop, sock, engine.opts))
+      hops.push(hopClient)
+      const next = index + 1 < chain.length ? engine.store.find(chain[index + 1]) : undefined
+      const nextHost = next !== undefined ? next.host : entry.host
+      const nextPort = next !== undefined ? next.port : entry.port
+      sock = await new Promise<ConnectConfig['sock']>((resolve, reject) => {
+        hopClient.forwardOut('127.0.0.1', 0, nextHost, nextPort, (error, stream) => {
+          if (error !== undefined) {
+            reject(error)
+          } else {
+            resolve(stream)
+          }
+        })
       })
-    })
+    }
+  } catch (error) {
+    // A missing alias, a failed hop connect, or a failed forwardOut must all
+    // close the hops already connected, so a failed ProxyJump never leaks a
+    // middle-hop connection.
+    for (const client of hops) client.end()
+    throw error
   }
   let target: Client | undefined
   try {
@@ -213,8 +219,13 @@ export function disposeRecord(engine: PoolEngine, alias: string, record?: PoolRe
   if (record !== undefined && current !== record) return
   if (current === undefined) return
   engine.pool.delete(alias)
-  try { current.client.end() } catch { /* already closed */ }
-  for (const hop of current.hops) {
+  endRecordChain(current)
+}
+
+/** End one record's client and hop chain (best-effort, safe to repeat). */
+export function endRecordChain(record: PoolRecord): void {
+  try { record.client.end() } catch { /* already closed */ }
+  for (const hop of record.hops) {
     try { hop.end() } catch { /* already closed */ }
   }
 }
@@ -247,6 +258,14 @@ export async function withClient<T>(engine: PoolEngine, alias: string, fn: (clie
       const result = await fn(record.client)
       record.idleAt = Date.now()
       return result
+    } catch (error) {
+      lastError = error
+      // Retry only when the connection actually broke mid-flight: drop the
+      // corpse and let the next attempt reconnect (a reconnect may replay a
+      // non-idempotent command — the documented trade-off). A failure on a
+      // healthy connection is a logic error and is rethrown, not replayed.
+      if (!record.broken) throw error
+      disposeRecord(engine, alias, record)
     } finally {
       record.inFlight -= 1
     }
@@ -297,8 +316,15 @@ export async function execCommand(engine: PoolEngine, alias: string, command: st
           if (settled) return
           settled = true
           clearTimeout(timer)
+          if (typeof code !== 'number' && !timedOut) {
+            // The channel closed without an exit status: the connection
+            // dropped mid-flight. Reject so withClient can reconnect and
+            // retry within the attempt budget.
+            reject(new Error('ssh: connection lost mid-flight (channel closed without an exit status)'))
+            return
+          }
           resolve({
-            success: code === 0 && !timedOut,
+            success: code === 0,
             exitCode: code,
             timedOut,
             stdout: stdout.text,
