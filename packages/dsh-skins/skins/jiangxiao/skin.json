@@ -3,8 +3,8 @@
   "name": "姜晓 · 墨金卷轴",
   "nameEn": "Jiangxiao · Ink-Gold Scroll",
   "author": "dsh-web-ui",
-  "tagline": "唐风二次元 · 墨金卷轴银杏深色 + 宣纸梅花浅色 · 鎏金流光 · 银杏飘落 · 朱砂印章 · FX 五效可关 · 角色浮层金色背光 · 状态跟随",
-  "description": "唐风二次元皮肤：深色「墨金卷轴银杏」（墨黑底、鎏金流光顶栏、银杏叶飘落、卷轴质感、金箔文字、朱砂印章发送钮），浅色「宣纸梅花」（宣纸底、水墨晕染、梅花飘落、墨色楷书），按仓内 skin-preview 原型设计。侧边栏用 surface 色阶，对比度达 WCAG AA。@property 驱动鎏金流光/金箔流光/墨晕呼吸，全走 GPU 合成，prefers-reduced-motion 支持。内置 Ma Shan Zheng 楷体 + Noto Serif SC 宋体@woff2 离线可用。运行时层：FX 五效独立开关（localStorage 持久化）、右下角角色浮层（金色发光背光、按需加载 webp、素材缺失不渲染）、DSH 会话状态自动跟随、设置卡素材导入引导。",
+  "tagline": "唐风二次元 · 墨金卷轴银杏深色 + 宣纸梅花浅色 · 鎏金流光 · 银杏飘落 · 朱砂印章 · 极致炫技",
+  "description": "唐风二次元皮肤重设计：深色「墨金卷轴银杏」（墨黑底、鎏金流光顶栏、银杏叶飘落、卷轴质感侧边栏、金箔文字、朱砂印章发送钮），浅色「宣纸梅花」（宣纸底、水墨晕染、梅花飘落、墨色楷书）。侧边栏改用 surface 色阶（非屎黄色），对比度达 WCAG AA。@property 驱动鎏金流光/金箔流光/墨晕呼吸，全走 GPU 合成，prefers-reduced-motion 支持。内置 Ma Shan Zheng 楷体 + Noto Serif SC 宋体@woff2 离线可用。",
   "tags": [
     "jiangxiao",
     "tang",

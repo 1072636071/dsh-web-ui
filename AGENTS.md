@@ -86,7 +86,8 @@ node scripts/dsh-skin-new            # 脚手架：新皮肤资产目录
 ### 提交前必过门禁
 
 `pnpm typecheck` / `pnpm test` / `pnpm test:scripts` / `pnpm docs:check`
-（涉及聚合包、画廊、皮肤中心时另跑 aggregate/gallery/skin-center 三个
+/ `pnpm parity:check`（jiangxiao 皮肤 token 与独立仓库 dsh-web-ui-jx 一致性，
+涉及聚合包、画廊、皮肤中心时另跑 aggregate/gallery/skin-center 三个
 --check）。CI（.github/workflows/ci.yml）全量执行所有门禁，红则 PR 不合并。
 
 ### PR 要求（本地与远程一致）

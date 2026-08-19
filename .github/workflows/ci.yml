@@ -59,6 +59,9 @@ jobs:
       - name: Community index consistency
         run: pnpm community:check
 
+      - name: Jiangxiao token parity
+        run: pnpm parity:check
+
       - name: Build
         run: pnpm build
 
