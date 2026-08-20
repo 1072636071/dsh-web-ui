@@ -23,7 +23,8 @@
     "docs:list": "node scripts/verify-docs.mjs --list",
     "docs:write-pair": "node scripts/verify-docs.mjs --write",
     "sync-shared": "node scripts/sync-shared.mjs",
-    "sync-shared:check": "node scripts/sync-shared.mjs --check"
+    "sync-shared:check": "node scripts/sync-shared.mjs --check",
+    "parity:check": "node scripts/check-jiangxiao-token-parity.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
