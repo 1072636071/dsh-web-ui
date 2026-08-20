@@ -874,6 +874,17 @@ function scanPetDir(dir: string, options: { assetPrefix?: string; warnings?: str
     const parsed = readPetJson(manifestFile, options.warnings)
     if (parsed === undefined) continue
     const entryDir = join(dir, name)
+    // animated-webp pets (jiangxiao) use the v1 kind dispatch directly,
+    // bypassing the v2 parser which only knows sprite2d/live2d renderers.
+    const rawKind = (parsed as Record<string, unknown> | null)?.kind
+    if (rawKind === 'animated-webp') {
+      const webpEntry = resolvePetManifest(parsed, entryDir, options)
+      if (webpEntry !== undefined) {
+        const voice = loadVoicePackFile(join(entryDir, 'voice.json'), options)
+        entries.push({ ...webpEntry, ...(voice === undefined ? {} : { voice }) })
+      }
+      continue
+    }
     const verdict = parsePetManifest(parsed, entryDir)
     for (const diagnostic of verdict.diagnostics) {
       options.diagnostics?.push({ level: diagnostic.level, source: entryDir, message: diagnostic.message })
